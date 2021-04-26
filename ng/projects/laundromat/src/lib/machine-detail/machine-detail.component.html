@@ -1,0 +1,85 @@
+<div *ngIf="machine" class="details">
+    <h1 class="details__title">machine</h1>
+    <!-- insertion point for fields specific code -->
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>TechName</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.TechName">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.Name">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>DrumLoad</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.DrumLoad">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <mat-grid-list cols="3" rowHeight="4:1">
+            <mat-grid-tile>
+                <form>
+                    <mat-form-field class="details_hours_width">
+                        <mat-label>RemainingTime Hours</mat-label>
+                        <input type="number" [ngModelOptions]="{standalone: true}" matInput
+                            [(ngModel)]="RemainingTime_Hours">
+                    </mat-form-field>
+                </form>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <form>
+                    <mat-form-field class="details_minutes_width">
+                        <mat-label>RemainingTime Minutes</mat-label>
+                        <input type="number" [ngModelOptions]="{standalone: true}" matInput
+                            [(ngModel)]="RemainingTime_Minutes">
+                    </mat-form-field>
+                </form>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <form>
+                    <mat-form-field class="details_seconds_width">
+                        <mat-label>RemainingTime Seconds</mat-label>
+                        <input type="number" [ngModelOptions]="{standalone: true}" matInput
+                            [(ngModel)]="RemainingTime_Seconds">
+                    </mat-form-field>
+                </form>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-checkbox [formControl]="CleanedlaundryFormControl">Cleanedlaundry</mat-checkbox>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <mat-form-field appearance="fill">
+            <mat-label>State</mat-label>
+            <mat-select [(ngModel)]="machine.State">
+                <mat-option *ngFor="let enum of MachineStateEnumList" [value]="enum.value">
+                    {{enum.viewValue}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="details__save">
+        <button mat-raised-button color="primary" (click)="save()">
+			Save machine
+		</button>
+    </div>
+</div>
