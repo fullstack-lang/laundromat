@@ -219,6 +219,16 @@ export class SidebarComponent implements OnInit {
       nonInstanceNodeId = nonInstanceNodeId + 1
       this.gongNodeTree.push(machineGongNodeStruct)
 
+      this.frontRepo.Machines_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
+
       this.frontRepo.Machines_array.forEach(
         machineDB => {
           let machineGongNodeInstance: GongNode = {
@@ -250,6 +260,16 @@ export class SidebarComponent implements OnInit {
       }
       nonInstanceNodeId = nonInstanceNodeId + 1
       this.gongNodeTree.push(simulationGongNodeStruct)
+
+      this.frontRepo.Simulations_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
 
       this.frontRepo.Simulations_array.forEach(
         simulationDB => {
@@ -348,6 +368,16 @@ export class SidebarComponent implements OnInit {
       }
       nonInstanceNodeId = nonInstanceNodeId + 1
       this.gongNodeTree.push(washerGongNodeStruct)
+
+      this.frontRepo.Washers_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
 
       this.frontRepo.Washers_array.forEach(
         washerDB => {

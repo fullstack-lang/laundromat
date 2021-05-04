@@ -128,7 +128,7 @@ export class SimulationsTableComponent implements OnInit {
           this.selection = new SelectionModel<SimulationDB>(allowMultiSelect, this.initialSelection);
         }
 
-		// update the mat table data source
+        // update the mat table data source
         this.matTableDataSource.data = this.simulations
       }
     )

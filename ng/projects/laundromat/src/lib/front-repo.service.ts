@@ -125,6 +125,18 @@ export class FrontRepoService {
                 }
               }
             )
+            
+            // sort Machines_array array
+            FrontRepoSingloton.Machines_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+            
             // init the array
             FrontRepoSingloton.Simulations_array = simulations
 
@@ -146,6 +158,18 @@ export class FrontRepoService {
                 }
               }
             )
+            
+            // sort Simulations_array array
+            FrontRepoSingloton.Simulations_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+            
             // init the array
             FrontRepoSingloton.Washers_array = washers
 
@@ -167,6 +191,18 @@ export class FrontRepoService {
                 }
               }
             )
+            
+            // sort Washers_array array
+            FrontRepoSingloton.Washers_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+            
 
             // 
             // Second Step: redeem pointers between instances (thanks to maps in the First Step)

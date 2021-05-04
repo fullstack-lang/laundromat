@@ -139,7 +139,7 @@ export class MachinesTableComponent implements OnInit {
           this.selection = new SelectionModel<MachineDB>(allowMultiSelect, this.initialSelection);
         }
 
-		// update the mat table data source
+        // update the mat table data source
         this.matTableDataSource.data = this.machines
       }
     )
