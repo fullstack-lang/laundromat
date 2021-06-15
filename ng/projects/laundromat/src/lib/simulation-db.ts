@@ -17,10 +17,8 @@ export class SimulationDB {
 	// insertion point for other declarations
 	Machine?: MachineDB
 	MachineID?: NullInt64
-	MachineName?: string
 
 	Washer?: WasherDB
 	WasherID?: NullInt64
-	WasherName?: string
 
 }

@@ -3,13 +3,19 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/laundromat/go/models"
 )
@@ -27,9 +33,34 @@ var dummy_Washer_sort sort.Float64Slice
 //
 // swagger:model washerAPI
 type WasherAPI struct {
+	gorm.Model
+
 	models.Washer
 
-	// insertion for fields declaration
+	// encoding of pointers
+	WasherPointersEnconding
+}
+
+// WasherPointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type WasherPointersEnconding struct {
+	// insertion for pointer fields encoding declaration
+	// field Machine is a pointer to another Struct (optional or 0..1)
+	// This field is generated into another field to enable AS ONE association
+	MachineID sql.NullInt64
+
+}
+
+// WasherDB describes a washer in the database
+//
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
+//
+// swagger:model washerDB
+type WasherDB struct {
+	gorm.Model
+
+	// insertion for basic fields declaration
 	// Declation for basic field washerDB.TechName {{BasicKind}} (to be completed)
 	TechName_Data sql.NullString
 
@@ -42,28 +73,11 @@ type WasherAPI struct {
 	// Declation for basic field washerDB.State {{BasicKind}} (to be completed)
 	State_Data sql.NullString
 
-	// field Machine is a pointer to another Struct (optional or 0..1)
-	// This field is generated into another field to enable AS ONE association
-	MachineID sql.NullInt64
-
-	// all gong Struct has a Name field, this enables this data to object field
-	MachineName string
-
 	// Declation for basic field washerDB.CleanedLaundryWeight {{BasicKind}} (to be completed)
 	CleanedLaundryWeight_Data sql.NullFloat64
 
-	// end of insertion
-}
-
-// WasherDB describes a washer in the database
-//
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
-//
-// swagger:model washerDB
-type WasherDB struct {
-	gorm.Model
-
-	WasherAPI
+	// encoding of pointers
+	WasherPointersEnconding
 }
 
 // WasherDBs arrays washerDBs
@@ -76,6 +90,36 @@ type WasherDBResponse struct {
 	WasherDB
 }
 
+// WasherWOP is a Washer without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type WasherWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	TechName string
+
+	Name string
+
+	DirtyLaundryWeight float64
+
+	State models.WasherStateEnum
+
+	CleanedLaundryWeight float64
+	// insertion for WOP pointer fields
+}
+
+var Washer_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"TechName",
+	"Name",
+	"DirtyLaundryWeight",
+	"State",
+	"CleanedLaundryWeight",
+}
+
+
 type BackRepoWasherStruct struct {
 	// stores WasherDB according to their gorm ID
 	Map_WasherDBID_WasherDB *map[uint]*WasherDB
@@ -87,6 +131,17 @@ type BackRepoWasherStruct struct {
 	Map_WasherDBID_WasherPtr *map[uint]*models.Washer
 
 	db *gorm.DB
+}
+
+func (backRepoWasher *BackRepoWasherStruct) GetDB() *gorm.DB {
+	return backRepoWasher.db
+}
+
+// GetWasherDBFromWasherPtr is a handy function to access the back repo instance from the stage instance
+func (backRepoWasher *BackRepoWasherStruct) GetWasherDBFromWasherPtr(washer *models.Washer) (washerDB *WasherDB) {
+	id := (*backRepoWasher.Map_WasherPtr_WasherDBID)[washer]
+	washerDB = (*backRepoWasher.Map_WasherDBID_WasherDB)[id]
+	return
 }
 
 // BackRepoWasher.Init set up the BackRepo of the Washer
@@ -170,7 +225,7 @@ func (backRepoWasher *BackRepoWasherStruct) CommitPhaseOneInstance(washer *model
 
 	// initiate washer
 	var washerDB WasherDB
-	washerDB.Washer = *washer
+	washerDB.CopyBasicFieldsFromWasher(washer)
 
 	query := backRepoWasher.db.Create(&washerDB)
 	if query.Error != nil {
@@ -203,34 +258,17 @@ func (backRepoWasher *BackRepoWasherStruct) CommitPhaseTwoInstance(backRepo *Bac
 	// fetch matching washerDB
 	if washerDB, ok := (*backRepoWasher.Map_WasherDBID_WasherDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				washerDB.TechName_Data.String = washer.TechName
-				washerDB.TechName_Data.Valid = true
+		washerDB.CopyBasicFieldsFromWasher(washer)
 
-				washerDB.Name_Data.String = washer.Name
-				washerDB.Name_Data.Valid = true
-
-				washerDB.DirtyLaundryWeight_Data.Float64 = washer.DirtyLaundryWeight
-				washerDB.DirtyLaundryWeight_Data.Valid = true
-
-				washerDB.State_Data.String = string(washer.State)
-				washerDB.State_Data.Valid = true
-
-				// commit pointer value washer.Machine translates to updating the washer.MachineID
-				washerDB.MachineID.Valid = true // allow for a 0 value (nil association)
-				if washer.Machine != nil {
-					if MachineId, ok := (*backRepo.BackRepoMachine.Map_MachinePtr_MachineDBID)[washer.Machine]; ok {
-						washerDB.MachineID.Int64 = int64(MachineId)
-					}
-				}
-
-				washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
-				washerDB.CleanedLaundryWeight_Data.Valid = true
-
+		// insertion point for translating pointers encodings into actual pointers
+		// commit pointer value washer.Machine translates to updating the washer.MachineID
+		washerDB.MachineID.Valid = true // allow for a 0 value (nil association)
+		if washer.Machine != nil {
+			if MachineId, ok := (*backRepo.BackRepoMachine.Map_MachinePtr_MachineDBID)[washer.Machine]; ok {
+				washerDB.MachineID.Int64 = int64(MachineId)
 			}
 		}
+
 		query := backRepoWasher.db.Save(&washerDB)
 		if query.Error != nil {
 			return query.Error
@@ -271,18 +309,24 @@ func (backRepoWasher *BackRepoWasherStruct) CheckoutPhaseOne() (Error error) {
 // models version of the washerDB
 func (backRepoWasher *BackRepoWasherStruct) CheckoutPhaseOneInstance(washerDB *WasherDB) (Error error) {
 
-	// if absent, create entries in the backRepoWasher maps.
-	washerWithNewFieldValues := washerDB.Washer
-	if _, ok := (*backRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]; !ok {
+	washer, ok := (*backRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]
+	if !ok {
+		washer = new(models.Washer)
 
-		(*backRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID] = &washerWithNewFieldValues
-		(*backRepoWasher.Map_WasherPtr_WasherDBID)[&washerWithNewFieldValues] = washerDB.ID
+		(*backRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID] = washer
+		(*backRepoWasher.Map_WasherPtr_WasherDBID)[washer] = washerDB.ID
 
 		// append model store with the new element
-		washerWithNewFieldValues.Stage()
+		washer.Name = washerDB.Name_Data.String
+		washer.Stage()
 	}
-	washerDBWithNewFieldValues := *washerDB
-	(*backRepoWasher.Map_WasherDBID_WasherDB)[washerDB.ID] = &washerDBWithNewFieldValues
+	washerDB.CopyBasicFieldsToWasher(washer)
+
+	// preserve pointer to washerDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_WasherDBID_WasherDB)[washerDB hold variable pointers
+	washerDB_Data := *washerDB
+	preservedPtrToWasher := &washerDB_Data
+	(*backRepoWasher.Map_WasherDBID_WasherDB)[washerDB.ID] = preservedPtrToWasher
 
 	return
 }
@@ -304,26 +348,11 @@ func (backRepoWasher *BackRepoWasherStruct) CheckoutPhaseTwoInstance(backRepo *B
 
 	washer := (*backRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]
 	_ = washer // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			washer.TechName = washerDB.TechName_Data.String
 
-			washer.Name = washerDB.Name_Data.String
-
-			washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
-
-			washer.State = models.WasherStateEnum(washerDB.State_Data.String)
-
-			// Machine field
-			if washerDB.MachineID.Int64 != 0 {
-				washer.Machine = (*backRepo.BackRepoMachine.Map_MachineDBID_MachinePtr)[uint(washerDB.MachineID.Int64)]
-			}
-
-			washer.CleanedLaundryWeight = washerDB.CleanedLaundryWeight_Data.Float64
-
-		}
+	// insertion point for checkout of pointer encoding
+	// Machine field
+	if washerDB.MachineID.Int64 != 0 {
+		washer.Machine = (*backRepo.BackRepoMachine.Map_MachineDBID_MachinePtr)[uint(washerDB.MachineID.Int64)]
 	}
 	return
 }
@@ -353,3 +382,192 @@ func (backRepo *BackRepoStruct) CheckoutWasher(washer *models.Washer) {
 		}
 	}
 }
+
+// CopyBasicFieldsFromWasher
+func (washerDB *WasherDB) CopyBasicFieldsFromWasher(washer *models.Washer) {
+	// insertion point for fields commit
+	washerDB.TechName_Data.String = washer.TechName
+	washerDB.TechName_Data.Valid = true
+
+	washerDB.Name_Data.String = washer.Name
+	washerDB.Name_Data.Valid = true
+
+	washerDB.DirtyLaundryWeight_Data.Float64 = washer.DirtyLaundryWeight
+	washerDB.DirtyLaundryWeight_Data.Valid = true
+
+	washerDB.State_Data.String = string(washer.State)
+	washerDB.State_Data.Valid = true
+
+	washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
+	washerDB.CleanedLaundryWeight_Data.Valid = true
+
+}
+
+// CopyBasicFieldsFromWasherWOP
+func (washerDB *WasherDB) CopyBasicFieldsFromWasherWOP(washer *WasherWOP) {
+	// insertion point for fields commit
+	washerDB.TechName_Data.String = washer.TechName
+	washerDB.TechName_Data.Valid = true
+
+	washerDB.Name_Data.String = washer.Name
+	washerDB.Name_Data.Valid = true
+
+	washerDB.DirtyLaundryWeight_Data.Float64 = washer.DirtyLaundryWeight
+	washerDB.DirtyLaundryWeight_Data.Valid = true
+
+	washerDB.State_Data.String = string(washer.State)
+	washerDB.State_Data.Valid = true
+
+	washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
+	washerDB.CleanedLaundryWeight_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToWasher
+func (washerDB *WasherDB) CopyBasicFieldsToWasher(washer *models.Washer) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	washer.TechName = washerDB.TechName_Data.String
+	washer.Name = washerDB.Name_Data.String
+	washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
+	washer.State = models.WasherStateEnum(washerDB.State_Data.String)
+	washer.CleanedLaundryWeight = washerDB.CleanedLaundryWeight_Data.Float64
+}
+
+// CopyBasicFieldsToWasherWOP
+func (washerDB *WasherDB) CopyBasicFieldsToWasherWOP(washer *WasherWOP) {
+	washer.ID = int(washerDB.ID)
+	// insertion point for checkout of basic fields (back repo to stage)
+	washer.TechName = washerDB.TechName_Data.String
+	washer.Name = washerDB.Name_Data.String
+	washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
+	washer.State = models.WasherStateEnum(washerDB.State_Data.String)
+	washer.CleanedLaundryWeight = washerDB.CleanedLaundryWeight_Data.Float64
+}
+
+// Backup generates a json file from a slice of all WasherDB instances in the backrepo
+func (backRepoWasher *BackRepoWasherStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "WasherDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*WasherDB, 0)
+	for _, washerDB := range *backRepoWasher.Map_WasherDBID_WasherDB {
+		forBackup = append(forBackup, washerDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Washer ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Washer file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all WasherDB instances in the backrepo
+func (backRepoWasher *BackRepoWasherStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*WasherDB, 0)
+	for _, washerDB := range *backRepoWasher.Map_WasherDBID_WasherDB {
+		forBackup = append(forBackup, washerDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Washer")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Washer_Fields, -1)
+	for _, washerDB := range forBackup {
+
+		var washerWOP WasherWOP
+		washerDB.CopyBasicFieldsToWasherWOP(&washerWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&washerWOP, -1)
+	}
+}
+
+// RestorePhaseOne read the file "WasherDB.json" in dirPath that stores an array
+// of WasherDB and stores it in the database
+// the map BackRepoWasherid_atBckpTime_newID is updated accordingly
+func (backRepoWasher *BackRepoWasherStruct) RestorePhaseOne(dirPath string) {
+
+	// resets the map
+	BackRepoWasherid_atBckpTime_newID = make(map[uint]uint)
+
+	filename := filepath.Join(dirPath, "WasherDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Washer file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*WasherDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_WasherDBID_WasherDB
+	for _, washerDB := range forRestore {
+
+		washerDB_ID_atBackupTime := washerDB.ID
+		washerDB.ID = 0
+		query := backRepoWasher.db.Create(washerDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoWasher.Map_WasherDBID_WasherDB)[washerDB.ID] = washerDB
+		BackRepoWasherid_atBckpTime_newID[washerDB_ID_atBackupTime] = washerDB.ID
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Washer file", err.Error())
+	}
+}
+
+// RestorePhaseTwo uses all map BackRepo<Washer>id_atBckpTime_newID
+// to compute new index
+func (backRepoWasher *BackRepoWasherStruct) RestorePhaseTwo() {
+
+	for _, washerDB := range (*backRepoWasher.Map_WasherDBID_WasherDB) {
+
+		// next line of code is to avert unused variable compilation error
+		_ = washerDB
+
+		// insertion point for reindexing pointers encoding
+		// reindexing Machine field
+		if washerDB.MachineID.Int64 != 0 {
+			washerDB.MachineID.Int64 = int64(BackRepoMachineid_atBckpTime_newID[uint(washerDB.MachineID.Int64)])
+		}
+
+		// update databse with new index encoding
+		query := backRepoWasher.db.Model(washerDB).Updates(*washerDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+	}
+
+}
+
+// this field is used during the restauration process.
+// it stores the ID at the backup time and is used for renumbering
+var BackRepoWasherid_atBckpTime_newID map[uint]uint

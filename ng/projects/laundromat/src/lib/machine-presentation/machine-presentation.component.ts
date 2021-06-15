@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { MachineDB } from '../machine-db'
 import { MachineService } from '../machine.service'
+
+import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
@@ -29,9 +31,13 @@ export class MachinePresentationComponent implements OnInit {
 	dataSource = ELEMENT_DATA;
 
 	machine: MachineDB;
+
+	// front repo
+	frontRepo: FrontRepo
  
 	constructor(
 		private machineService: MachineService,
+		private frontRepoService: FrontRepoService,
 		private route: ActivatedRoute,
 		private router: Router,
 	) {
@@ -55,26 +61,26 @@ export class MachinePresentationComponent implements OnInit {
 
 	getMachine(): void {
 		const id = +this.route.snapshot.paramMap.get('id');
-		this.machineService.getMachine(id)
-			.subscribe(
-				machine => {
-					this.machine = machine
+		this.frontRepoService.pull().subscribe(
+			frontRepo => {
+				this.frontRepo = frontRepo
 
-					// insertion point for recovery of durations
-					// computation of Hours, Minutes, Seconds for RemainingTime
-					this.RemainingTime_Hours = Math.floor(this.machine.RemainingTime / (3600 * 1000 * 1000 * 1000))
-					this.RemainingTime_Minutes = Math.floor(this.machine.RemainingTime % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000))
-					this.RemainingTime_Seconds = this.machine.RemainingTime % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000)
+				this.machine = this.frontRepo.Machines.get(id)
 
-				}
-			);
+				// insertion point for recovery of durations
+				// computation of Hours, Minutes, Seconds for RemainingTime
+				this.RemainingTime_Hours = Math.floor(this.machine.RemainingTime / (3600 * 1000 * 1000 * 1000))
+				this.RemainingTime_Minutes = Math.floor(this.machine.RemainingTime % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000))
+				this.RemainingTime_Seconds = this.machine.RemainingTime % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000)
+			}
+		);
 	}
 
 	// set presentation outlet
 	setPresentationRouterOutlet(structName: string, ID: number) {
 		this.router.navigate([{
 			outlets: {
-				presentation: [structName + "-presentation", ID]
+				github_com_fullstack_lang_laundromat_go_presentation: ["github_com_fullstack_lang_laundromat_go-" + structName + "-presentation", ID]
 			}
 		}]);
 	}
@@ -83,7 +89,7 @@ export class MachinePresentationComponent implements OnInit {
 	setEditorRouterOutlet(ID: number) {
 		this.router.navigate([{
 			outlets: {
-				editor: ["machine-detail", ID]
+				github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + "machine-detail", ID]
 			}
 		}]);
 	}

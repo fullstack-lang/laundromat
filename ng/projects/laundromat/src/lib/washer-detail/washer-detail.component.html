@@ -42,7 +42,7 @@
     <div class="details__item">
         <mat-form-field>
             <mat-label>Machine</mat-label>
-            <mat-select [(ngModel)]="washer.Machine">
+            <mat-select [(ngModel)]="washer.Machine" (selectionChange)="fillUpNameIfEmpty($event)">
                 <mat-option>None</mat-option>
                 <mat-option *ngFor="let machine of frontRepo.Machines_array" [value]="machine">
                     {{machine.Name}}

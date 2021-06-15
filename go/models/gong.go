@@ -13,17 +13,20 @@ var __member __void
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
 	Machines map[*Machine]struct{}
+	Machines_mapString map[string]*Machine
 
 	Simulations map[*Simulation]struct{}
+	Simulations_mapString map[string]*Simulation
 
 	Washers map[*Washer]struct{}
+	Washers_mapString map[string]*Washer
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
 	AllModelsStructDeleteCallback AllModelsStructDeleteInterface
 
 	BackRepo BackRepoInterface
-	
+
 	// if set will be called before each commit to the back repo
 	OnInitCommitCallback OnInitCommitInterface
 }
@@ -35,6 +38,10 @@ type OnInitCommitInterface interface {
 type BackRepoInterface interface {
 	Commit(stage *StageStruct)
 	Checkout(stage *StageStruct)
+	Backup(stage *StageStruct, dirPath string)
+	Restore(stage *StageStruct, dirPath string)
+	BackupXL(stage *StageStruct, dirPath string)
+	RestoreXL(stage *StageStruct, dirPath string)
 	// insertion point for Commit and Checkout signatures
 	CommitMachine(machine *Machine)
 	CheckoutMachine(machine *Machine)
@@ -48,11 +55,15 @@ type BackRepoInterface interface {
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
 	Machines: make(map[*Machine]struct{}, 0),
+	Machines_mapString: make(map[string]*Machine, 0),
 
 	Simulations: make(map[*Simulation]struct{}, 0),
+	Simulations_mapString: make(map[string]*Simulation, 0),
 
 	Washers: make(map[*Washer]struct{}, 0),
+	Washers_mapString: make(map[string]*Washer, 0),
 
+	// end of insertion point
 }
 
 func (stage *StageStruct) Commit() {
@@ -64,6 +75,34 @@ func (stage *StageStruct) Commit() {
 func (stage *StageStruct) Checkout() {
 	if stage.BackRepo != nil {
 		stage.BackRepo.Checkout(stage)
+	}
+}
+
+// backup generates backup files in the dirPath
+func (stage *StageStruct) Backup(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.Backup(stage, dirPath)
+	}
+}
+
+// Restore resets Stage & BackRepo and restores their content from the restore files in dirPath
+func (stage *StageStruct) Restore(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.Restore(stage, dirPath)
+	}
+}
+
+// backup generates backup files in the dirPath
+func (stage *StageStruct) BackupXL(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.BackupXL(stage, dirPath)
+	}
+}
+
+// Restore resets Stage & BackRepo and restores their content from the restore files in dirPath
+func (stage *StageStruct) RestoreXL(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.RestoreXL(stage, dirPath)
 	}
 }
 
@@ -83,12 +122,15 @@ func (stage *StageStruct) getMachineOrderedStructWithNameField() []*Machine {
 // Stage puts machine to the model stage
 func (machine *Machine) Stage() *Machine {
 	Stage.Machines[machine] = __member
+	Stage.Machines_mapString[machine.Name] = machine
+	
 	return machine
 }
 
 // Unstage removes machine off the model stage
 func (machine *Machine) Unstage() *Machine {
 	delete(Stage.Machines, machine)
+	delete(Stage.Machines_mapString, machine.Name)
 	return machine
 }
 
@@ -182,12 +224,15 @@ func (stage *StageStruct) getSimulationOrderedStructWithNameField() []*Simulatio
 // Stage puts simulation to the model stage
 func (simulation *Simulation) Stage() *Simulation {
 	Stage.Simulations[simulation] = __member
+	Stage.Simulations_mapString[simulation.Name] = simulation
+	
 	return simulation
 }
 
 // Unstage removes simulation off the model stage
 func (simulation *Simulation) Unstage() *Simulation {
 	delete(Stage.Simulations, simulation)
+	delete(Stage.Simulations_mapString, simulation.Name)
 	return simulation
 }
 
@@ -281,12 +326,15 @@ func (stage *StageStruct) getWasherOrderedStructWithNameField() []*Washer {
 // Stage puts washer to the model stage
 func (washer *Washer) Stage() *Washer {
 	Stage.Washers[washer] = __member
+	Stage.Washers_mapString[washer.Name] = washer
+	
 	return washer
 }
 
 // Unstage removes washer off the model stage
 func (washer *Washer) Unstage() *Washer {
 	delete(Stage.Washers, washer)
+	delete(Stage.Washers_mapString, washer.Name)
 	return washer
 }
 
@@ -380,12 +428,24 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
 	stage.Machines = make(map[*Machine]struct{}, 0)
+	stage.Machines_mapString = make(map[string]*Machine, 0)
+
 	stage.Simulations = make(map[*Simulation]struct{}, 0)
+	stage.Simulations_mapString = make(map[string]*Simulation, 0)
+
 	stage.Washers = make(map[*Washer]struct{}, 0)
+	stage.Washers_mapString = make(map[string]*Washer, 0)
+
 }
 
 func (stage *StageStruct) Nil() { // insertion point for array nil
 	stage.Machines = nil
+	stage.Machines_mapString = nil
+
 	stage.Simulations = nil
+	stage.Simulations_mapString = nil
+
 	stage.Washers = nil
+	stage.Washers_mapString = nil
+
 }

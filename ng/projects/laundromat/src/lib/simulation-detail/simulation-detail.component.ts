@@ -63,8 +63,6 @@ export class SimulationDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo SimulationPull returned")
-
 				if (id != 0 && association == undefined) {
 					this.simulation = frontRepo.Simulations.get(id)
 				} else {
@@ -92,11 +90,9 @@ export class SimulationDetailComponent implements OnInit {
 		if (this.simulation.Machine != undefined) {
 			this.simulation.MachineID.Int64 = this.simulation.Machine.ID
 			this.simulation.MachineID.Valid = true
-			this.simulation.MachineName = this.simulation.Machine.Name
 		} else {
 			this.simulation.MachineID.Int64 = 0
 			this.simulation.MachineID.Valid = true
-			this.simulation.MachineName = ""
 		}
 		if (this.simulation.WasherID == undefined) {
 			this.simulation.WasherID = new NullInt64
@@ -104,11 +100,9 @@ export class SimulationDetailComponent implements OnInit {
 		if (this.simulation.Washer != undefined) {
 			this.simulation.WasherID.Int64 = this.simulation.Washer.ID
 			this.simulation.WasherID.Valid = true
-			this.simulation.WasherName = this.simulation.Washer.Name
 		} else {
 			this.simulation.WasherID.Int64 = 0
 			this.simulation.WasherID.Valid = true
-			this.simulation.WasherName = ""
 		}
 		
 		// save from the front pointer space to the non pointer space for serialization
@@ -121,8 +115,6 @@ export class SimulationDetailComponent implements OnInit {
 			this.simulationService.updateSimulation(this.simulation)
 				.subscribe(simulation => {
 					this.simulationService.SimulationServiceChanged.next("update")
-
-					console.log("simulation saved")
 				});
 		} else {
 			switch (association) {
@@ -133,7 +125,6 @@ export class SimulationDetailComponent implements OnInit {
 				this.simulationService.SimulationServiceChanged.next("post")
 
 				this.simulation = {} // reset fields
-				console.log("simulation added")
 			});
 		}
 	}
@@ -162,7 +153,6 @@ export class SimulationDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -185,7 +175,12 @@ export class SimulationDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
+	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.simulation.Name == undefined) {
+			this.simulation.Name = event.value.Name		
+		}
 	}
 }

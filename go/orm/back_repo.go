@@ -2,8 +2,18 @@
 package orm
 
 import (
-	"github.com/jinzhu/gorm"
+	"bufio"
+	"bytes"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+
+	"gorm.io/gorm"
+
 	"github.com/fullstack-lang/laundromat/go/models"
+
+	"github.com/tealeg/xlsx/v3"
 )
 
 // BackRepoStruct supports callback functions
@@ -72,4 +82,69 @@ var BackRepo BackRepoStruct
 
 func GetLastCommitNb() uint {
 	return BackRepo.GetLastCommitNb()
+}
+
+// Backup the BackRepoStruct
+func (backRepo *BackRepoStruct) Backup(stage *models.StageStruct, dirPath string) {
+	os.Mkdir(dirPath, os.ModePerm)
+
+	// insertion point for per struct backup
+	backRepo.BackRepoMachine.Backup(dirPath)
+	backRepo.BackRepoSimulation.Backup(dirPath)
+	backRepo.BackRepoWasher.Backup(dirPath)
+}
+
+// Backup in XL the BackRepoStruct
+func (backRepo *BackRepoStruct) BackupXL(stage *models.StageStruct, dirPath string) {
+	os.Mkdir(dirPath, os.ModePerm)
+
+	// open an existing file
+	file := xlsx.NewFile()
+
+	// insertion point for per struct backup
+	backRepo.BackRepoMachine.BackupXL(file)
+	backRepo.BackRepoSimulation.BackupXL(file)
+	backRepo.BackRepoWasher.BackupXL(file)
+
+	var b bytes.Buffer
+	writer := bufio.NewWriter(&b)
+	file.Write(writer)
+	theBytes := b.Bytes()
+
+	filename := filepath.Join(dirPath, "bckp.xlsx")
+	err := ioutil.WriteFile(filename, theBytes, 0644)
+	if err != nil {
+		log.Panic("Cannot write the XL file", err.Error())
+	}
+}
+
+// Restore the database into the back repo
+func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath string) {
+	models.Stage.Commit()
+	models.Stage.Reset()
+	models.Stage.Checkout()
+
+	//
+	// restauration first phase (create DB instance with new IDs)
+	//
+
+	// insertion point for per struct backup
+	backRepo.BackRepoMachine.RestorePhaseOne(dirPath)
+	backRepo.BackRepoSimulation.RestorePhaseOne(dirPath)
+	backRepo.BackRepoWasher.RestorePhaseOne(dirPath)
+
+	//
+	// restauration second phase (reindex pointers with the new ID)
+	//
+	
+	// insertion point for per struct backup
+	backRepo.BackRepoMachine.RestorePhaseTwo()
+	backRepo.BackRepoSimulation.RestorePhaseTwo()
+	backRepo.BackRepoWasher.RestorePhaseTwo()
+
+	models.Stage.Checkout()
+}
+
+// Restore the database into the back repo
+func (backRepo *BackRepoStruct) RestoreXL(stage *models.StageStruct, dirPath string) {
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/laundromat/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,10 +46,11 @@ type MachineInput struct {
 //    default: genericError
 //        200: machineDBsResponse
 func GetMachines(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
-	var machines []orm.MachineDB
-	query := db.Find(&machines)
+	db := orm.BackRepo.BackRepoMachine.GetDB()
+	
+	// source slice
+	var machineDBs []orm.MachineDB
+	query := db.Find(&machineDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,36 +59,23 @@ func GetMachines(c *gin.Context) {
 		return
 	}
 
+	// slice that will be transmitted to the front
+	machineAPIs := make([]orm.MachineAPI, 0)
+
 	// for each machine, update fields from the database nullable fields
-	for idx := range machines {
-		machine := &machines[idx]
-		_ = machine
+	for idx := range machineDBs {
+		machineDB := &machineDBs[idx]
+		_ = machineDB
+		var machineAPI orm.MachineAPI
+
 		// insertion point for updating fields
-		if machine.TechName_Data.Valid {
-			machine.TechName = machine.TechName_Data.String
-		}
-
-		if machine.Name_Data.Valid {
-			machine.Name = machine.Name_Data.String
-		}
-
-		if machine.DrumLoad_Data.Valid {
-			machine.DrumLoad = machine.DrumLoad_Data.Float64
-		}
-
-		if machine.RemainingTime_Data.Valid {
-			machine.RemainingTime = time.Duration(machine.RemainingTime_Data.Int64)
-		}
-
-		machine.Cleanedlaundry = machine.Cleanedlaundry_Data.Bool
-
-		if machine.State_Data.Valid {
-			machine.State = models.MachineStateEnum(machine.State_Data.String)
-		}
-
+		machineAPI.ID = machineDB.ID
+		machineDB.CopyBasicFieldsToMachine(&machineAPI.Machine)
+		machineAPI.MachinePointersEnconding = machineDB.MachinePointersEnconding
+		machineAPIs = append(machineAPIs, machineAPI)
 	}
 
-	c.JSON(http.StatusOK, machines)
+	c.JSON(http.StatusOK, machineAPIs)
 }
 
 // PostMachine
@@ -105,7 +92,7 @@ func GetMachines(c *gin.Context) {
 //     Responses:
 //       200: machineDBResponse
 func PostMachine(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMachine.GetDB()
 
 	// Validate input
 	var input orm.MachineAPI
@@ -121,25 +108,8 @@ func PostMachine(c *gin.Context) {
 
 	// Create machine
 	machineDB := orm.MachineDB{}
-	machineDB.MachineAPI = input
-	// insertion point for nullable field set
-	machineDB.TechName_Data.String = input.TechName
-	machineDB.TechName_Data.Valid = true
-
-	machineDB.Name_Data.String = input.Name
-	machineDB.Name_Data.Valid = true
-
-	machineDB.DrumLoad_Data.Float64 = input.DrumLoad
-	machineDB.DrumLoad_Data.Valid = true
-
-	machineDB.RemainingTime_Data.Int64 = int64(input.RemainingTime)
-	machineDB.RemainingTime_Data.Valid = true
-
-	machineDB.Cleanedlaundry_Data.Bool = input.Cleanedlaundry
-	machineDB.Cleanedlaundry_Data.Valid = true
-
-	machineDB.State_Data.String = string(input.State)
-	machineDB.State_Data.Valid = true
+	machineDB.MachinePointersEnconding = input.MachinePointersEnconding
+	machineDB.CopyBasicFieldsFromMachine(&input.Machine)
 
 	query := db.Create(&machineDB)
 	if query.Error != nil {
@@ -167,11 +137,11 @@ func PostMachine(c *gin.Context) {
 //    default: genericError
 //        200: machineDBResponse
 func GetMachine(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMachine.GetDB()
 
-	// Get machine in DB
-	var machine orm.MachineDB
-	if err := db.First(&machine, c.Param("id")).Error; err != nil {
+	// Get machineDB in DB
+	var machineDB orm.MachineDB
+	if err := db.First(&machineDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -179,30 +149,12 @@ func GetMachine(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if machine.TechName_Data.Valid {
-		machine.TechName = machine.TechName_Data.String
-	}
+	var machineAPI orm.MachineAPI
+	machineAPI.ID = machineDB.ID
+	machineAPI.MachinePointersEnconding = machineDB.MachinePointersEnconding
+	machineDB.CopyBasicFieldsToMachine(&machineAPI.Machine)
 
-	if machine.Name_Data.Valid {
-		machine.Name = machine.Name_Data.String
-	}
-
-	if machine.DrumLoad_Data.Valid {
-		machine.DrumLoad = machine.DrumLoad_Data.Float64
-	}
-
-	if machine.RemainingTime_Data.Valid {
-		machine.RemainingTime = time.Duration(machine.RemainingTime_Data.Int64)
-	}
-
-	machine.Cleanedlaundry = machine.Cleanedlaundry_Data.Bool
-
-	if machine.State_Data.Valid {
-		machine.State = models.MachineStateEnum(machine.State_Data.String)
-	}
-
-	c.JSON(http.StatusOK, machine)
+	c.JSON(http.StatusOK, machineAPI)
 }
 
 // UpdateMachine
@@ -215,7 +167,7 @@ func GetMachine(c *gin.Context) {
 //    default: genericError
 //        200: machineDBResponse
 func UpdateMachine(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMachine.GetDB()
 
 	// Get model if exist
 	var machineDB orm.MachineDB
@@ -239,26 +191,10 @@ func UpdateMachine(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.TechName_Data.String = input.TechName
-	input.TechName_Data.Valid = true
+	machineDB.CopyBasicFieldsFromMachine(&input.Machine)
+	machineDB.MachinePointersEnconding = input.MachinePointersEnconding
 
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
-
-	input.DrumLoad_Data.Float64 = input.DrumLoad
-	input.DrumLoad_Data.Valid = true
-
-	input.RemainingTime_Data.Int64 = int64(input.RemainingTime)
-	input.RemainingTime_Data.Valid = true
-
-	input.Cleanedlaundry_Data.Bool = input.Cleanedlaundry
-	input.Cleanedlaundry_Data.Valid = true
-
-	input.State_Data.String = string(input.State)
-	input.State_Data.Valid = true
-
-	query = db.Model(&machineDB).Updates(input)
+	query = db.Model(&machineDB).Updates(machineDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -284,7 +220,7 @@ func UpdateMachine(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteMachine(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMachine.GetDB()
 
 	// Get model if exist
 	var machineDB orm.MachineDB

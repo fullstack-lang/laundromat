@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/laundromat/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,10 +46,11 @@ type SimulationInput struct {
 //    default: genericError
 //        200: simulationDBsResponse
 func GetSimulations(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
-	var simulations []orm.SimulationDB
-	query := db.Find(&simulations)
+	db := orm.BackRepo.BackRepoSimulation.GetDB()
+	
+	// source slice
+	var simulationDBs []orm.SimulationDB
+	query := db.Find(&simulationDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,22 +59,23 @@ func GetSimulations(c *gin.Context) {
 		return
 	}
 
+	// slice that will be transmitted to the front
+	simulationAPIs := make([]orm.SimulationAPI, 0)
+
 	// for each simulation, update fields from the database nullable fields
-	for idx := range simulations {
-		simulation := &simulations[idx]
-		_ = simulation
+	for idx := range simulationDBs {
+		simulationDB := &simulationDBs[idx]
+		_ = simulationDB
+		var simulationAPI orm.SimulationAPI
+
 		// insertion point for updating fields
-		if simulation.Name_Data.Valid {
-			simulation.Name = simulation.Name_Data.String
-		}
-
-		if simulation.LastCommitNb_Data.Valid {
-			simulation.LastCommitNb = int(simulation.LastCommitNb_Data.Int64)
-		}
-
+		simulationAPI.ID = simulationDB.ID
+		simulationDB.CopyBasicFieldsToSimulation(&simulationAPI.Simulation)
+		simulationAPI.SimulationPointersEnconding = simulationDB.SimulationPointersEnconding
+		simulationAPIs = append(simulationAPIs, simulationAPI)
 	}
 
-	c.JSON(http.StatusOK, simulations)
+	c.JSON(http.StatusOK, simulationAPIs)
 }
 
 // PostSimulation
@@ -91,7 +92,7 @@ func GetSimulations(c *gin.Context) {
 //     Responses:
 //       200: simulationDBResponse
 func PostSimulation(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
 	// Validate input
 	var input orm.SimulationAPI
@@ -107,13 +108,8 @@ func PostSimulation(c *gin.Context) {
 
 	// Create simulation
 	simulationDB := orm.SimulationDB{}
-	simulationDB.SimulationAPI = input
-	// insertion point for nullable field set
-	simulationDB.Name_Data.String = input.Name
-	simulationDB.Name_Data.Valid = true
-
-	simulationDB.LastCommitNb_Data.Int64 = int64(input.LastCommitNb)
-	simulationDB.LastCommitNb_Data.Valid = true
+	simulationDB.SimulationPointersEnconding = input.SimulationPointersEnconding
+	simulationDB.CopyBasicFieldsFromSimulation(&input.Simulation)
 
 	query := db.Create(&simulationDB)
 	if query.Error != nil {
@@ -141,11 +137,11 @@ func PostSimulation(c *gin.Context) {
 //    default: genericError
 //        200: simulationDBResponse
 func GetSimulation(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
-	// Get simulation in DB
-	var simulation orm.SimulationDB
-	if err := db.First(&simulation, c.Param("id")).Error; err != nil {
+	// Get simulationDB in DB
+	var simulationDB orm.SimulationDB
+	if err := db.First(&simulationDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -153,16 +149,12 @@ func GetSimulation(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if simulation.Name_Data.Valid {
-		simulation.Name = simulation.Name_Data.String
-	}
+	var simulationAPI orm.SimulationAPI
+	simulationAPI.ID = simulationDB.ID
+	simulationAPI.SimulationPointersEnconding = simulationDB.SimulationPointersEnconding
+	simulationDB.CopyBasicFieldsToSimulation(&simulationAPI.Simulation)
 
-	if simulation.LastCommitNb_Data.Valid {
-		simulation.LastCommitNb = int(simulation.LastCommitNb_Data.Int64)
-	}
-
-	c.JSON(http.StatusOK, simulation)
+	c.JSON(http.StatusOK, simulationAPI)
 }
 
 // UpdateSimulation
@@ -175,7 +167,7 @@ func GetSimulation(c *gin.Context) {
 //    default: genericError
 //        200: simulationDBResponse
 func UpdateSimulation(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
 	// Get model if exist
 	var simulationDB orm.SimulationDB
@@ -199,14 +191,10 @@ func UpdateSimulation(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
+	simulationDB.CopyBasicFieldsFromSimulation(&input.Simulation)
+	simulationDB.SimulationPointersEnconding = input.SimulationPointersEnconding
 
-	input.LastCommitNb_Data.Int64 = int64(input.LastCommitNb)
-	input.LastCommitNb_Data.Valid = true
-
-	query = db.Model(&simulationDB).Updates(input)
+	query = db.Model(&simulationDB).Updates(simulationDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -232,7 +220,7 @@ func UpdateSimulation(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteSimulation(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
 	// Get model if exist
 	var simulationDB orm.SimulationDB

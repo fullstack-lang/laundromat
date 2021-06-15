@@ -12,7 +12,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 
 	target_controllers "github.com/fullstack-lang/laundromat/go/controllers"
 	target_models "github.com/fullstack-lang/laundromat/go/models"
@@ -38,7 +37,7 @@ var (
 	clientControlFlag = flag.Bool("client-control", false, "if true, engine waits for API calls")
 )
 
-var db *gorm.DB
+// var db *gorm.DB
 
 //
 // generic code
@@ -62,8 +61,14 @@ func main() {
 	}
 
 	// setup GORM
-	db = target_orm.SetupModels(*logDBFlag, ":memory:")
-	db.DB().SetMaxOpenConns(1)
+	db := target_orm.SetupModels(*logDBFlag, ":memory:")
+	// since gongsim is a multi threaded application. It is important to set up
+	// only one open connexion at a time
+	dbDB, err := db.DB()
+	if err != nil {
+		panic("cannot access DB of db" + err.Error())
+	}
+	dbDB.SetMaxOpenConns(1)
 
 	// add gongdocatabase
 	gongdoc_orm.AutoMigrate(db)

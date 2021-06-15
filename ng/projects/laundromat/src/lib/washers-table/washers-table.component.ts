@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-washers-table',
+  selector: 'app-washerstable',
   templateUrl: './washers-table.component.html',
   styleUrls: ['./washers-table.component.css'],
 })
@@ -47,6 +47,40 @@ export class WashersTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (washerDB: WasherDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+  			case 'Machine':
+				return (washerDB.Machine ? washerDB.Machine.Name : '');
+
+				default:
+					return WasherDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (washerDB: WasherDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the washerDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += washerDB.TechName.toLowerCase()
+		mergedContent += washerDB.Name.toLowerCase()
+		mergedContent += washerDB.DirtyLaundryWeight.toString()
+		mergedContent += washerDB.State.toLowerCase()
+		if (washerDB.Machine) {
+    		mergedContent += washerDB.Machine.Name.toLowerCase()
+		}
+		mergedContent += washerDB.CleanedLaundryWeight.toString()
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -106,7 +140,6 @@ export class WashersTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.washers = this.frontRepo.Washers_array;
 
@@ -144,8 +177,6 @@ export class WashersTableComponent implements OnInit {
     this.washerService.deleteWasher(washerID).subscribe(
       washer => {
         this.washerService.WasherServiceChanged.next("delete")
-
-        console.log("washer deleted")
       }
     );
   }
@@ -156,14 +187,14 @@ export class WashersTableComponent implements OnInit {
 
   // display washer in router
   displayWasherInRouter(washerID: number) {
-    this.router.navigate(["washer-display", washerID])
+    this.router.navigate(["github_com_fullstack_lang_laundromat_go-" + "washer-display", washerID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(washerID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["washer-detail", washerID]
+        github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + "washer-detail", washerID]
       }
     }]);
   }
@@ -172,7 +203,7 @@ export class WashersTableComponent implements OnInit {
   setPresentationRouterOutlet(washerID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["washer-presentation", washerID]
+        github_com_fullstack_lang_laundromat_go_presentation: ["github_com_fullstack_lang_laundromat_go-" + "washer-presentation", washerID]
       }
     }]);
   }
@@ -207,7 +238,6 @@ export class WashersTableComponent implements OnInit {
     // from selection, set washer that belong to washer through Anarrayofb
     this.selection.selected.forEach(
       washer => {
-        console.log("selection ID " + washer.ID)
         let ID = +this.dialogData.ID
         washer[this.dialogData.ReversePointer].Int64 = ID
         washer[this.dialogData.ReversePointer].Valid = true
@@ -221,7 +251,6 @@ export class WashersTableComponent implements OnInit {
         this.washerService.updateWasher(washer)
           .subscribe(washer => {
             this.washerService.WasherServiceChanged.next("update")
-            console.log("washer saved")
           });
       }
     )

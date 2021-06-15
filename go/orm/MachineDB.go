@@ -3,13 +3,19 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/laundromat/go/models"
 )
@@ -27,9 +33,30 @@ var dummy_Machine_sort sort.Float64Slice
 //
 // swagger:model machineAPI
 type MachineAPI struct {
+	gorm.Model
+
 	models.Machine
 
-	// insertion for fields declaration
+	// encoding of pointers
+	MachinePointersEnconding
+}
+
+// MachinePointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type MachinePointersEnconding struct {
+	// insertion for pointer fields encoding declaration
+}
+
+// MachineDB describes a machine in the database
+//
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
+//
+// swagger:model machineDB
+type MachineDB struct {
+	gorm.Model
+
+	// insertion for basic fields declaration
 	// Declation for basic field machineDB.TechName {{BasicKind}} (to be completed)
 	TechName_Data sql.NullString
 
@@ -49,18 +76,8 @@ type MachineAPI struct {
 	// Declation for basic field machineDB.State {{BasicKind}} (to be completed)
 	State_Data sql.NullString
 
-	// end of insertion
-}
-
-// MachineDB describes a machine in the database
-//
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
-//
-// swagger:model machineDB
-type MachineDB struct {
-	gorm.Model
-
-	MachineAPI
+	// encoding of pointers
+	MachinePointersEnconding
 }
 
 // MachineDBs arrays machineDBs
@@ -73,6 +90,39 @@ type MachineDBResponse struct {
 	MachineDB
 }
 
+// MachineWOP is a Machine without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type MachineWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	TechName string
+
+	Name string
+
+	DrumLoad float64
+
+	RemainingTime time.Duration
+
+	Cleanedlaundry bool
+
+	State models.MachineStateEnum
+	// insertion for WOP pointer fields
+}
+
+var Machine_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"TechName",
+	"Name",
+	"DrumLoad",
+	"RemainingTime",
+	"Cleanedlaundry",
+	"State",
+}
+
+
 type BackRepoMachineStruct struct {
 	// stores MachineDB according to their gorm ID
 	Map_MachineDBID_MachineDB *map[uint]*MachineDB
@@ -84,6 +134,17 @@ type BackRepoMachineStruct struct {
 	Map_MachineDBID_MachinePtr *map[uint]*models.Machine
 
 	db *gorm.DB
+}
+
+func (backRepoMachine *BackRepoMachineStruct) GetDB() *gorm.DB {
+	return backRepoMachine.db
+}
+
+// GetMachineDBFromMachinePtr is a handy function to access the back repo instance from the stage instance
+func (backRepoMachine *BackRepoMachineStruct) GetMachineDBFromMachinePtr(machine *models.Machine) (machineDB *MachineDB) {
+	id := (*backRepoMachine.Map_MachinePtr_MachineDBID)[machine]
+	machineDB = (*backRepoMachine.Map_MachineDBID_MachineDB)[id]
+	return
 }
 
 // BackRepoMachine.Init set up the BackRepo of the Machine
@@ -167,7 +228,7 @@ func (backRepoMachine *BackRepoMachineStruct) CommitPhaseOneInstance(machine *mo
 
 	// initiate machine
 	var machineDB MachineDB
-	machineDB.Machine = *machine
+	machineDB.CopyBasicFieldsFromMachine(machine)
 
 	query := backRepoMachine.db.Create(&machineDB)
 	if query.Error != nil {
@@ -200,29 +261,9 @@ func (backRepoMachine *BackRepoMachineStruct) CommitPhaseTwoInstance(backRepo *B
 	// fetch matching machineDB
 	if machineDB, ok := (*backRepoMachine.Map_MachineDBID_MachineDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				machineDB.TechName_Data.String = machine.TechName
-				machineDB.TechName_Data.Valid = true
+		machineDB.CopyBasicFieldsFromMachine(machine)
 
-				machineDB.Name_Data.String = machine.Name
-				machineDB.Name_Data.Valid = true
-
-				machineDB.DrumLoad_Data.Float64 = machine.DrumLoad
-				machineDB.DrumLoad_Data.Valid = true
-
-				machineDB.RemainingTime_Data.Int64 = int64(machine.RemainingTime)
-				machineDB.RemainingTime_Data.Valid = true
-
-				machineDB.Cleanedlaundry_Data.Bool = machine.Cleanedlaundry
-				machineDB.Cleanedlaundry_Data.Valid = true
-
-				machineDB.State_Data.String = string(machine.State)
-				machineDB.State_Data.Valid = true
-
-			}
-		}
+		// insertion point for translating pointers encodings into actual pointers
 		query := backRepoMachine.db.Save(&machineDB)
 		if query.Error != nil {
 			return query.Error
@@ -263,18 +304,24 @@ func (backRepoMachine *BackRepoMachineStruct) CheckoutPhaseOne() (Error error) {
 // models version of the machineDB
 func (backRepoMachine *BackRepoMachineStruct) CheckoutPhaseOneInstance(machineDB *MachineDB) (Error error) {
 
-	// if absent, create entries in the backRepoMachine maps.
-	machineWithNewFieldValues := machineDB.Machine
-	if _, ok := (*backRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]; !ok {
+	machine, ok := (*backRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]
+	if !ok {
+		machine = new(models.Machine)
 
-		(*backRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID] = &machineWithNewFieldValues
-		(*backRepoMachine.Map_MachinePtr_MachineDBID)[&machineWithNewFieldValues] = machineDB.ID
+		(*backRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID] = machine
+		(*backRepoMachine.Map_MachinePtr_MachineDBID)[machine] = machineDB.ID
 
 		// append model store with the new element
-		machineWithNewFieldValues.Stage()
+		machine.Name = machineDB.Name_Data.String
+		machine.Stage()
 	}
-	machineDBWithNewFieldValues := *machineDB
-	(*backRepoMachine.Map_MachineDBID_MachineDB)[machineDB.ID] = &machineDBWithNewFieldValues
+	machineDB.CopyBasicFieldsToMachine(machine)
+
+	// preserve pointer to machineDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_MachineDBID_MachineDB)[machineDB hold variable pointers
+	machineDB_Data := *machineDB
+	preservedPtrToMachine := &machineDB_Data
+	(*backRepoMachine.Map_MachineDBID_MachineDB)[machineDB.ID] = preservedPtrToMachine
 
 	return
 }
@@ -296,23 +343,8 @@ func (backRepoMachine *BackRepoMachineStruct) CheckoutPhaseTwoInstance(backRepo 
 
 	machine := (*backRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]
 	_ = machine // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			machine.TechName = machineDB.TechName_Data.String
 
-			machine.Name = machineDB.Name_Data.String
-
-			machine.DrumLoad = machineDB.DrumLoad_Data.Float64
-
-			machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)
-
-			machine.Cleanedlaundry = machineDB.Cleanedlaundry_Data.Bool
-			machine.State = models.MachineStateEnum(machineDB.State_Data.String)
-
-		}
-	}
+	// insertion point for checkout of pointer encoding
 	return
 }
 
@@ -341,3 +373,195 @@ func (backRepo *BackRepoStruct) CheckoutMachine(machine *models.Machine) {
 		}
 	}
 }
+
+// CopyBasicFieldsFromMachine
+func (machineDB *MachineDB) CopyBasicFieldsFromMachine(machine *models.Machine) {
+	// insertion point for fields commit
+	machineDB.TechName_Data.String = machine.TechName
+	machineDB.TechName_Data.Valid = true
+
+	machineDB.Name_Data.String = machine.Name
+	machineDB.Name_Data.Valid = true
+
+	machineDB.DrumLoad_Data.Float64 = machine.DrumLoad
+	machineDB.DrumLoad_Data.Valid = true
+
+	machineDB.RemainingTime_Data.Int64 = int64(machine.RemainingTime)
+	machineDB.RemainingTime_Data.Valid = true
+
+	machineDB.Cleanedlaundry_Data.Bool = machine.Cleanedlaundry
+	machineDB.Cleanedlaundry_Data.Valid = true
+
+	machineDB.State_Data.String = string(machine.State)
+	machineDB.State_Data.Valid = true
+
+}
+
+// CopyBasicFieldsFromMachineWOP
+func (machineDB *MachineDB) CopyBasicFieldsFromMachineWOP(machine *MachineWOP) {
+	// insertion point for fields commit
+	machineDB.TechName_Data.String = machine.TechName
+	machineDB.TechName_Data.Valid = true
+
+	machineDB.Name_Data.String = machine.Name
+	machineDB.Name_Data.Valid = true
+
+	machineDB.DrumLoad_Data.Float64 = machine.DrumLoad
+	machineDB.DrumLoad_Data.Valid = true
+
+	machineDB.RemainingTime_Data.Int64 = int64(machine.RemainingTime)
+	machineDB.RemainingTime_Data.Valid = true
+
+	machineDB.Cleanedlaundry_Data.Bool = machine.Cleanedlaundry
+	machineDB.Cleanedlaundry_Data.Valid = true
+
+	machineDB.State_Data.String = string(machine.State)
+	machineDB.State_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToMachine
+func (machineDB *MachineDB) CopyBasicFieldsToMachine(machine *models.Machine) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	machine.TechName = machineDB.TechName_Data.String
+	machine.Name = machineDB.Name_Data.String
+	machine.DrumLoad = machineDB.DrumLoad_Data.Float64
+	machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)
+	machine.Cleanedlaundry = machineDB.Cleanedlaundry_Data.Bool
+	machine.State = models.MachineStateEnum(machineDB.State_Data.String)
+}
+
+// CopyBasicFieldsToMachineWOP
+func (machineDB *MachineDB) CopyBasicFieldsToMachineWOP(machine *MachineWOP) {
+	machine.ID = int(machineDB.ID)
+	// insertion point for checkout of basic fields (back repo to stage)
+	machine.TechName = machineDB.TechName_Data.String
+	machine.Name = machineDB.Name_Data.String
+	machine.DrumLoad = machineDB.DrumLoad_Data.Float64
+	machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)
+	machine.Cleanedlaundry = machineDB.Cleanedlaundry_Data.Bool
+	machine.State = models.MachineStateEnum(machineDB.State_Data.String)
+}
+
+// Backup generates a json file from a slice of all MachineDB instances in the backrepo
+func (backRepoMachine *BackRepoMachineStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "MachineDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*MachineDB, 0)
+	for _, machineDB := range *backRepoMachine.Map_MachineDBID_MachineDB {
+		forBackup = append(forBackup, machineDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Machine ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Machine file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all MachineDB instances in the backrepo
+func (backRepoMachine *BackRepoMachineStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*MachineDB, 0)
+	for _, machineDB := range *backRepoMachine.Map_MachineDBID_MachineDB {
+		forBackup = append(forBackup, machineDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Machine")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Machine_Fields, -1)
+	for _, machineDB := range forBackup {
+
+		var machineWOP MachineWOP
+		machineDB.CopyBasicFieldsToMachineWOP(&machineWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&machineWOP, -1)
+	}
+}
+
+// RestorePhaseOne read the file "MachineDB.json" in dirPath that stores an array
+// of MachineDB and stores it in the database
+// the map BackRepoMachineid_atBckpTime_newID is updated accordingly
+func (backRepoMachine *BackRepoMachineStruct) RestorePhaseOne(dirPath string) {
+
+	// resets the map
+	BackRepoMachineid_atBckpTime_newID = make(map[uint]uint)
+
+	filename := filepath.Join(dirPath, "MachineDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Machine file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*MachineDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_MachineDBID_MachineDB
+	for _, machineDB := range forRestore {
+
+		machineDB_ID_atBackupTime := machineDB.ID
+		machineDB.ID = 0
+		query := backRepoMachine.db.Create(machineDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoMachine.Map_MachineDBID_MachineDB)[machineDB.ID] = machineDB
+		BackRepoMachineid_atBckpTime_newID[machineDB_ID_atBackupTime] = machineDB.ID
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Machine file", err.Error())
+	}
+}
+
+// RestorePhaseTwo uses all map BackRepo<Machine>id_atBckpTime_newID
+// to compute new index
+func (backRepoMachine *BackRepoMachineStruct) RestorePhaseTwo() {
+
+	for _, machineDB := range (*backRepoMachine.Map_MachineDBID_MachineDB) {
+
+		// next line of code is to avert unused variable compilation error
+		_ = machineDB
+
+		// insertion point for reindexing pointers encoding
+		// update databse with new index encoding
+		query := backRepoMachine.db.Model(machineDB).Updates(*machineDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+	}
+
+}
+
+// this field is used during the restauration process.
+// it stores the ID at the backup time and is used for renumbering
+var BackRepoMachineid_atBckpTime_newID map[uint]uint

@@ -19,6 +19,5 @@ export class WasherDB {
 	// insertion point for other declarations
 	Machine?: MachineDB
 	MachineID?: NullInt64
-	MachineName?: string
 
 }

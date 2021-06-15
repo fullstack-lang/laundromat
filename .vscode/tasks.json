@@ -52,9 +52,9 @@
 			"args": [
 				"get",
 				"-d",
-				"github.com/fullstack-lang/gong@main",
-				"github.com/fullstack-lang/gongdoc@master",
-				"github.com/fullstack-lang/gongsim@master",
+				"github.com/fullstack-lang/gong@HEAD",
+				"github.com/fullstack-lang/gongdoc@HEAD",
+				"github.com/fullstack-lang/gongsim@HEAD",
 			],
 			"group": "build"
 		},

@@ -16,26 +16,26 @@ import { WasherPresentationComponent } from './washer-presentation/washer-presen
 
 
 const routes: Routes = [ // insertion point for routes declarations
-	{ path: 'machines', component: MachinesTableComponent, outlet: 'table' },
-	{ path: 'machine-adder', component: MachineDetailComponent, outlet: 'editor' },
-	{ path: 'machine-adder/:id/:association', component: MachineDetailComponent, outlet: 'editor' },
-	{ path: 'machine-detail/:id', component: MachineDetailComponent, outlet: 'editor' },
-	{ path: 'machine-presentation/:id', component: MachinePresentationComponent, outlet: 'presentation' },
-	{ path: 'machine-presentation-special/:id', component: MachinePresentationComponent, outlet: 'machinepres' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-machines', component: MachinesTableComponent, outlet: 'github_com_fullstack_lang_laundromat_go_table' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-machine-adder', component: MachineDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-machine-adder/:id/:association', component: MachineDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-machine-detail/:id', component: MachineDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-machine-presentation/:id', component: MachinePresentationComponent, outlet: 'github_com_fullstack_lang_laundromat_go_presentation' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-machine-presentation-special/:id', component: MachinePresentationComponent, outlet: 'github_com_fullstack_lang_laundromat_gomachinepres' },
 
-	{ path: 'simulations', component: SimulationsTableComponent, outlet: 'table' },
-	{ path: 'simulation-adder', component: SimulationDetailComponent, outlet: 'editor' },
-	{ path: 'simulation-adder/:id/:association', component: SimulationDetailComponent, outlet: 'editor' },
-	{ path: 'simulation-detail/:id', component: SimulationDetailComponent, outlet: 'editor' },
-	{ path: 'simulation-presentation/:id', component: SimulationPresentationComponent, outlet: 'presentation' },
-	{ path: 'simulation-presentation-special/:id', component: SimulationPresentationComponent, outlet: 'simulationpres' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-simulations', component: SimulationsTableComponent, outlet: 'github_com_fullstack_lang_laundromat_go_table' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-simulation-adder', component: SimulationDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-simulation-adder/:id/:association', component: SimulationDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-simulation-detail/:id', component: SimulationDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-simulation-presentation/:id', component: SimulationPresentationComponent, outlet: 'github_com_fullstack_lang_laundromat_go_presentation' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-simulation-presentation-special/:id', component: SimulationPresentationComponent, outlet: 'github_com_fullstack_lang_laundromat_gosimulationpres' },
 
-	{ path: 'washers', component: WashersTableComponent, outlet: 'table' },
-	{ path: 'washer-adder', component: WasherDetailComponent, outlet: 'editor' },
-	{ path: 'washer-adder/:id/:association', component: WasherDetailComponent, outlet: 'editor' },
-	{ path: 'washer-detail/:id', component: WasherDetailComponent, outlet: 'editor' },
-	{ path: 'washer-presentation/:id', component: WasherPresentationComponent, outlet: 'presentation' },
-	{ path: 'washer-presentation-special/:id', component: WasherPresentationComponent, outlet: 'washerpres' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-washers', component: WashersTableComponent, outlet: 'github_com_fullstack_lang_laundromat_go_table' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-washer-adder', component: WasherDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-washer-adder/:id/:association', component: WasherDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-washer-detail/:id', component: WasherDetailComponent, outlet: 'github_com_fullstack_lang_laundromat_go_editor' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-washer-presentation/:id', component: WasherPresentationComponent, outlet: 'github_com_fullstack_lang_laundromat_go_presentation' },
+	{ path: 'github_com_fullstack_lang_laundromat_go-washer-presentation-special/:id', component: WasherPresentationComponent, outlet: 'github_com_fullstack_lang_laundromat_gowasherpres' },
 
 ];
 

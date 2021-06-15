@@ -70,8 +70,6 @@ export class MachineDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo MachinePull returned")
-
 				if (id != 0 && association == undefined) {
 					this.machine = frontRepo.Machines.get(id)
 				} else {
@@ -114,8 +112,6 @@ export class MachineDetailComponent implements OnInit {
 			this.machineService.updateMachine(this.machine)
 				.subscribe(machine => {
 					this.machineService.MachineServiceChanged.next("update")
-
-					console.log("machine saved")
 				});
 		} else {
 			switch (association) {
@@ -126,7 +122,6 @@ export class MachineDetailComponent implements OnInit {
 				this.machineService.MachineServiceChanged.next("post")
 
 				this.machine = {} // reset fields
-				console.log("machine added")
 			});
 		}
 	}
@@ -155,7 +150,6 @@ export class MachineDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -178,7 +172,12 @@ export class MachineDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
+	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.machine.Name == undefined) {
+			this.machine.Name = event.value.Name		
+		}
 	}
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/laundromat/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,10 +46,11 @@ type WasherInput struct {
 //    default: genericError
 //        200: washerDBsResponse
 func GetWashers(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
-	var washers []orm.WasherDB
-	query := db.Find(&washers)
+	db := orm.BackRepo.BackRepoWasher.GetDB()
+	
+	// source slice
+	var washerDBs []orm.WasherDB
+	query := db.Find(&washerDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,34 +59,23 @@ func GetWashers(c *gin.Context) {
 		return
 	}
 
+	// slice that will be transmitted to the front
+	washerAPIs := make([]orm.WasherAPI, 0)
+
 	// for each washer, update fields from the database nullable fields
-	for idx := range washers {
-		washer := &washers[idx]
-		_ = washer
+	for idx := range washerDBs {
+		washerDB := &washerDBs[idx]
+		_ = washerDB
+		var washerAPI orm.WasherAPI
+
 		// insertion point for updating fields
-		if washer.TechName_Data.Valid {
-			washer.TechName = washer.TechName_Data.String
-		}
-
-		if washer.Name_Data.Valid {
-			washer.Name = washer.Name_Data.String
-		}
-
-		if washer.DirtyLaundryWeight_Data.Valid {
-			washer.DirtyLaundryWeight = washer.DirtyLaundryWeight_Data.Float64
-		}
-
-		if washer.State_Data.Valid {
-			washer.State = models.WasherStateEnum(washer.State_Data.String)
-		}
-
-		if washer.CleanedLaundryWeight_Data.Valid {
-			washer.CleanedLaundryWeight = washer.CleanedLaundryWeight_Data.Float64
-		}
-
+		washerAPI.ID = washerDB.ID
+		washerDB.CopyBasicFieldsToWasher(&washerAPI.Washer)
+		washerAPI.WasherPointersEnconding = washerDB.WasherPointersEnconding
+		washerAPIs = append(washerAPIs, washerAPI)
 	}
 
-	c.JSON(http.StatusOK, washers)
+	c.JSON(http.StatusOK, washerAPIs)
 }
 
 // PostWasher
@@ -103,7 +92,7 @@ func GetWashers(c *gin.Context) {
 //     Responses:
 //       200: washerDBResponse
 func PostWasher(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoWasher.GetDB()
 
 	// Validate input
 	var input orm.WasherAPI
@@ -119,22 +108,8 @@ func PostWasher(c *gin.Context) {
 
 	// Create washer
 	washerDB := orm.WasherDB{}
-	washerDB.WasherAPI = input
-	// insertion point for nullable field set
-	washerDB.TechName_Data.String = input.TechName
-	washerDB.TechName_Data.Valid = true
-
-	washerDB.Name_Data.String = input.Name
-	washerDB.Name_Data.Valid = true
-
-	washerDB.DirtyLaundryWeight_Data.Float64 = input.DirtyLaundryWeight
-	washerDB.DirtyLaundryWeight_Data.Valid = true
-
-	washerDB.State_Data.String = string(input.State)
-	washerDB.State_Data.Valid = true
-
-	washerDB.CleanedLaundryWeight_Data.Float64 = input.CleanedLaundryWeight
-	washerDB.CleanedLaundryWeight_Data.Valid = true
+	washerDB.WasherPointersEnconding = input.WasherPointersEnconding
+	washerDB.CopyBasicFieldsFromWasher(&input.Washer)
 
 	query := db.Create(&washerDB)
 	if query.Error != nil {
@@ -162,11 +137,11 @@ func PostWasher(c *gin.Context) {
 //    default: genericError
 //        200: washerDBResponse
 func GetWasher(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoWasher.GetDB()
 
-	// Get washer in DB
-	var washer orm.WasherDB
-	if err := db.First(&washer, c.Param("id")).Error; err != nil {
+	// Get washerDB in DB
+	var washerDB orm.WasherDB
+	if err := db.First(&washerDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -174,28 +149,12 @@ func GetWasher(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if washer.TechName_Data.Valid {
-		washer.TechName = washer.TechName_Data.String
-	}
+	var washerAPI orm.WasherAPI
+	washerAPI.ID = washerDB.ID
+	washerAPI.WasherPointersEnconding = washerDB.WasherPointersEnconding
+	washerDB.CopyBasicFieldsToWasher(&washerAPI.Washer)
 
-	if washer.Name_Data.Valid {
-		washer.Name = washer.Name_Data.String
-	}
-
-	if washer.DirtyLaundryWeight_Data.Valid {
-		washer.DirtyLaundryWeight = washer.DirtyLaundryWeight_Data.Float64
-	}
-
-	if washer.State_Data.Valid {
-		washer.State = models.WasherStateEnum(washer.State_Data.String)
-	}
-
-	if washer.CleanedLaundryWeight_Data.Valid {
-		washer.CleanedLaundryWeight = washer.CleanedLaundryWeight_Data.Float64
-	}
-
-	c.JSON(http.StatusOK, washer)
+	c.JSON(http.StatusOK, washerAPI)
 }
 
 // UpdateWasher
@@ -208,7 +167,7 @@ func GetWasher(c *gin.Context) {
 //    default: genericError
 //        200: washerDBResponse
 func UpdateWasher(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoWasher.GetDB()
 
 	// Get model if exist
 	var washerDB orm.WasherDB
@@ -232,23 +191,10 @@ func UpdateWasher(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.TechName_Data.String = input.TechName
-	input.TechName_Data.Valid = true
+	washerDB.CopyBasicFieldsFromWasher(&input.Washer)
+	washerDB.WasherPointersEnconding = input.WasherPointersEnconding
 
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
-
-	input.DirtyLaundryWeight_Data.Float64 = input.DirtyLaundryWeight
-	input.DirtyLaundryWeight_Data.Valid = true
-
-	input.State_Data.String = string(input.State)
-	input.State_Data.Valid = true
-
-	input.CleanedLaundryWeight_Data.Float64 = input.CleanedLaundryWeight
-	input.CleanedLaundryWeight_Data.Valid = true
-
-	query = db.Model(&washerDB).Updates(input)
+	query = db.Model(&washerDB).Updates(washerDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -274,7 +220,7 @@ func UpdateWasher(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteWasher(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoWasher.GetDB()
 
 	// Get model if exist
 	var washerDB orm.WasherDB

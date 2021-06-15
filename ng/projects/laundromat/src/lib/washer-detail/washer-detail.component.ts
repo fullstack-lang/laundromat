@@ -66,8 +66,6 @@ export class WasherDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo WasherPull returned")
-
 				if (id != 0 && association == undefined) {
 					this.washer = frontRepo.Washers.get(id)
 				} else {
@@ -95,11 +93,9 @@ export class WasherDetailComponent implements OnInit {
 		if (this.washer.Machine != undefined) {
 			this.washer.MachineID.Int64 = this.washer.Machine.ID
 			this.washer.MachineID.Valid = true
-			this.washer.MachineName = this.washer.Machine.Name
 		} else {
 			this.washer.MachineID.Int64 = 0
 			this.washer.MachineID.Valid = true
-			this.washer.MachineName = ""
 		}
 		
 		// save from the front pointer space to the non pointer space for serialization
@@ -112,8 +108,6 @@ export class WasherDetailComponent implements OnInit {
 			this.washerService.updateWasher(this.washer)
 				.subscribe(washer => {
 					this.washerService.WasherServiceChanged.next("update")
-
-					console.log("washer saved")
 				});
 		} else {
 			switch (association) {
@@ -124,7 +118,6 @@ export class WasherDetailComponent implements OnInit {
 				this.washerService.WasherServiceChanged.next("post")
 
 				this.washer = {} // reset fields
-				console.log("washer added")
 			});
 		}
 	}
@@ -153,7 +146,6 @@ export class WasherDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -176,7 +168,12 @@ export class WasherDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
+	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.washer.Name == undefined) {
+			this.washer.Name = event.value.Name		
+		}
 	}
 }

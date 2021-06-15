@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { SimulationDB } from '../simulation-db'
 import { SimulationService } from '../simulation.service'
+
+import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
@@ -25,9 +27,13 @@ export class SimulationPresentationComponent implements OnInit {
 	dataSource = ELEMENT_DATA;
 
 	simulation: SimulationDB;
+
+	// front repo
+	frontRepo: FrontRepo
  
 	constructor(
 		private simulationService: SimulationService,
+		private frontRepoService: FrontRepoService,
 		private route: ActivatedRoute,
 		private router: Router,
 	) {
@@ -51,22 +57,22 @@ export class SimulationPresentationComponent implements OnInit {
 
 	getSimulation(): void {
 		const id = +this.route.snapshot.paramMap.get('id');
-		this.simulationService.getSimulation(id)
-			.subscribe(
-				simulation => {
-					this.simulation = simulation
+		this.frontRepoService.pull().subscribe(
+			frontRepo => {
+				this.frontRepo = frontRepo
 
-					// insertion point for recovery of durations
+				this.simulation = this.frontRepo.Simulations.get(id)
 
-				}
-			);
+				// insertion point for recovery of durations
+			}
+		);
 	}
 
 	// set presentation outlet
 	setPresentationRouterOutlet(structName: string, ID: number) {
 		this.router.navigate([{
 			outlets: {
-				presentation: [structName + "-presentation", ID]
+				github_com_fullstack_lang_laundromat_go_presentation: ["github_com_fullstack_lang_laundromat_go-" + structName + "-presentation", ID]
 			}
 		}]);
 	}
@@ -75,7 +81,7 @@ export class SimulationPresentationComponent implements OnInit {
 	setEditorRouterOutlet(ID: number) {
 		this.router.navigate([{
 			outlets: {
-				editor: ["simulation-detail", ID]
+				github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + "simulation-detail", ID]
 			}
 		}]);
 	}

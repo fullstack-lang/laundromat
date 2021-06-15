@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-simulations-table',
+  selector: 'app-simulationstable',
   templateUrl: './simulations-table.component.html',
   styleUrls: ['./simulations-table.component.css'],
 })
@@ -47,6 +47,43 @@ export class SimulationsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (simulationDB: SimulationDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+  			case 'Machine':
+				return (simulationDB.Machine ? simulationDB.Machine.Name : '');
+
+  			case 'Washer':
+				return (simulationDB.Washer ? simulationDB.Washer.Name : '');
+
+				default:
+					return SimulationDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (simulationDB: SimulationDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the simulationDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += simulationDB.Name.toLowerCase()
+		if (simulationDB.Machine) {
+    		mergedContent += simulationDB.Machine.Name.toLowerCase()
+		}
+		if (simulationDB.Washer) {
+    		mergedContent += simulationDB.Washer.Name.toLowerCase()
+		}
+		mergedContent += simulationDB.LastCommitNb.toString()
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -102,7 +139,6 @@ export class SimulationsTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.simulations = this.frontRepo.Simulations_array;
 
@@ -140,8 +176,6 @@ export class SimulationsTableComponent implements OnInit {
     this.simulationService.deleteSimulation(simulationID).subscribe(
       simulation => {
         this.simulationService.SimulationServiceChanged.next("delete")
-
-        console.log("simulation deleted")
       }
     );
   }
@@ -152,14 +186,14 @@ export class SimulationsTableComponent implements OnInit {
 
   // display simulation in router
   displaySimulationInRouter(simulationID: number) {
-    this.router.navigate(["simulation-display", simulationID])
+    this.router.navigate(["github_com_fullstack_lang_laundromat_go-" + "simulation-display", simulationID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(simulationID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["simulation-detail", simulationID]
+        github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + "simulation-detail", simulationID]
       }
     }]);
   }
@@ -168,7 +202,7 @@ export class SimulationsTableComponent implements OnInit {
   setPresentationRouterOutlet(simulationID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["simulation-presentation", simulationID]
+        github_com_fullstack_lang_laundromat_go_presentation: ["github_com_fullstack_lang_laundromat_go-" + "simulation-presentation", simulationID]
       }
     }]);
   }
@@ -203,7 +237,6 @@ export class SimulationsTableComponent implements OnInit {
     // from selection, set simulation that belong to simulation through Anarrayofb
     this.selection.selected.forEach(
       simulation => {
-        console.log("selection ID " + simulation.ID)
         let ID = +this.dialogData.ID
         simulation[this.dialogData.ReversePointer].Int64 = ID
         simulation[this.dialogData.ReversePointer].Valid = true
@@ -217,7 +250,6 @@ export class SimulationsTableComponent implements OnInit {
         this.simulationService.updateSimulation(simulation)
           .subscribe(simulation => {
             this.simulationService.SimulationServiceChanged.next("update")
-            console.log("simulation saved")
           });
       }
     )

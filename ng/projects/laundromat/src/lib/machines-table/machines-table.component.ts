@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-machines-table',
+  selector: 'app-machinestable',
   templateUrl: './machines-table.component.html',
   styleUrls: ['./machines-table.component.css'],
 })
@@ -47,6 +47,33 @@ export class MachinesTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (machineDB: MachineDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+				default:
+					return MachineDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (machineDB: MachineDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the machineDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += machineDB.TechName.toLowerCase()
+		mergedContent += machineDB.Name.toLowerCase()
+		mergedContent += machineDB.DrumLoad.toString()
+		mergedContent += machineDB.State.toLowerCase()
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -106,7 +133,6 @@ export class MachinesTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.machines = this.frontRepo.Machines_array;
 
@@ -151,8 +177,6 @@ export class MachinesTableComponent implements OnInit {
     this.machineService.deleteMachine(machineID).subscribe(
       machine => {
         this.machineService.MachineServiceChanged.next("delete")
-
-        console.log("machine deleted")
       }
     );
   }
@@ -163,14 +187,14 @@ export class MachinesTableComponent implements OnInit {
 
   // display machine in router
   displayMachineInRouter(machineID: number) {
-    this.router.navigate(["machine-display", machineID])
+    this.router.navigate(["github_com_fullstack_lang_laundromat_go-" + "machine-display", machineID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(machineID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["machine-detail", machineID]
+        github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + "machine-detail", machineID]
       }
     }]);
   }
@@ -179,7 +203,7 @@ export class MachinesTableComponent implements OnInit {
   setPresentationRouterOutlet(machineID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["machine-presentation", machineID]
+        github_com_fullstack_lang_laundromat_go_presentation: ["github_com_fullstack_lang_laundromat_go-" + "machine-presentation", machineID]
       }
     }]);
   }
@@ -214,7 +238,6 @@ export class MachinesTableComponent implements OnInit {
     // from selection, set machine that belong to machine through Anarrayofb
     this.selection.selected.forEach(
       machine => {
-        console.log("selection ID " + machine.ID)
         let ID = +this.dialogData.ID
         machine[this.dialogData.ReversePointer].Int64 = ID
         machine[this.dialogData.ReversePointer].Valid = true
@@ -228,7 +251,6 @@ export class MachinesTableComponent implements OnInit {
         this.machineService.updateMachine(machine)
           .subscribe(machine => {
             this.machineService.MachineServiceChanged.next("update")
-            console.log("machine saved")
           });
       }
     )
