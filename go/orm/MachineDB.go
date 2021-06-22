@@ -90,7 +90,7 @@ type MachineDBResponse struct {
 	MachineDB
 }
 
-// MachineWOP is a Machine without pointers
+// MachineWOP is a Machine without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type MachineWOP struct {
 	ID int
@@ -121,7 +121,6 @@ var Machine_Fields = []string{
 	"Cleanedlaundry",
 	"State",
 }
-
 
 type BackRepoMachineStruct struct {
 	// stores MachineDB according to their gorm ID
@@ -280,9 +279,8 @@ func (backRepoMachine *BackRepoMachineStruct) CommitPhaseTwoInstance(backRepo *B
 
 // BackRepoMachine.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoMachine *BackRepoMachineStruct) CheckoutPhaseOne() (Error error) {
 
@@ -292,9 +290,34 @@ func (backRepoMachine *BackRepoMachineStruct) CheckoutPhaseOne() (Error error) {
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	machineInstancesToBeRemovedFromTheStage := make(map[*models.Machine]struct{})
+	for key, value := range models.Stage.Machines {
+		machineInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, machineDB := range machineDBArray {
 		backRepoMachine.CheckoutPhaseOneInstance(&machineDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		machine, ok := (*backRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]
+		if ok {
+			delete(machineInstancesToBeRemovedFromTheStage, machine)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all machines that are not in the checkout
+	for machine := range machineInstancesToBeRemovedFromTheStage {
+		machine.Unstage()
+
+		// remove instance from the back repo 3 maps
+		machineID := (*backRepoMachine.Map_MachinePtr_MachineDBID)[machine]
+		delete((*backRepoMachine.Map_MachinePtr_MachineDBID), machine)
+		delete((*backRepoMachine.Map_MachineDBID_MachineDB), machineID)
+		delete((*backRepoMachine.Map_MachineDBID_MachinePtr), machineID)
 	}
 
 	return
@@ -547,7 +570,7 @@ func (backRepoMachine *BackRepoMachineStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoMachine *BackRepoMachineStruct) RestorePhaseTwo() {
 
-	for _, machineDB := range (*backRepoMachine.Map_MachineDBID_MachineDB) {
+	for _, machineDB := range *backRepoMachine.Map_MachineDBID_MachineDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = machineDB

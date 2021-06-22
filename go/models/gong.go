@@ -12,13 +12,13 @@ var __member __void
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
-	Machines map[*Machine]struct{}
+	Machines           map[*Machine]struct{}
 	Machines_mapString map[string]*Machine
 
-	Simulations map[*Simulation]struct{}
+	Simulations           map[*Simulation]struct{}
 	Simulations_mapString map[string]*Simulation
 
-	Washers map[*Washer]struct{}
+	Washers           map[*Washer]struct{}
 	Washers_mapString map[string]*Washer
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
@@ -50,17 +50,18 @@ type BackRepoInterface interface {
 	CommitWasher(washer *Washer)
 	CheckoutWasher(washer *Washer)
 	GetLastCommitNb() uint
+	GetLastPushFromFrontNb() uint
 }
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Machines: make(map[*Machine]struct{}, 0),
+	Machines:           make(map[*Machine]struct{}, 0),
 	Machines_mapString: make(map[string]*Machine, 0),
 
-	Simulations: make(map[*Simulation]struct{}, 0),
+	Simulations:           make(map[*Simulation]struct{}, 0),
 	Simulations_mapString: make(map[string]*Simulation, 0),
 
-	Washers: make(map[*Washer]struct{}, 0),
+	Washers:           make(map[*Washer]struct{}, 0),
 	Washers_mapString: make(map[string]*Washer, 0),
 
 	// end of insertion point
@@ -123,7 +124,7 @@ func (stage *StageStruct) getMachineOrderedStructWithNameField() []*Machine {
 func (machine *Machine) Stage() *Machine {
 	Stage.Machines[machine] = __member
 	Stage.Machines_mapString[machine.Name] = machine
-	
+
 	return machine
 }
 
@@ -225,7 +226,7 @@ func (stage *StageStruct) getSimulationOrderedStructWithNameField() []*Simulatio
 func (simulation *Simulation) Stage() *Simulation {
 	Stage.Simulations[simulation] = __member
 	Stage.Simulations_mapString[simulation.Name] = simulation
-	
+
 	return simulation
 }
 
@@ -327,7 +328,7 @@ func (stage *StageStruct) getWasherOrderedStructWithNameField() []*Washer {
 func (washer *Washer) Stage() *Washer {
 	Stage.Washers[washer] = __member
 	Stage.Washers_mapString[washer.Name] = washer
-	
+
 	return washer
 }
 

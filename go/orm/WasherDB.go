@@ -90,7 +90,7 @@ type WasherDBResponse struct {
 	WasherDB
 }
 
-// WasherWOP is a Washer without pointers
+// WasherWOP is a Washer without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type WasherWOP struct {
 	ID int
@@ -118,7 +118,6 @@ var Washer_Fields = []string{
 	"State",
 	"CleanedLaundryWeight",
 }
-
 
 type BackRepoWasherStruct struct {
 	// stores WasherDB according to their gorm ID
@@ -285,9 +284,8 @@ func (backRepoWasher *BackRepoWasherStruct) CommitPhaseTwoInstance(backRepo *Bac
 
 // BackRepoWasher.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoWasher *BackRepoWasherStruct) CheckoutPhaseOne() (Error error) {
 
@@ -297,9 +295,34 @@ func (backRepoWasher *BackRepoWasherStruct) CheckoutPhaseOne() (Error error) {
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	washerInstancesToBeRemovedFromTheStage := make(map[*models.Washer]struct{})
+	for key, value := range models.Stage.Washers {
+		washerInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, washerDB := range washerDBArray {
 		backRepoWasher.CheckoutPhaseOneInstance(&washerDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		washer, ok := (*backRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]
+		if ok {
+			delete(washerInstancesToBeRemovedFromTheStage, washer)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all washers that are not in the checkout
+	for washer := range washerInstancesToBeRemovedFromTheStage {
+		washer.Unstage()
+
+		// remove instance from the back repo 3 maps
+		washerID := (*backRepoWasher.Map_WasherPtr_WasherDBID)[washer]
+		delete((*backRepoWasher.Map_WasherPtr_WasherDBID), washer)
+		delete((*backRepoWasher.Map_WasherDBID_WasherDB), washerID)
+		delete((*backRepoWasher.Map_WasherDBID_WasherPtr), washerID)
 	}
 
 	return
@@ -548,7 +571,7 @@ func (backRepoWasher *BackRepoWasherStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoWasher *BackRepoWasherStruct) RestorePhaseTwo() {
 
-	for _, washerDB := range (*backRepoWasher.Map_WasherDBID_WasherDB) {
+	for _, washerDB := range *backRepoWasher.Map_WasherDBID_WasherDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = washerDB

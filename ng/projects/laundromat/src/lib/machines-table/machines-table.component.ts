@@ -52,6 +52,24 @@ export class MachinesTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (machineDB: MachineDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
+			case 'TechName':
+				return machineDB.TechName;
+
+			case 'Name':
+				return machineDB.Name;
+
+			case 'DrumLoad':
+				return machineDB.DrumLoad;
+
+			case 'RemainingTime':
+				return machineDB.RemainingTime;
+
+			case 'Cleanedlaundry':
+				return machineDB.Cleanedlaundry;
+
+			case 'State':
+				return machineDB.State;
+
 				default:
 					return MachineDB[property];
 		}

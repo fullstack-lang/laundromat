@@ -52,11 +52,17 @@ export class SimulationsTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (simulationDB: SimulationDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
-  			case 'Machine':
+			case 'Name':
+				return simulationDB.Name;
+
+			case 'Machine':
 				return (simulationDB.Machine ? simulationDB.Machine.Name : '');
 
-  			case 'Washer':
+			case 'Washer':
 				return (simulationDB.Washer ? simulationDB.Washer.Name : '');
+
+			case 'LastCommitNb':
+				return simulationDB.LastCommitNb;
 
 				default:
 					return SimulationDB[property];

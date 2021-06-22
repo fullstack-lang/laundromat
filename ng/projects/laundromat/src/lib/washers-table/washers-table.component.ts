@@ -52,8 +52,23 @@ export class WashersTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (washerDB: WasherDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
-  			case 'Machine':
+			case 'TechName':
+				return washerDB.TechName;
+
+			case 'Name':
+				return washerDB.Name;
+
+			case 'DirtyLaundryWeight':
+				return washerDB.DirtyLaundryWeight;
+
+			case 'State':
+				return washerDB.State;
+
+			case 'Machine':
 				return (washerDB.Machine ? washerDB.Machine.Name : '');
+
+			case 'CleanedLaundryWeight':
+				return washerDB.CleanedLaundryWeight;
 
 				default:
 					return WasherDB[property];

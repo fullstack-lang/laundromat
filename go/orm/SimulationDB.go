@@ -85,7 +85,7 @@ type SimulationDBResponse struct {
 	SimulationDB
 }
 
-// SimulationWOP is a Simulation without pointers
+// SimulationWOP is a Simulation without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type SimulationWOP struct {
 	ID int
@@ -104,7 +104,6 @@ var Simulation_Fields = []string{
 	"Name",
 	"LastCommitNb",
 }
-
 
 type BackRepoSimulationStruct struct {
 	// stores SimulationDB according to their gorm ID
@@ -279,9 +278,8 @@ func (backRepoSimulation *BackRepoSimulationStruct) CommitPhaseTwoInstance(backR
 
 // BackRepoSimulation.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoSimulation *BackRepoSimulationStruct) CheckoutPhaseOne() (Error error) {
 
@@ -291,9 +289,34 @@ func (backRepoSimulation *BackRepoSimulationStruct) CheckoutPhaseOne() (Error er
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	simulationInstancesToBeRemovedFromTheStage := make(map[*models.Simulation]struct{})
+	for key, value := range models.Stage.Simulations {
+		simulationInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, simulationDB := range simulationDBArray {
 		backRepoSimulation.CheckoutPhaseOneInstance(&simulationDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		simulation, ok := (*backRepoSimulation.Map_SimulationDBID_SimulationPtr)[simulationDB.ID]
+		if ok {
+			delete(simulationInstancesToBeRemovedFromTheStage, simulation)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all simulations that are not in the checkout
+	for simulation := range simulationInstancesToBeRemovedFromTheStage {
+		simulation.Unstage()
+
+		// remove instance from the back repo 3 maps
+		simulationID := (*backRepoSimulation.Map_SimulationPtr_SimulationDBID)[simulation]
+		delete((*backRepoSimulation.Map_SimulationPtr_SimulationDBID), simulation)
+		delete((*backRepoSimulation.Map_SimulationDBID_SimulationDB), simulationID)
+		delete((*backRepoSimulation.Map_SimulationDBID_SimulationPtr), simulationID)
 	}
 
 	return
@@ -522,7 +545,7 @@ func (backRepoSimulation *BackRepoSimulationStruct) RestorePhaseOne(dirPath stri
 // to compute new index
 func (backRepoSimulation *BackRepoSimulationStruct) RestorePhaseTwo() {
 
-	for _, simulationDB := range (*backRepoSimulation.Map_SimulationDBID_SimulationDB) {
+	for _, simulationDB := range *backRepoSimulation.Map_SimulationDBID_SimulationDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = simulationDB
