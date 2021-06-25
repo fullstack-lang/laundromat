@@ -1,67 +1,81 @@
-<div *ngIf="washer" class="details">
+<form *ngIf="washer" class="details">
     <h1 class="details__title">washer</h1>
     <!-- insertion point for fields specific code -->
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-grid-list *ngIf='!isATextArea("TechName")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TechName</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.TechName">
             </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('TechName')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("TechName")' mat-form-field class="detail-full-width">
+        <mat-label>TechName</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.TechName"></textarea>
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.Name">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Name')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Name")' mat-form-field class="detail-full-width">
+        <mat-label>Name</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.Name"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>DirtyLaundryWeight</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.DirtyLaundryWeight">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>DirtyLaundryWeight</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.DirtyLaundryWeight" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <mat-form-field appearance="fill">
-            <mat-label>State</mat-label>
-            <mat-select [(ngModel)]="washer.State">
-                <mat-option *ngFor="let enum of WasherStateEnumList" [value]="enum.value">
-                    {{enum.viewValue}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <div class="details__item">
-        <mat-form-field>
-            <mat-label>Machine</mat-label>
-            <mat-select [(ngModel)]="washer.Machine" (selectionChange)="fillUpNameIfEmpty($event)">
-                <mat-option>None</mat-option>
-                <mat-option *ngFor="let machine of frontRepo.Machines_array" [value]="machine">
-                    {{machine.Name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
+    <mat-form-field appearance="fill" class="detail-full-width">
+        <mat-label>State</mat-label>
+        <mat-select [(ngModel)]="washer.State" [ngModelOptions]="{standalone: true}">
+            <mat-option *ngFor="let enum of WasherStateEnumList" [value]="enum.value">
+                {{enum.viewValue}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="detail-full-width">
+        <mat-label>Machine</mat-label>
+        <mat-select [compareWith]="compareObjects" [(value)]="washer.Machine" (selectionChange)="fillUpNameIfEmpty($event)">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let machine of frontRepo.Machines_array" [value]="machine">
+                {{machine.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>CleanedLaundryWeight</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.CleanedLaundryWeight">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>CleanedLaundryWeight</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="washer.CleanedLaundryWeight" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
 			Save washer
 		</button>
     </div>
-</div>
+</form>

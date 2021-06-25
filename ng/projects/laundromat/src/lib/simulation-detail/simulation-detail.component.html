@@ -1,49 +1,55 @@
-<div *ngIf="simulation" class="details">
+<form *ngIf="simulation" class="details">
     <h1 class="details__title">simulation</h1>
     <!-- insertion point for fields specific code -->
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="simulation.Name">
             </mat-form-field>
-        </form>
-    </div>
-    <div class="details__item">
-        <mat-form-field>
-            <mat-label>Machine</mat-label>
-            <mat-select [(ngModel)]="simulation.Machine" (selectionChange)="fillUpNameIfEmpty($event)">
-                <mat-option>None</mat-option>
-                <mat-option *ngFor="let machine of frontRepo.Machines_array" [value]="machine">
-                    {{machine.Name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <div class="details__item">
-        <mat-form-field>
-            <mat-label>Washer</mat-label>
-            <mat-select [(ngModel)]="simulation.Washer" (selectionChange)="fillUpNameIfEmpty($event)">
-                <mat-option>None</mat-option>
-                <mat-option *ngFor="let washer of frontRepo.Washers_array" [value]="washer">
-                    {{washer.Name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Name')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Name")' mat-form-field class="detail-full-width">
+        <mat-label>Name</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="simulation.Name"></textarea>
+    </mat-form-field>
+
+    <mat-form-field class="detail-full-width">
+        <mat-label>Machine</mat-label>
+        <mat-select [compareWith]="compareObjects" [(value)]="simulation.Machine" (selectionChange)="fillUpNameIfEmpty($event)">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let machine of frontRepo.Machines_array" [value]="machine">
+                {{machine.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="detail-full-width">
+        <mat-label>Washer</mat-label>
+        <mat-select [compareWith]="compareObjects" [(value)]="simulation.Washer" (selectionChange)="fillUpNameIfEmpty($event)">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let washer of frontRepo.Washers_array" [value]="washer">
+                {{washer.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>LastCommitNb</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="simulation.LastCommitNb">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>LastCommitNb</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="simulation.LastCommitNb" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
 			Save simulation
 		</button>
     </div>
-</div>
+</form>
