@@ -17,6 +17,14 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// SimulationDetailComponent is initilizaed from different routes
+// SimulationDetailComponentState detail different cases 
+enum SimulationDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+}
+
 @Component({
 	selector: 'app-simulation-detail',
 	templateUrl: './simulation-detail.component.html',
@@ -37,6 +45,17 @@ export class SimulationDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: SimulationDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private simulationService: SimulationService,
 		private frontRepoService: FrontRepoService,
@@ -47,6 +66,27 @@ export class SimulationDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = SimulationDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = SimulationDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getSimulation()
 
 		// observable for changes in structs
@@ -62,16 +102,21 @@ export class SimulationDetailComponent implements OnInit {
 	}
 
 	getSimulation(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.simulation = frontRepo.Simulations.get(id)
-				} else {
-					this.simulation = new (SimulationDB)
+
+				switch (this.state) {
+					case SimulationDetailComponentState.CREATE_INSTANCE:
+						this.simulation = new (SimulationDB)
+						break;
+					case SimulationDetailComponentState.UPDATE_INSTANCE:
+						this.simulation = frontRepo.Simulations.get(this.id)
+						break;
+					// insertion point for init of association field
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -82,8 +127,6 @@ export class SimulationDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -111,26 +154,21 @@ export class SimulationDetailComponent implements OnInit {
 		}
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-		}
 
-		if (id != 0 && association == undefined) {
+		// insertion point for translation/nullation of each pointers
 
-			this.simulationService.updateSimulation(this.simulation)
-				.subscribe(simulation => {
-					this.simulationService.SimulationServiceChanged.next("update")
+		switch (this.state) {
+			case SimulationDetailComponentState.UPDATE_INSTANCE:
+				this.simulationService.updateSimulation(this.simulation)
+					.subscribe(simulation => {
+						this.simulationService.SimulationServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.simulationService.postSimulation(this.simulation).subscribe(simulation => {
+					this.simulationService.SimulationServiceChanged.next("post")
+					this.simulation = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-			}
-			this.simulationService.postSimulation(this.simulation).subscribe(simulation => {
-
-				this.simulationService.SimulationServiceChanged.next("post")
-
-				this.simulation = {} // reset fields
-			});
 		}
 	}
 

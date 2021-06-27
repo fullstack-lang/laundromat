@@ -1,8 +1,8 @@
 <form *ngIf="machine" class="details">
-    <h1 class="details__title">machine</h1>
+    <h2 class="details__title">machine</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("TechName")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("TechName")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TechName</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.TechName">
@@ -21,8 +21,8 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.TechName"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.Name">

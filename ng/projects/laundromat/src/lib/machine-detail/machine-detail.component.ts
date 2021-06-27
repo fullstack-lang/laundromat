@@ -18,6 +18,14 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// MachineDetailComponent is initilizaed from different routes
+// MachineDetailComponentState detail different cases 
+enum MachineDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+}
+
 @Component({
 	selector: 'app-machine-detail',
 	templateUrl: './machine-detail.component.html',
@@ -43,6 +51,17 @@ export class MachineDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: MachineDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private machineService: MachineService,
 		private frontRepoService: FrontRepoService,
@@ -53,6 +72,27 @@ export class MachineDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = MachineDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = MachineDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getMachine()
 
 		// observable for changes in structs
@@ -69,16 +109,21 @@ export class MachineDetailComponent implements OnInit {
 	}
 
 	getMachine(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.machine = frontRepo.Machines.get(id)
-				} else {
-					this.machine = new (MachineDB)
+
+				switch (this.state) {
+					case MachineDetailComponentState.CREATE_INSTANCE:
+						this.machine = new (MachineDB)
+						break;
+					case MachineDetailComponentState.UPDATE_INSTANCE:
+						this.machine = frontRepo.Machines.get(this.id)
+						break;
+					// insertion point for init of association field
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -94,8 +139,6 @@ export class MachineDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -108,26 +151,21 @@ export class MachineDetailComponent implements OnInit {
 		this.machine.Cleanedlaundry = this.CleanedlaundryFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-		}
 
-		if (id != 0 && association == undefined) {
+		// insertion point for translation/nullation of each pointers
 
-			this.machineService.updateMachine(this.machine)
-				.subscribe(machine => {
-					this.machineService.MachineServiceChanged.next("update")
+		switch (this.state) {
+			case MachineDetailComponentState.UPDATE_INSTANCE:
+				this.machineService.updateMachine(this.machine)
+					.subscribe(machine => {
+						this.machineService.MachineServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.machineService.postMachine(this.machine).subscribe(machine => {
+					this.machineService.MachineServiceChanged.next("post")
+					this.machine = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-			}
-			this.machineService.postMachine(this.machine).subscribe(machine => {
-
-				this.machineService.MachineServiceChanged.next("post")
-
-				this.machine = {} // reset fields
-			});
 		}
 	}
 

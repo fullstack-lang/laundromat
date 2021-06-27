@@ -18,6 +18,14 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// WasherDetailComponent is initilizaed from different routes
+// WasherDetailComponentState detail different cases 
+enum WasherDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+}
+
 @Component({
 	selector: 'app-washer-detail',
 	templateUrl: './washer-detail.component.html',
@@ -39,6 +47,17 @@ export class WasherDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: WasherDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private washerService: WasherService,
 		private frontRepoService: FrontRepoService,
@@ -49,6 +68,27 @@ export class WasherDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = WasherDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = WasherDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getWasher()
 
 		// observable for changes in structs
@@ -65,16 +105,21 @@ export class WasherDetailComponent implements OnInit {
 	}
 
 	getWasher(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.washer = frontRepo.Washers.get(id)
-				} else {
-					this.washer = new (WasherDB)
+
+				switch (this.state) {
+					case WasherDetailComponentState.CREATE_INSTANCE:
+						this.washer = new (WasherDB)
+						break;
+					case WasherDetailComponentState.UPDATE_INSTANCE:
+						this.washer = frontRepo.Washers.get(this.id)
+						break;
+					// insertion point for init of association field
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -85,8 +130,6 @@ export class WasherDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -104,26 +147,21 @@ export class WasherDetailComponent implements OnInit {
 		}
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-		}
 
-		if (id != 0 && association == undefined) {
+		// insertion point for translation/nullation of each pointers
 
-			this.washerService.updateWasher(this.washer)
-				.subscribe(washer => {
-					this.washerService.WasherServiceChanged.next("update")
+		switch (this.state) {
+			case WasherDetailComponentState.UPDATE_INSTANCE:
+				this.washerService.updateWasher(this.washer)
+					.subscribe(washer => {
+						this.washerService.WasherServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.washerService.postWasher(this.washer).subscribe(washer => {
+					this.washerService.WasherServiceChanged.next("post")
+					this.washer = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-			}
-			this.washerService.postWasher(this.washer).subscribe(washer => {
-
-				this.washerService.WasherServiceChanged.next("post")
-
-				this.washer = {} // reset fields
-			});
 		}
 	}
 
