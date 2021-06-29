@@ -2,7 +2,7 @@
     <h2 class="details__title">machine</h2>
     <!-- insertion point for fields specific code -->
     <mat-grid-list *ngIf='!isATextArea("TechName")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TechName</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.TechName">
@@ -22,7 +22,7 @@
     </mat-form-field>
 
     <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.Name">
@@ -52,22 +52,19 @@
         <mat-grid-tile>
             <mat-form-field class="details_hours_width">
                 <mat-label>RemainingTime Hours</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput
-                    [(ngModel)]="RemainingTime_Hours">
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="RemainingTime_Hours">
             </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
             <mat-form-field class="details_minutes_width">
                 <mat-label>RemainingTime Minutes</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput
-                    [(ngModel)]="RemainingTime_Minutes">
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="RemainingTime_Minutes">
             </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
             <mat-form-field class="details_seconds_width">
                 <mat-label>RemainingTime Seconds</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput
-                    [(ngModel)]="RemainingTime_Seconds">
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="RemainingTime_Seconds">
             </mat-form-field>
         </mat-grid-tile>
     </mat-grid-list>
@@ -87,7 +84,7 @@
 
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
-			Save machine
-		</button>
+            Save machine
+        </button>
     </div>
 </form>
