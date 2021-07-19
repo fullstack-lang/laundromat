@@ -16,6 +16,28 @@
       "dom"
     ],
     "paths": {
+      // 
+      // https://angular.io/guide/creating-libraries#use-typescript-path-mapping-for-peer-dependencies
+      //
+      // Angular libraries should list any @angular/* 
+      // dependencies the library depends on as peer dependencies. This ensures that when modules ask for Angular, 
+      // they all get the exact same module. If a library lists @angular/core in dependencies instead of peerDependencies, 
+      // it might get a different Angular module instead, which would cause your application to break.
+      "@angular/*": [
+        "./node_modules/@angular/*"
+      ],
+      "rxjs/operators": [
+        "./node_modules/rxjs/operators"
+      ],
+      "rxjs": [
+        "./node_modules/rxjs"
+      ],
+      "angular-split": [
+        "./node_modules/angular-split"
+      ],
+      "tslib": [
+        "./node_modules/tslib"
+      ],
       "laundromat": [
         "projects/laundromat/src/public-api.ts",
       ],
