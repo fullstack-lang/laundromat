@@ -109,8 +109,8 @@ definitions:
     title: NullTime represents a time.Time that may be null.
     type: object
     x-go-package: database/sql
-  State:
-    description: State mirrors joint.shapes.uml.State
+  UmlState:
+    description: UmlState mirrors joint.shapes.uml.UmlState
     properties:
       Name:
         type: string
@@ -139,7 +139,7 @@ definitions:
           this is the memory model (and not the "memory motel" of the Rolling Stones)
           it is not ignored by swagger because it is used by the angular model
         items:
-          $ref: '#/definitions/State'
+          $ref: '#/definitions/UmlState'
         type: array
     type: object
     x-go-package: github.com/fullstack-lang/gongdoc/go/models
