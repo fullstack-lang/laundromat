@@ -24,6 +24,16 @@
 			"group": "build"
 		},
 		{
+			"label": "02 - laundromat",
+			"type": "shell",
+			"options": {
+				"cwd": "."
+			},
+			"command": "laundromat",
+			"args": [],
+			"group": "build"
+		},
+		{
 			"label": "01 - gongc",
 			"type": "shell",
 			"options": {
