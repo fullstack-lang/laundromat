@@ -41,9 +41,6 @@ func TestLaundromat(t *testing.T) {
 	simulation := models.NewSimulation()
 	gongsim_models.EngineSingloton.Simulation = simulation
 
-	gongsim_orm.BackRepo.Init(db)
-	target_orm.BackRepo.Init(db)
-
 	log.Printf("sleep 1/10 second")
 	time.Sleep(time.Duration(100 * time.Millisecond))
 
