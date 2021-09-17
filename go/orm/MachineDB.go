@@ -21,8 +21,8 @@ import (
 )
 
 // dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
-var dummy_Machine sql.NullBool
-var __Machine_time__dummyDeclaration time.Duration
+var dummy_Machine_sql sql.NullBool
+var dummy_Machine_time time.Duration
 var dummy_Machine_sort sort.Float64Slice
 
 // MachineAPI is the input in POST API

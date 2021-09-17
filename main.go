@@ -127,14 +127,6 @@ func main() {
 		c.Abort()
 	})
 
-	//
-	// init all back repositories
-	//
-	gongsim_orm.BackRepo.Init(db)
-	gongdoc_orm.BackRepo.Init(db)
-	target_orm.BackRepo.Init(db)
-	gong_orm.BackRepo.Init(db)
-
 	// put all to database
 	gongsim_models.Stage.Commit()
 	gongdoc_models.Stage.Commit()
