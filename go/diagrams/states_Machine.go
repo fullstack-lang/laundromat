@@ -8,7 +8,7 @@ import (
 var states_Machine uml.Umlsc = uml.Umlsc{
 	Name:        "Washing Machine States",
 	Activestate: string(models.MACHINE_DOOR_OPEN),
-	States: []*uml.State{
+	States: []*uml.UmlState{
 		{
 			X:    10.000000,
 			Y:    10.000000,

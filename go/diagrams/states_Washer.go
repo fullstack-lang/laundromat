@@ -8,7 +8,7 @@ import (
 var states_Washer uml.Umlsc = uml.Umlsc{
 	Name:        "Washer States",
 	Activestate: string(models.WASHER_IDLE),
-	States: []*uml.State{
+	States: []*uml.UmlState{
 		{
 			X:    10.000000,
 			Y:    10.000000,
