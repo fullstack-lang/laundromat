@@ -64,6 +64,8 @@ github.com/fullstack-lang/gong v0.0.0-20210926165931-e705e61241de h1:gzjq6N6oGYF
 github.com/fullstack-lang/gong v0.0.0-20210926165931-e705e61241de/go.mod h1:iBENs2ZoN5ZzqDthcol+Sa+rmdCqGRpG0SDgeg4Flhc=
 github.com/fullstack-lang/gong v0.0.0-20210927152242-a5d86dd6dbea h1:XJdT8ydbD+4JNpcDoEOqKAE6fUr1+zt2JrDzob4Uhu4=
 github.com/fullstack-lang/gong v0.0.0-20210927152242-a5d86dd6dbea/go.mod h1:MLXIv5+xuxDtH5+NwOH99Gr7uk6xJwjWuLAWWMu55XE=
+github.com/fullstack-lang/gong v0.0.0-20210927175349-2953bbc077f0 h1:IcKS74tV0WZE7hfmiC91FLr2dYLXHdF3Qm5DCuVIU9g=
+github.com/fullstack-lang/gong v0.0.0-20210927175349-2953bbc077f0/go.mod h1:HamBrDO6KVWmxVYU5orALJhBHk+KQRPieFOd0e6BYnw=
 github.com/fullstack-lang/gongdoc v0.0.0-20210827055712-35f109a3519c h1:aknm+Yu9OnpaF9Yol3Wf/Ku9w/S+7llza9WBnvnkm0I=
 github.com/fullstack-lang/gongdoc v0.0.0-20210827055712-35f109a3519c/go.mod h1:28vqAfsyiEFCa+AWyGC3zkMcwxzarAEWA6abV6eGNjE=
 github.com/fullstack-lang/gongdoc v0.0.0-20210926081122-5f781dd3437a h1:ULvusHpEKVI7HJVCo2z5gX2we+8Va8ne2aDic5sIFb0=
@@ -72,12 +74,16 @@ github.com/fullstack-lang/gongdoc v0.0.0-20210926165932-42e0a3b477fd h1:CYmHvhz6
 github.com/fullstack-lang/gongdoc v0.0.0-20210926165932-42e0a3b477fd/go.mod h1:N0twPi5LmPp65FFKGs35O+dG7GLDE6fOYzBaTJ6kyhg=
 github.com/fullstack-lang/gongdoc v0.0.0-20210927172759-d2b3f1c92c44 h1:2XtYqcxNsXVYYeiQNE/KSCyxU7tPj0kW06jLi76gMR4=
 github.com/fullstack-lang/gongdoc v0.0.0-20210927172759-d2b3f1c92c44/go.mod h1:tfKsmdC6NaCX1SDCZg7JbCOqNBgh6rBRiy1dSAN/akI=
+github.com/fullstack-lang/gongdoc v0.0.0-20210927175349-d66887bded16 h1:H1qpxpJ+YNuHTjauiiTh8CcPCxlxGiUo3WomTMi3LIY=
+github.com/fullstack-lang/gongdoc v0.0.0-20210927175349-d66887bded16/go.mod h1:7j3lcER2teWzQSqs+vxyIcrUjk16YjCmgHeU2Ki1mUo=
 github.com/fullstack-lang/gongsim v0.0.0-20210907063531-f2986e335d95 h1:g8a63tOc7M4nBJ4jMkGD4yomYj6bP2MfLO0kmm8TK38=
 github.com/fullstack-lang/gongsim v0.0.0-20210907063531-f2986e335d95/go.mod h1:Gl2maDoPfKZg2POjqC92gl0LzQ9xc6eFxEP08qilGLw=
 github.com/fullstack-lang/gongsim v0.0.0-20210926165932-b7fc4b3aa73c h1:exFWHJo9cQxLCtw9OBJabAdNWMjBqUOLTa6Tbzdeook=
 github.com/fullstack-lang/gongsim v0.0.0-20210926165932-b7fc4b3aa73c/go.mod h1:ZGRLfJ8rOxbExPgicECVO3tswFprTZyJUs0kZ3yZioQ=
 github.com/fullstack-lang/gongsim v0.0.0-20210927172800-cabcd9661bf2 h1:YAuPNjyLtFWNK8UsaEnYUE4b9PYbVjRBdZkobFvXEAc=
 github.com/fullstack-lang/gongsim v0.0.0-20210927172800-cabcd9661bf2/go.mod h1:ZGRLfJ8rOxbExPgicECVO3tswFprTZyJUs0kZ3yZioQ=
+github.com/fullstack-lang/gongsim v0.0.0-20210927175350-b2d89080457e h1:eRmOD04NVwhEqjWQWz1vghvuhilK/0TQMTfYtUijASY=
+github.com/fullstack-lang/gongsim v0.0.0-20210927175350-b2d89080457e/go.mod h1:NFSA/FN8b5YM2vHxG2Jkz/VA3oJaKr/B+Bw4MeYmw00=
 github.com/fyne-io/mobile v0.1.3-0.20210412090810-650a3139866a/go.mod h1:/kOrWrZB6sasLbEy2JIvr4arEzQTXBTZGb3Y96yWbHY=
 github.com/gin-contrib/cors v1.3.1 h1:doAsuITavI4IOcd0Y19U4B+O0dNWihRyX//nn4sEmgA=
 github.com/gin-contrib/cors v1.3.1/go.mod h1:jjEJ4268OPZUcU7k9Pm653S7lXUGcqMADzFA61xsmDk=
