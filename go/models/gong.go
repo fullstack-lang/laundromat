@@ -55,14 +55,14 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Machines:           make(map[*Machine]struct{}, 0),
-	Machines_mapString: make(map[string]*Machine, 0),
+	Machines:           make(map[*Machine]struct{}),
+	Machines_mapString: make(map[string]*Machine),
 
-	Simulations:           make(map[*Simulation]struct{}, 0),
-	Simulations_mapString: make(map[string]*Simulation, 0),
+	Simulations:           make(map[*Simulation]struct{}),
+	Simulations_mapString: make(map[string]*Simulation),
 
-	Washers:           make(map[*Washer]struct{}, 0),
-	Washers_mapString: make(map[string]*Washer, 0),
+	Washers:           make(map[*Washer]struct{}),
+	Washers_mapString: make(map[string]*Washer),
 
 	// end of insertion point
 }
@@ -428,14 +428,14 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
-	stage.Machines = make(map[*Machine]struct{}, 0)
-	stage.Machines_mapString = make(map[string]*Machine, 0)
+	stage.Machines = make(map[*Machine]struct{})
+	stage.Machines_mapString = make(map[string]*Machine)
 
-	stage.Simulations = make(map[*Simulation]struct{}, 0)
-	stage.Simulations_mapString = make(map[string]*Simulation, 0)
+	stage.Simulations = make(map[*Simulation]struct{})
+	stage.Simulations_mapString = make(map[string]*Simulation)
 
-	stage.Washers = make(map[*Washer]struct{}, 0)
-	stage.Washers_mapString = make(map[string]*Washer, 0)
+	stage.Washers = make(map[*Washer]struct{})
+	stage.Washers_mapString = make(map[string]*Washer)
 
 }
 
