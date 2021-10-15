@@ -16,7 +16,7 @@ import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 
-import { NullInt64 } from '../front-repo.service'
+import { NullInt64 } from '../null-int64'
 
 // MachineDetailComponent is initilizaed from different routes
 // MachineDetailComponentState detail different cases 
@@ -34,17 +34,17 @@ enum MachineDetailComponentState {
 export class MachineDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	RemainingTime_Hours: number
-	RemainingTime_Minutes: number
-	RemainingTime_Seconds: number
+	RemainingTime_Hours: number = 0
+	RemainingTime_Minutes: number = 0
+	RemainingTime_Seconds: number = 0
 	CleanedlaundryFormControl = new FormControl(false);
-	MachineStateEnumList: MachineStateEnumSelect[]
+	MachineStateEnumList: MachineStateEnumSelect[] = []
 
 	// the MachineDB of interest
-	machine: MachineDB;
+	machine: MachineDB = new MachineDB
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new FrontRepo
 
 	// this stores the information related to string fields
 	// if false, the field is inputed with an <input ...> form 
@@ -52,15 +52,15 @@ export class MachineDetailComponent implements OnInit {
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
 	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
-	state: MachineDetailComponentState
+	state: MachineDetailComponentState = MachineDetailComponentState.CREATE_INSTANCE
 
 	// in UDPATE state, if is the id of the instance to update
 	// in CREATE state with one association set, this is the id of the associated instance
-	id: number
+	id: number = 0
 
 	// in CREATE state with one association set, this is the id of the associated instance
-	originStruct: string
-	originStructFieldName: string
+	originStruct: string = ""
+	originStructFieldName: string = ""
 
 	constructor(
 		private machineService: MachineService,
@@ -74,9 +74,9 @@ export class MachineDetailComponent implements OnInit {
 	ngOnInit(): void {
 
 		// compute state
-		this.id = +this.route.snapshot.paramMap.get('id');
-		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
-		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+		this.id = +this.route.snapshot.paramMap.get('id')!;
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct')!;
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName')!;
 
 		const association = this.route.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -119,7 +119,9 @@ export class MachineDetailComponent implements OnInit {
 						this.machine = new (MachineDB)
 						break;
 					case MachineDetailComponentState.UPDATE_INSTANCE:
-						this.machine = frontRepo.Machines.get(this.id)
+						let machine = frontRepo.Machines.get(this.id)
+						console.assert(machine != undefined, "missing machine with id:" + this.id)
+						this.machine = machine!
 						break;
 					// insertion point for init of association field
 					default:
@@ -164,7 +166,7 @@ export class MachineDetailComponent implements OnInit {
 			default:
 				this.machineService.postMachine(this.machine).subscribe(machine => {
 					this.machineService.MachineServiceChanged.next("post")
-					this.machine = {} // reset fields
+					this.machine = new (MachineDB) // reset fields
 				});
 		}
 	}
@@ -173,7 +175,7 @@ export class MachineDetailComponent implements OnInit {
 	// ONE-MANY association
 	// It uses the MapOfComponent provided by the front repo
 	openReverseSelection(AssociatedStruct: string, reverseField: string, selectionMode: string,
-		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string ) {
+		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string) {
 
 		console.log("mode " + selectionMode)
 
@@ -187,7 +189,7 @@ export class MachineDetailComponent implements OnInit {
 		dialogConfig.height = "50%"
 		if (selectionMode == SelectionMode.ONE_MANY_ASSOCIATION_MODE) {
 
-			dialogData.ID = this.machine.ID
+			dialogData.ID = this.machine.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -203,7 +205,7 @@ export class MachineDetailComponent implements OnInit {
 			});
 		}
 		if (selectionMode == SelectionMode.MANY_MANY_ASSOCIATION_MODE) {
-			dialogData.ID = this.machine.ID
+			dialogData.ID = this.machine.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -254,7 +256,7 @@ export class MachineDetailComponent implements OnInit {
 		});
 	}
 
-	fillUpNameIfEmpty(event) {
+	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
 		if (this.machine.Name == undefined) {
 			this.machine.Name = event.value.Name
 		}
@@ -271,7 +273,7 @@ export class MachineDetailComponent implements OnInit {
 
 	isATextArea(fieldName: string): boolean {
 		if (this.mapFields_displayAsTextArea.has(fieldName)) {
-			return this.mapFields_displayAsTextArea.get(fieldName)
+			return this.mapFields_displayAsTextArea.get(fieldName)!
 		} else {
 			return false
 		}

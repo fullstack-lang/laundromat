@@ -23,17 +23,17 @@ export class MachinePresentationComponent implements OnInit {
 
 	// insertion point for declarations
 	// fields from RemainingTime
-	RemainingTime_Hours: number
-	RemainingTime_Minutes: number
-	RemainingTime_Seconds: number
+	RemainingTime_Hours: number = 0
+	RemainingTime_Minutes: number = 0
+	RemainingTime_Seconds: number = 0
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	machine: MachineDB;
+	machine: MachineDB = new (MachineDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private machineService: MachineService,
@@ -60,12 +60,12 @@ export class MachinePresentationComponent implements OnInit {
 	}
 
 	getMachine(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.machine = this.frontRepo.Machines.get(id)
+				this.machine = this.frontRepo.Machines.get(id)!
 
 				// insertion point for recovery of durations
 				// computation of Hours, Minutes, Seconds for RemainingTime

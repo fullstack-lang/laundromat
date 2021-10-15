@@ -30,7 +30,7 @@ export enum GongNodeType {
  */
 interface GongNode {
   name: string; // if STRUCT, the name of the struct, if INSTANCE the name of the instance
-  children?: GongNode[];
+  children: GongNode[];
   type: GongNodeType;
   structName: string;
   associationField: string;
@@ -137,8 +137,8 @@ export class SidebarComponent implements OnInit {
   hasChild = (_: number, node: GongFlatNode) => node.expandable;
 
   // front repo
-  frontRepo: FrontRepo
-  commitNb: number
+  frontRepo: FrontRepo = new (FrontRepo)
+  commitNb: number = 0
 
   // "data" tree that is constructed during NgInit and is passed to the mat-tree component
   gongNodeTree = new Array<GongNode>();
@@ -192,20 +192,19 @@ export class SidebarComponent implements OnInit {
       let memoryOfExpandedNodes = new Map<number, boolean>()
       let nonInstanceNodeId = 1
 
-      if (this.treeControl.dataNodes != undefined) {
-        this.treeControl.dataNodes.forEach(
-          node => {
-            if (this.treeControl.isExpanded(node)) {
-              memoryOfExpandedNodes[node.uniqueIdPerStack] = true
-            } else {
-              memoryOfExpandedNodes[node.uniqueIdPerStack] = false
-            }
+      this.treeControl.dataNodes?.forEach(
+        node => {
+          if (this.treeControl.isExpanded(node)) {
+            memoryOfExpandedNodes.set(node.uniqueIdPerStack, true)
+          } else {
+            memoryOfExpandedNodes.set(node.uniqueIdPerStack, false)
           }
-        )
-      }
+        }
+      )
 
+      // reset the gong node tree
       this.gongNodeTree = new Array<GongNode>();
-
+      
       // insertion point for per struct tree construction
       /**
       * fill up the Machine part of the mat tree
@@ -245,7 +244,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          machineGongNodeStruct.children.push(machineGongNodeInstance)
+          machineGongNodeStruct.children!.push(machineGongNodeInstance)
 
           // insertion point for per field code
         }
@@ -289,7 +288,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          simulationGongNodeStruct.children.push(simulationGongNodeInstance)
+          simulationGongNodeStruct.children!.push(simulationGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -306,7 +305,7 @@ export class SidebarComponent implements OnInit {
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          simulationGongNodeInstance.children.push(MachineGongNodeAssociation)
+          simulationGongNodeInstance.children!.push(MachineGongNodeAssociation)
 
           /**
             * let append a node for the instance behind the asssociation Machine
@@ -341,7 +340,7 @@ export class SidebarComponent implements OnInit {
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          simulationGongNodeInstance.children.push(WasherGongNodeAssociation)
+          simulationGongNodeInstance.children!.push(WasherGongNodeAssociation)
 
           /**
             * let append a node for the instance behind the asssociation Washer
@@ -403,7 +402,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          washerGongNodeStruct.children.push(washerGongNodeInstance)
+          washerGongNodeStruct.children!.push(washerGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -420,7 +419,7 @@ export class SidebarComponent implements OnInit {
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          washerGongNodeInstance.children.push(MachineGongNodeAssociation)
+          washerGongNodeInstance.children!.push(MachineGongNodeAssociation)
 
           /**
             * let append a node for the instance behind the asssociation Machine
@@ -448,17 +447,13 @@ export class SidebarComponent implements OnInit {
       this.dataSource.data = this.gongNodeTree
 
       // expand nodes that were exapanded before
-      if (this.treeControl.dataNodes != undefined) {
-        this.treeControl.dataNodes.forEach(
-          node => {
-            if (memoryOfExpandedNodes[node.uniqueIdPerStack] != undefined) {
-              if (memoryOfExpandedNodes[node.uniqueIdPerStack]) {
-                this.treeControl.expand(node)
-              }
-            }
+      this.treeControl.dataNodes?.forEach(
+        node => {
+          if (memoryOfExpandedNodes.get(node.uniqueIdPerStack)) {
+            this.treeControl.expand(node)
           }
-        )
-      }
+        }
+      )
     });
 
     // fetch the number of commits
@@ -504,7 +499,7 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  setEditorRouterOutlet(path) {
+  setEditorRouterOutlet(path: string) {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + path.toLowerCase()]
@@ -512,7 +507,7 @@ export class SidebarComponent implements OnInit {
     }]);
   }
 
-  setEditorSpecialRouterOutlet( node: GongFlatNode) {
+  setEditorSpecialRouterOutlet(node: GongFlatNode) {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_laundromat_go_editor: ["github_com_fullstack_lang_laundromat_go-" + node.associatedStructName.toLowerCase() + "-adder", node.id, node.structName, node.associationField]

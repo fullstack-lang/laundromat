@@ -13,6 +13,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { WasherDB } from './washer-db';
 
+// insertion point for imports
+import { MachineDB } from './machine-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +38,14 @@ export class WasherService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.washersUrl = origin + '/api/github.com/fullstack-lang/laundromat/go/v1/washers';
-   }
+  }
 
   /** GET washers from the server */
   getWashers(): Observable<WasherDB[]> {
@@ -67,16 +70,16 @@ export class WasherService {
   /** POST: add a new washer to the server */
   postWasher(washerdb: WasherDB): Observable<WasherDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    washerdb.Machine = {}
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    washerdb.Machine = new MachineDB
 
-		return this.http.post<WasherDB>(this.washersUrl, washerdb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
-				this.log(`posted washerdb id=${washerdb.ID}`)
-			}),
-			catchError(this.handleError<WasherDB>('postWasher'))
-		);
+    return this.http.post<WasherDB>(this.washersUrl, washerdb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
+        this.log(`posted washerdb id=${washerdb.ID}`)
+      }),
+      catchError(this.handleError<WasherDB>('postWasher'))
+    );
   }
 
   /** DELETE: delete the washerdb from the server */
@@ -96,9 +99,9 @@ export class WasherService {
     const url = `${this.washersUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    washerdb.Machine = {}
+    washerdb.Machine = new MachineDB
 
-    return this.http.put(url, washerdb, this.httpOptions).pipe(
+    return this.http.put<WasherDB>(url, washerdb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`updated washerdb id=${washerdb.ID}`)

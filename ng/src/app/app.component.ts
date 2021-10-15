@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
   sim = 'Sim view'
   views: string[] = [this.simu, this.data, this.sim, this.diagrams];
 
-  diagramIDForWasherStates: number
-  diagramIDForMachineStates: number
+  diagramIDForWasherStates: number = 0
+  diagramIDForMachineStates: number = 0
 
   constructor(
     private washersService: laundromat.WasherService,

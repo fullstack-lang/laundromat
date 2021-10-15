@@ -23,13 +23,13 @@ export class WasherPresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	washer: WasherDB;
+	washer: WasherDB = new (WasherDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private washerService: WasherService,
@@ -56,12 +56,12 @@ export class WasherPresentationComponent implements OnInit {
 	}
 
 	getWasher(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.washer = this.frontRepo.Washers.get(id)
+				this.washer = this.frontRepo.Washers.get(id)!
 
 				// insertion point for recovery of durations
 			}

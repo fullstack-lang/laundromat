@@ -13,6 +13,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { MachineDB } from './machine-db';
 
+// insertion point for imports
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +37,14 @@ export class MachineService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.machinesUrl = origin + '/api/github.com/fullstack-lang/laundromat/go/v1/machines';
-   }
+  }
 
   /** GET machines from the server */
   getMachines(): Observable<MachineDB[]> {
@@ -67,15 +69,15 @@ export class MachineService {
   /** POST: add a new machine to the server */
   postMachine(machinedb: MachineDB): Observable<MachineDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
 
-		return this.http.post<MachineDB>(this.machinesUrl, machinedb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
-				this.log(`posted machinedb id=${machinedb.ID}`)
-			}),
-			catchError(this.handleError<MachineDB>('postMachine'))
-		);
+    return this.http.post<MachineDB>(this.machinesUrl, machinedb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
+        this.log(`posted machinedb id=${machinedb.ID}`)
+      }),
+      catchError(this.handleError<MachineDB>('postMachine'))
+    );
   }
 
   /** DELETE: delete the machinedb from the server */
@@ -96,7 +98,7 @@ export class MachineService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
 
-    return this.http.put(url, machinedb, this.httpOptions).pipe(
+    return this.http.put<MachineDB>(url, machinedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`updated machinedb id=${machinedb.ID}`)

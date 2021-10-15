@@ -23,13 +23,13 @@ export class SimulationPresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	simulation: SimulationDB;
+	simulation: SimulationDB = new (SimulationDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private simulationService: SimulationService,
@@ -56,12 +56,12 @@ export class SimulationPresentationComponent implements OnInit {
 	}
 
 	getSimulation(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.simulation = this.frontRepo.Simulations.get(id)
+				this.simulation = this.frontRepo.Simulations.get(id)!
 
 				// insertion point for recovery of durations
 			}

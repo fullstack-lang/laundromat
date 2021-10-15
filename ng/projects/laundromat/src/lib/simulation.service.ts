@@ -13,6 +13,10 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { SimulationDB } from './simulation-db';
 
+// insertion point for imports
+import { MachineDB } from './machine-db'
+import { WasherDB } from './washer-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +39,14 @@ export class SimulationService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.simulationsUrl = origin + '/api/github.com/fullstack-lang/laundromat/go/v1/simulations';
-   }
+  }
 
   /** GET simulations from the server */
   getSimulations(): Observable<SimulationDB[]> {
@@ -67,17 +71,17 @@ export class SimulationService {
   /** POST: add a new simulation to the server */
   postSimulation(simulationdb: SimulationDB): Observable<SimulationDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    simulationdb.Machine = {}
-    simulationdb.Washer = {}
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    simulationdb.Machine = new MachineDB
+    simulationdb.Washer = new WasherDB
 
-		return this.http.post<SimulationDB>(this.simulationsUrl, simulationdb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
-				this.log(`posted simulationdb id=${simulationdb.ID}`)
-			}),
-			catchError(this.handleError<SimulationDB>('postSimulation'))
-		);
+    return this.http.post<SimulationDB>(this.simulationsUrl, simulationdb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
+        this.log(`posted simulationdb id=${simulationdb.ID}`)
+      }),
+      catchError(this.handleError<SimulationDB>('postSimulation'))
+    );
   }
 
   /** DELETE: delete the simulationdb from the server */
@@ -97,10 +101,10 @@ export class SimulationService {
     const url = `${this.simulationsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    simulationdb.Machine = {}
-    simulationdb.Washer = {}
+    simulationdb.Machine = new MachineDB
+    simulationdb.Washer = new WasherDB
 
-    return this.http.put(url, simulationdb, this.httpOptions).pipe(
+    return this.http.put<SimulationDB>(url, simulationdb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`updated simulationdb id=${simulationdb.ID}`)
