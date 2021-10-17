@@ -16,7 +16,8 @@ definitions:
     description: Machine is a sim agent
     properties:
       Cleanedlaundry:
-        description: Cleanedlaundry indicate wether the laundry in the drum is wet (it has been cleand)
+        description: Cleanedlaundry indicate wether the laundry in the drum is wet
+          (it has been cleand)
         type: boolean
       DrumLoad:
         description: DrumLoad in kg
@@ -180,7 +181,8 @@ definitions:
       fullfill the ORM requirements for associations
     properties:
       Cleanedlaundry:
-        description: Cleanedlaundry indicate wether the laundry in the drum is wet (it has been cleand)
+        description: Cleanedlaundry indicate wether the laundry in the drum is wet
+          (it has been cleand)
         type: boolean
       CreatedAt:
         format: date-time
@@ -689,16 +691,20 @@ responses:
         type: string
       DeletedAt: {}
       DrumLoad_Data:
-        description: Declation for basic field machineDB.DrumLoad {{BasicKind}} (to be completed)
+        description: Declation for basic field machineDB.DrumLoad {{BasicKind}} (to
+          be completed)
       ID:
         format: uint64
         type: integer
       Name_Data:
-        description: Declation for basic field machineDB.Name {{BasicKind}} (to be completed)
+        description: Declation for basic field machineDB.Name {{BasicKind}} (to be
+          completed)
       RemainingTime_Data:
-        description: Declation for basic field machineDB.RemainingTime {{BasicKind}} (to be completed)
+        description: Declation for basic field machineDB.RemainingTime {{BasicKind}}
+          (to be completed)
       State_Data:
-        description: Declation for basic field machineDB.State {{BasicKind}} (to be completed)
+        description: Declation for basic field machineDB.State {{BasicKind}} (to be
+          completed)
       TechName_Data:
         description: |-
           insertion for basic fields declaration
@@ -725,7 +731,8 @@ responses:
         format: uint64
         type: integer
       LastCommitNb_Data:
-        description: Declation for basic field simulationDB.LastCommitNb {{BasicKind}} (to be completed)
+        description: Declation for basic field simulationDB.LastCommitNb {{BasicKind}}
+          (to be completed)
       MachineID:
         description: |-
           insertion for pointer fields encoding declaration
@@ -771,13 +778,15 @@ responses:
     description: WasherDBResponse provides response
     headers:
       CleanedLaundryWeight_Data:
-        description: Declation for basic field washerDB.CleanedLaundryWeight {{BasicKind}} (to be completed)
+        description: Declation for basic field washerDB.CleanedLaundryWeight {{BasicKind}}
+          (to be completed)
       CreatedAt:
         format: date-time
         type: string
       DeletedAt: {}
       DirtyLaundryWeight_Data:
-        description: Declation for basic field washerDB.DirtyLaundryWeight {{BasicKind}} (to be completed)
+        description: Declation for basic field washerDB.DirtyLaundryWeight {{BasicKind}}
+          (to be completed)
       ID:
         format: uint64
         type: integer
@@ -787,9 +796,11 @@ responses:
           field Machine is a pointer to another Struct (optional or 0..1)
           This field is generated into another field to enable AS ONE association
       Name_Data:
-        description: Declation for basic field washerDB.Name {{BasicKind}} (to be completed)
+        description: Declation for basic field washerDB.Name {{BasicKind}} (to be
+          completed)
       State_Data:
-        description: Declation for basic field washerDB.State {{BasicKind}} (to be completed)
+        description: Declation for basic field washerDB.State {{BasicKind}} (to be
+          completed)
       TechName_Data:
         description: |-
           insertion for basic fields declaration
