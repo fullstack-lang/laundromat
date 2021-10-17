@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/fullstack-lang/gong v0.0.0-20211017115116-4931b25a7529
 	github.com/fullstack-lang/gongdoc v0.0.0-20211017120233-0d3489c14f9f
-	github.com/fullstack-lang/gongsim v0.0.0-20211017115116-639f8d09dab8
+	github.com/fullstack-lang/gongsim v0.0.0-20211017121441-d7838965352d
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.7.4

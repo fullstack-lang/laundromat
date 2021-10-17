@@ -106,6 +106,8 @@ github.com/fullstack-lang/gongsim v0.0.0-20211017113339-d090724cf663 h1:tJbUKv61
 github.com/fullstack-lang/gongsim v0.0.0-20211017113339-d090724cf663/go.mod h1:NFSA/FN8b5YM2vHxG2Jkz/VA3oJaKr/B+Bw4MeYmw00=
 github.com/fullstack-lang/gongsim v0.0.0-20211017115116-639f8d09dab8 h1:GoQ38zebEHIBfMM4QgjuGh4SkTZ7vgW/86lyUOCyi08=
 github.com/fullstack-lang/gongsim v0.0.0-20211017115116-639f8d09dab8/go.mod h1:pglLYX0XbSE1w2nZVxsWjKevsB5pMe0uuqqpupysj6g=
+github.com/fullstack-lang/gongsim v0.0.0-20211017121441-d7838965352d h1:U1PRp9gpxZ00RfmxNl2CCCv26WvQIhn/ya5DPaVxLh8=
+github.com/fullstack-lang/gongsim v0.0.0-20211017121441-d7838965352d/go.mod h1:pglLYX0XbSE1w2nZVxsWjKevsB5pMe0uuqqpupysj6g=
 github.com/fyne-io/mobile v0.1.3-0.20210412090810-650a3139866a/go.mod h1:/kOrWrZB6sasLbEy2JIvr4arEzQTXBTZGb3Y96yWbHY=
 github.com/gin-contrib/cors v1.3.1 h1:doAsuITavI4IOcd0Y19U4B+O0dNWihRyX//nn4sEmgA=
 github.com/gin-contrib/cors v1.3.1/go.mod h1:jjEJ4268OPZUcU7k9Pm653S7lXUGcqMADzFA61xsmDk=
