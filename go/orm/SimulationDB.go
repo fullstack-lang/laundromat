@@ -251,6 +251,7 @@ func (backRepoSimulation *BackRepoSimulationStruct) CommitPhaseTwoInstance(backR
 		if simulation.Machine != nil {
 			if MachineId, ok := (*backRepo.BackRepoMachine.Map_MachinePtr_MachineDBID)[simulation.Machine]; ok {
 				simulationDB.MachineID.Int64 = int64(MachineId)
+				simulationDB.MachineID.Valid = true
 			}
 		}
 
@@ -259,6 +260,7 @@ func (backRepoSimulation *BackRepoSimulationStruct) CommitPhaseTwoInstance(backR
 		if simulation.Washer != nil {
 			if WasherId, ok := (*backRepo.BackRepoWasher.Map_WasherPtr_WasherDBID)[simulation.Washer]; ok {
 				simulationDB.WasherID.Int64 = int64(WasherId)
+				simulationDB.WasherID.Valid = true
 			}
 		}
 
@@ -554,11 +556,13 @@ func (backRepoSimulation *BackRepoSimulationStruct) RestorePhaseTwo() {
 		// reindexing Machine field
 		if simulationDB.MachineID.Int64 != 0 {
 			simulationDB.MachineID.Int64 = int64(BackRepoMachineid_atBckpTime_newID[uint(simulationDB.MachineID.Int64)])
+			simulationDB.MachineID.Valid = true
 		}
 
 		// reindexing Washer field
 		if simulationDB.WasherID.Int64 != 0 {
 			simulationDB.WasherID.Int64 = int64(BackRepoWasherid_atBckpTime_newID[uint(simulationDB.WasherID.Int64)])
+			simulationDB.WasherID.Valid = true
 		}
 
 		// update databse with new index encoding

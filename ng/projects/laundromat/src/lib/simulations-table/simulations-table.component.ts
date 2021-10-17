@@ -180,16 +180,14 @@ export class SimulationsTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.simulations.forEach(
-            simulation => {
-              let ID = this.dialogData.ID
-              let revPointer = simulation[this.dialogData.ReversePointer as keyof SimulationDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(simulation)
-              }
+          for (let simulation of this.simulations) {
+            let ID = this.dialogData.ID
+            let revPointer = simulation[this.dialogData.ReversePointer as keyof SimulationDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(simulation)
             }
-          )
-          this.selection = new SelectionModel<SimulationDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<SimulationDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -276,34 +274,31 @@ export class SimulationsTableComponent implements OnInit {
       let toUpdate = new Set<SimulationDB>()
 
       // reset all initial selection of simulation that belong to simulation
-      this.initialSelection.forEach(
-        simulation => {
-          let index = simulation[this.dialogData.ReversePointer as keyof SimulationDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(simulation)
-        }
-      )
+      for (let simulation of this.initialSelection) {
+        let index = simulation[this.dialogData.ReversePointer as keyof SimulationDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(simulation)
+
+      }
 
       // from selection, set simulation that belong to simulation
-      this.selection.selected.forEach(
-        simulation => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = simulation[this.dialogData.ReversePointer  as keyof SimulationDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(simulation)
-        }
-      )
+      for (let simulation of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = simulation[this.dialogData.ReversePointer as keyof SimulationDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(simulation)
+      }
+
 
       // update all simulation (only update selection & initial selection)
-      toUpdate.forEach(
-        simulation => {
-          this.simulationService.updateSimulation(simulation)
-            .subscribe(simulation => {
-              this.simulationService.SimulationServiceChanged.next("update")
-            });
-        }
-      )
+      for (let simulation of toUpdate) {
+        this.simulationService.updateSimulation(simulation)
+          .subscribe(simulation => {
+            this.simulationService.SimulationServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -350,13 +345,15 @@ export class SimulationsTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + simulation.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = simulation.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = simulation.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("simulation " + simulation.Name + " is still selected")

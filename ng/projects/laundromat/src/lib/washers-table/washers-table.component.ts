@@ -190,16 +190,14 @@ export class WashersTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.washers.forEach(
-            washer => {
-              let ID = this.dialogData.ID
-              let revPointer = washer[this.dialogData.ReversePointer as keyof WasherDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(washer)
-              }
+          for (let washer of this.washers) {
+            let ID = this.dialogData.ID
+            let revPointer = washer[this.dialogData.ReversePointer as keyof WasherDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(washer)
             }
-          )
-          this.selection = new SelectionModel<WasherDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<WasherDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -286,34 +284,31 @@ export class WashersTableComponent implements OnInit {
       let toUpdate = new Set<WasherDB>()
 
       // reset all initial selection of washer that belong to washer
-      this.initialSelection.forEach(
-        washer => {
-          let index = washer[this.dialogData.ReversePointer as keyof WasherDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(washer)
-        }
-      )
+      for (let washer of this.initialSelection) {
+        let index = washer[this.dialogData.ReversePointer as keyof WasherDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(washer)
+
+      }
 
       // from selection, set washer that belong to washer
-      this.selection.selected.forEach(
-        washer => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = washer[this.dialogData.ReversePointer  as keyof WasherDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(washer)
-        }
-      )
+      for (let washer of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = washer[this.dialogData.ReversePointer as keyof WasherDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(washer)
+      }
+
 
       // update all washer (only update selection & initial selection)
-      toUpdate.forEach(
-        washer => {
-          this.washerService.updateWasher(washer)
-            .subscribe(washer => {
-              this.washerService.WasherServiceChanged.next("update")
-            });
-        }
-      )
+      for (let washer of toUpdate) {
+        this.washerService.updateWasher(washer)
+          .subscribe(washer => {
+            this.washerService.WasherServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -360,13 +355,15 @@ export class WashersTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + washer.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = washer.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = washer.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("washer " + washer.Name + " is still selected")

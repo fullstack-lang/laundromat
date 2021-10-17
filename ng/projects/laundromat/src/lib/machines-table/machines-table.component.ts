@@ -193,16 +193,14 @@ export class MachinesTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.machines.forEach(
-            machine => {
-              let ID = this.dialogData.ID
-              let revPointer = machine[this.dialogData.ReversePointer as keyof MachineDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(machine)
-              }
+          for (let machine of this.machines) {
+            let ID = this.dialogData.ID
+            let revPointer = machine[this.dialogData.ReversePointer as keyof MachineDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(machine)
             }
-          )
-          this.selection = new SelectionModel<MachineDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<MachineDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -289,34 +287,31 @@ export class MachinesTableComponent implements OnInit {
       let toUpdate = new Set<MachineDB>()
 
       // reset all initial selection of machine that belong to machine
-      this.initialSelection.forEach(
-        machine => {
-          let index = machine[this.dialogData.ReversePointer as keyof MachineDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(machine)
-        }
-      )
+      for (let machine of this.initialSelection) {
+        let index = machine[this.dialogData.ReversePointer as keyof MachineDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(machine)
+
+      }
 
       // from selection, set machine that belong to machine
-      this.selection.selected.forEach(
-        machine => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = machine[this.dialogData.ReversePointer  as keyof MachineDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(machine)
-        }
-      )
+      for (let machine of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = machine[this.dialogData.ReversePointer as keyof MachineDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(machine)
+      }
+
 
       // update all machine (only update selection & initial selection)
-      toUpdate.forEach(
-        machine => {
-          this.machineService.updateMachine(machine)
-            .subscribe(machine => {
-              this.machineService.MachineServiceChanged.next("update")
-            });
-        }
-      )
+      for (let machine of toUpdate) {
+        this.machineService.updateMachine(machine)
+          .subscribe(machine => {
+            this.machineService.MachineServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -363,13 +358,15 @@ export class MachinesTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + machine.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = machine.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = machine.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("machine " + machine.Name + " is still selected")

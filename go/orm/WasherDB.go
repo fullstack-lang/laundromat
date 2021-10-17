@@ -265,6 +265,7 @@ func (backRepoWasher *BackRepoWasherStruct) CommitPhaseTwoInstance(backRepo *Bac
 		if washer.Machine != nil {
 			if MachineId, ok := (*backRepo.BackRepoMachine.Map_MachinePtr_MachineDBID)[washer.Machine]; ok {
 				washerDB.MachineID.Int64 = int64(MachineId)
+				washerDB.MachineID.Valid = true
 			}
 		}
 
@@ -580,6 +581,7 @@ func (backRepoWasher *BackRepoWasherStruct) RestorePhaseTwo() {
 		// reindexing Machine field
 		if washerDB.MachineID.Int64 != 0 {
 			washerDB.MachineID.Int64 = int64(BackRepoMachineid_atBckpTime_newID[uint(washerDB.MachineID.Int64)])
+			washerDB.MachineID.Valid = true
 		}
 
 		// update databse with new index encoding
