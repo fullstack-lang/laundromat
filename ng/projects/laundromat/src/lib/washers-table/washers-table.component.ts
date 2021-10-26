@@ -62,6 +62,9 @@ export class WashersTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (washerDB: WasherDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return washerDB.ID
+
         // insertion point for specific sorting accessor
         case 'TechName':
           return washerDB.TechName;

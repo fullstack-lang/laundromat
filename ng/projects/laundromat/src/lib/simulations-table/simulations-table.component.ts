@@ -62,6 +62,9 @@ export class SimulationsTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (simulationDB: SimulationDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return simulationDB.ID
+
         // insertion point for specific sorting accessor
         case 'Name':
           return simulationDB.Name;
