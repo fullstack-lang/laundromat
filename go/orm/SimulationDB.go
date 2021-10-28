@@ -45,6 +45,7 @@ type SimulationAPI struct {
 // reverse pointers of slice of poitners to Struct
 type SimulationPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
 	// field Machine is a pointer to another Struct (optional or 0..1)
 	// This field is generated into another field to enable AS ONE association
 	MachineID sql.NullInt64
@@ -52,7 +53,6 @@ type SimulationPointersEnconding struct {
 	// field Washer is a pointer to another Struct (optional or 0..1)
 	// This field is generated into another field to enable AS ONE association
 	WasherID sql.NullInt64
-
 }
 
 // SimulationDB describes a simulation in the database
@@ -65,12 +65,12 @@ type SimulationDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field simulationDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
 	// Declation for basic field simulationDB.LastCommitNb {{BasicKind}} (to be completed)
 	LastCommitNb_Data sql.NullInt64
-
 	// encoding of pointers
 	SimulationPointersEnconding
 }
@@ -88,13 +88,13 @@ type SimulationDBResponse struct {
 // SimulationWOP is a Simulation without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type SimulationWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	Name string
+	Name string `xlsx:"1"`
 
-	LastCommitNb int
+	LastCommitNb int `xlsx:"2"`
 	// insertion for WOP pointer fields
 }
 
@@ -409,23 +409,23 @@ func (backRepo *BackRepoStruct) CheckoutSimulation(simulation *models.Simulation
 // CopyBasicFieldsFromSimulation
 func (simulationDB *SimulationDB) CopyBasicFieldsFromSimulation(simulation *models.Simulation) {
 	// insertion point for fields commit
+
 	simulationDB.Name_Data.String = simulation.Name
 	simulationDB.Name_Data.Valid = true
 
 	simulationDB.LastCommitNb_Data.Int64 = int64(simulation.LastCommitNb)
 	simulationDB.LastCommitNb_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromSimulationWOP
 func (simulationDB *SimulationDB) CopyBasicFieldsFromSimulationWOP(simulation *SimulationWOP) {
 	// insertion point for fields commit
+
 	simulationDB.Name_Data.String = simulation.Name
 	simulationDB.Name_Data.Valid = true
 
 	simulationDB.LastCommitNb_Data.Int64 = int64(simulation.LastCommitNb)
 	simulationDB.LastCommitNb_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToSimulation
@@ -501,6 +501,51 @@ func (backRepoSimulation *BackRepoSimulationStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&simulationWOP, -1)
 	}
+}
+
+// RestoreXL from the "Simulation" sheet all SimulationDB instances
+func (backRepoSimulation *BackRepoSimulationStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoSimulationid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Simulation"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoSimulation.rowVisitorSimulation)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoSimulation *BackRepoSimulationStruct) rowVisitorSimulation(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var simulationWOP SimulationWOP
+		row.ReadStruct(&simulationWOP)
+
+		// add the unmarshalled struct to the stage
+		simulationDB := new(SimulationDB)
+		simulationDB.CopyBasicFieldsFromSimulationWOP(&simulationWOP)
+
+		simulationDB_ID_atBackupTime := simulationDB.ID
+		simulationDB.ID = 0
+		query := backRepoSimulation.db.Create(simulationDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoSimulation.Map_SimulationDBID_SimulationDB)[simulationDB.ID] = simulationDB
+		BackRepoSimulationid_atBckpTime_newID[simulationDB_ID_atBackupTime] = simulationDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "SimulationDB.json" in dirPath that stores an array

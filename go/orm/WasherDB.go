@@ -45,10 +45,10 @@ type WasherAPI struct {
 // reverse pointers of slice of poitners to Struct
 type WasherPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
 	// field Machine is a pointer to another Struct (optional or 0..1)
 	// This field is generated into another field to enable AS ONE association
 	MachineID sql.NullInt64
-
 }
 
 // WasherDB describes a washer in the database
@@ -61,6 +61,7 @@ type WasherDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field washerDB.TechName {{BasicKind}} (to be completed)
 	TechName_Data sql.NullString
 
@@ -75,7 +76,6 @@ type WasherDB struct {
 
 	// Declation for basic field washerDB.CleanedLaundryWeight {{BasicKind}} (to be completed)
 	CleanedLaundryWeight_Data sql.NullFloat64
-
 	// encoding of pointers
 	WasherPointersEnconding
 }
@@ -93,19 +93,19 @@ type WasherDBResponse struct {
 // WasherWOP is a Washer without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type WasherWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	TechName string
+	TechName string `xlsx:"1"`
 
-	Name string
+	Name string `xlsx:"2"`
 
-	DirtyLaundryWeight float64
+	DirtyLaundryWeight float64 `xlsx:"3"`
 
-	State models.WasherStateEnum
+	State models.WasherStateEnum `xlsx:"4"`
 
-	CleanedLaundryWeight float64
+	CleanedLaundryWeight float64 `xlsx:"5"`
 	// insertion for WOP pointer fields
 }
 
@@ -410,6 +410,7 @@ func (backRepo *BackRepoStruct) CheckoutWasher(washer *models.Washer) {
 // CopyBasicFieldsFromWasher
 func (washerDB *WasherDB) CopyBasicFieldsFromWasher(washer *models.Washer) {
 	// insertion point for fields commit
+
 	washerDB.TechName_Data.String = washer.TechName
 	washerDB.TechName_Data.Valid = true
 
@@ -424,12 +425,12 @@ func (washerDB *WasherDB) CopyBasicFieldsFromWasher(washer *models.Washer) {
 
 	washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
 	washerDB.CleanedLaundryWeight_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromWasherWOP
 func (washerDB *WasherDB) CopyBasicFieldsFromWasherWOP(washer *WasherWOP) {
 	// insertion point for fields commit
+
 	washerDB.TechName_Data.String = washer.TechName
 	washerDB.TechName_Data.Valid = true
 
@@ -444,7 +445,6 @@ func (washerDB *WasherDB) CopyBasicFieldsFromWasherWOP(washer *WasherWOP) {
 
 	washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
 	washerDB.CleanedLaundryWeight_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToWasher
@@ -526,6 +526,51 @@ func (backRepoWasher *BackRepoWasherStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&washerWOP, -1)
 	}
+}
+
+// RestoreXL from the "Washer" sheet all WasherDB instances
+func (backRepoWasher *BackRepoWasherStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoWasherid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Washer"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoWasher.rowVisitorWasher)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoWasher *BackRepoWasherStruct) rowVisitorWasher(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var washerWOP WasherWOP
+		row.ReadStruct(&washerWOP)
+
+		// add the unmarshalled struct to the stage
+		washerDB := new(WasherDB)
+		washerDB.CopyBasicFieldsFromWasherWOP(&washerWOP)
+
+		washerDB_ID_atBackupTime := washerDB.ID
+		washerDB.ID = 0
+		query := backRepoWasher.db.Create(washerDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoWasher.Map_WasherDBID_WasherDB)[washerDB.ID] = washerDB
+		BackRepoWasherid_atBckpTime_newID[washerDB_ID_atBackupTime] = washerDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "WasherDB.json" in dirPath that stores an array

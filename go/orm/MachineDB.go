@@ -57,6 +57,7 @@ type MachineDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field machineDB.TechName {{BasicKind}} (to be completed)
 	TechName_Data sql.NullString
 
@@ -75,7 +76,6 @@ type MachineDB struct {
 
 	// Declation for basic field machineDB.State {{BasicKind}} (to be completed)
 	State_Data sql.NullString
-
 	// encoding of pointers
 	MachinePointersEnconding
 }
@@ -93,21 +93,21 @@ type MachineDBResponse struct {
 // MachineWOP is a Machine without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type MachineWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	TechName string
+	TechName string `xlsx:"1"`
 
-	Name string
+	Name string `xlsx:"2"`
 
-	DrumLoad float64
+	DrumLoad float64 `xlsx:"3"`
 
-	RemainingTime time.Duration
+	RemainingTime time.Duration `xlsx:"4"`
 
-	Cleanedlaundry bool
+	Cleanedlaundry bool `xlsx:"5"`
 
-	State models.MachineStateEnum
+	State models.MachineStateEnum `xlsx:"6"`
 	// insertion for WOP pointer fields
 }
 
@@ -400,6 +400,7 @@ func (backRepo *BackRepoStruct) CheckoutMachine(machine *models.Machine) {
 // CopyBasicFieldsFromMachine
 func (machineDB *MachineDB) CopyBasicFieldsFromMachine(machine *models.Machine) {
 	// insertion point for fields commit
+
 	machineDB.TechName_Data.String = machine.TechName
 	machineDB.TechName_Data.Valid = true
 
@@ -417,12 +418,12 @@ func (machineDB *MachineDB) CopyBasicFieldsFromMachine(machine *models.Machine) 
 
 	machineDB.State_Data.String = string(machine.State)
 	machineDB.State_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromMachineWOP
 func (machineDB *MachineDB) CopyBasicFieldsFromMachineWOP(machine *MachineWOP) {
 	// insertion point for fields commit
+
 	machineDB.TechName_Data.String = machine.TechName
 	machineDB.TechName_Data.Valid = true
 
@@ -440,7 +441,6 @@ func (machineDB *MachineDB) CopyBasicFieldsFromMachineWOP(machine *MachineWOP) {
 
 	machineDB.State_Data.String = string(machine.State)
 	machineDB.State_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToMachine
@@ -524,6 +524,51 @@ func (backRepoMachine *BackRepoMachineStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&machineWOP, -1)
 	}
+}
+
+// RestoreXL from the "Machine" sheet all MachineDB instances
+func (backRepoMachine *BackRepoMachineStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoMachineid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Machine"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoMachine.rowVisitorMachine)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoMachine *BackRepoMachineStruct) rowVisitorMachine(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var machineWOP MachineWOP
+		row.ReadStruct(&machineWOP)
+
+		// add the unmarshalled struct to the stage
+		machineDB := new(MachineDB)
+		machineDB.CopyBasicFieldsFromMachineWOP(&machineWOP)
+
+		machineDB_ID_atBackupTime := machineDB.ID
+		machineDB.ID = 0
+		query := backRepoMachine.db.Create(machineDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoMachine.Map_MachineDBID_MachineDB)[machineDB.ID] = machineDB
+		BackRepoMachineid_atBckpTime_newID[machineDB_ID_atBackupTime] = machineDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "MachineDB.json" in dirPath that stores an array
