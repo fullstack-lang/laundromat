@@ -14,7 +14,7 @@
 			"label": "02 - go run",
 			"type": "shell",
 			"options": {
-				"cwd": "."
+				"cwd": "./go/cmd/laundromat"
 			},
 			"command": "go",
 			"args": [

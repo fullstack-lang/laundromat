@@ -171,6 +171,16 @@ func (simulation *Simulation) GetLastCommitNb() (commitNb uint) {
 	return commitNb
 }
 
+// GetLastCommitNbFromFront fetch the last commit nb from the front to the simulation
+func (simulation *Simulation) GetLastCommitNbFromFront() (commitNb uint) {
+
+	if Stage.BackRepo != nil {
+		commitNb = Stage.BackRepo.GetLastPushFromFrontNb()
+	}
+
+	return commitNb
+}
+
 // Reset simulation
 func (simulation *Simulation) Reset(engine *gongsim_models.Engine) {
 
