@@ -37,6 +37,12 @@
       "rxjs": [
         "./node_modules/rxjs"
       ],
+      "jointjs": [
+        "./node_modules/jointjs"
+      ],
+      "@types/jointjs": [
+        "./node_modules/@types/jointjs"
+      ],
       "angular-split": [
         "./node_modules/angular-split"
       ],
@@ -47,19 +53,19 @@
         "projects/laundromat/src/public-api.ts",
       ],
       "gongsimcontrol": [
-        "../../gongsim/ng/projects/gongsimcontrol/src/public-api.ts"
+        "../vendor/github.com/fullstack-lang/gongsim/ng/projects/gongsimcontrol/src/public-api.ts"
       ],
       "gongsim": [
-        "../../gongsim/ng/projects/gongsim/src/public-api.ts"
+        "../vendor/github.com/fullstack-lang/gongsim/ng/projects/gongsim/src/public-api.ts"
       ],
       "gong": [
-        "../../gong/ng/projects/gong/src/public-api.ts"
+        "../vendor/github.com/fullstack-lang/gong/ng/projects/gong/src/public-api.ts"
       ],
       "gongdoc": [
-        "../../gongdoc/ng/projects/gongdoc/src/public-api.ts"
+        "../vendor/github.com/fullstack-lang/gongdoc/ng/projects/gongdoc/src/public-api.ts"
       ],
       "gongdocdiagrams": [
-        "../../gongdoc/ng/projects/gongdocdiagrams/src/public-api.ts"
+        "../vendor/github.com/fullstack-lang/gongdoc/ng/projects/gongdocdiagrams/src/public-api.ts"
       ],
     }
   },

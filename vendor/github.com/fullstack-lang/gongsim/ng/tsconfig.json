@@ -1,0 +1,32 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "es2020",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "strict": true,
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "gongsim": [
+        "./projects/gongsim/src/public-api.ts"
+      ],
+      "gongsimcontrol": [
+        "./projects/gongsimcontrol/src/public-api.ts"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
+}
