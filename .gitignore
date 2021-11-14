@@ -1,3 +1,4 @@
 __debug_bin
 go/controllers/laundromatapi.yml
 go/cmd/laundromat/laundromat.exe
+go/cmd/laundromat/laundromat
