@@ -78,5 +78,15 @@
 			],
 			"group": "build"
 		},
+		{
+			"label": "00 - go mod vendor",
+			"type": "shell",
+			"command": "go",
+			"args": [
+				"mod",
+				"vendor"
+			],
+			"group": "build"
+		},
 	]
 }
