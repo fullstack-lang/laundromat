@@ -165,7 +165,7 @@ func (simulation *Simulation) CheckoutAgents(engine *gongsim_models.Engine) {
 func (simulation *Simulation) GetLastCommitNb() (commitNb uint) {
 
 	if Stage.BackRepo != nil {
-		commitNb = Stage.BackRepo.GetLastCommitNb()
+		commitNb = Stage.BackRepo.GetLastCommitFromBackNb()
 	}
 
 	return commitNb
