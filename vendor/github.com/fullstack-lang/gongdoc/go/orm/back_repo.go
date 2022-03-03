@@ -25,6 +25,8 @@ type BackRepoStruct struct {
 
 	BackRepoField BackRepoFieldStruct
 
+	BackRepoGongStruct BackRepoGongStructStruct
+
 	BackRepoGongdocCommand BackRepoGongdocCommandStruct
 
 	BackRepoGongdocStatus BackRepoGongdocStatusStruct
@@ -41,30 +43,39 @@ type BackRepoStruct struct {
 
 	BackRepoVertice BackRepoVerticeStruct
 
-	CommitNb uint // this ng is updated at the BackRepo level but also at the BackRepo<GongStruct> level
+	CommitFromBackNb uint // this ng is updated at the BackRepo level but also at the BackRepo<GongStruct> level
 
 	PushFromFrontNb uint // records increments from push from front
 }
 
-func (backRepo *BackRepoStruct) GetLastCommitNb() uint {
-	return backRepo.CommitNb
+func (backRepo *BackRepoStruct) GetLastCommitFromBackNb() uint {
+	return backRepo.CommitFromBackNb
 }
 
 func (backRepo *BackRepoStruct) GetLastPushFromFrontNb() uint {
 	return backRepo.PushFromFrontNb
 }
 
-func (backRepo *BackRepoStruct) IncrementCommitNb() uint {
+func (backRepo *BackRepoStruct) IncrementCommitFromBackNb() uint {
 	if models.Stage.OnInitCommitCallback != nil {
 		models.Stage.OnInitCommitCallback.BeforeCommit(&models.Stage)
 	}
-	backRepo.CommitNb = backRepo.CommitNb + 1
-	return backRepo.CommitNb
+	if models.Stage.OnInitCommitFromBackCallback != nil {
+		models.Stage.OnInitCommitFromBackCallback.BeforeCommit(&models.Stage)
+	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
+	return backRepo.CommitFromBackNb
 }
 
 func (backRepo *BackRepoStruct) IncrementPushFromFrontNb() uint {
+	if models.Stage.OnInitCommitCallback != nil {
+		models.Stage.OnInitCommitCallback.BeforeCommit(&models.Stage)
+	}
+	if models.Stage.OnInitCommitFromFrontCallback != nil {
+		models.Stage.OnInitCommitFromFrontCallback.BeforeCommit(&models.Stage)
+	}
 	backRepo.PushFromFrontNb = backRepo.PushFromFrontNb + 1
-	return backRepo.CommitNb
+	return backRepo.CommitFromBackNb
 }
 
 // Init the BackRepoStruct inner variables and link to the database
@@ -73,6 +84,7 @@ func (backRepo *BackRepoStruct) init(db *gorm.DB) {
 	backRepo.BackRepoClassdiagram.Init(db)
 	backRepo.BackRepoClassshape.Init(db)
 	backRepo.BackRepoField.Init(db)
+	backRepo.BackRepoGongStruct.Init(db)
 	backRepo.BackRepoGongdocCommand.Init(db)
 	backRepo.BackRepoGongdocStatus.Init(db)
 	backRepo.BackRepoLink.Init(db)
@@ -91,6 +103,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoClassdiagram.CommitPhaseOne(stage)
 	backRepo.BackRepoClassshape.CommitPhaseOne(stage)
 	backRepo.BackRepoField.CommitPhaseOne(stage)
+	backRepo.BackRepoGongStruct.CommitPhaseOne(stage)
 	backRepo.BackRepoGongdocCommand.CommitPhaseOne(stage)
 	backRepo.BackRepoGongdocStatus.CommitPhaseOne(stage)
 	backRepo.BackRepoLink.CommitPhaseOne(stage)
@@ -104,6 +117,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoClassdiagram.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoClassshape.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoField.CommitPhaseTwo(backRepo)
+	backRepo.BackRepoGongStruct.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoGongdocCommand.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoGongdocStatus.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoLink.CommitPhaseTwo(backRepo)
@@ -113,7 +127,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoUmlsc.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoVertice.CommitPhaseTwo(backRepo)
 
-	backRepo.IncrementCommitNb()
+	backRepo.IncrementCommitFromBackNb()
 }
 
 // Checkout the database into the stage
@@ -122,6 +136,7 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoClassdiagram.CheckoutPhaseOne()
 	backRepo.BackRepoClassshape.CheckoutPhaseOne()
 	backRepo.BackRepoField.CheckoutPhaseOne()
+	backRepo.BackRepoGongStruct.CheckoutPhaseOne()
 	backRepo.BackRepoGongdocCommand.CheckoutPhaseOne()
 	backRepo.BackRepoGongdocStatus.CheckoutPhaseOne()
 	backRepo.BackRepoLink.CheckoutPhaseOne()
@@ -135,6 +150,7 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoClassdiagram.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoClassshape.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoField.CheckoutPhaseTwo(backRepo)
+	backRepo.BackRepoGongStruct.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoGongdocCommand.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoGongdocStatus.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoLink.CheckoutPhaseTwo(backRepo)
@@ -147,8 +163,8 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 
 var BackRepo BackRepoStruct
 
-func GetLastCommitNb() uint {
-	return BackRepo.GetLastCommitNb()
+func GetLastCommitFromBackNb() uint {
+	return BackRepo.GetLastCommitFromBackNb()
 }
 
 func GetLastPushFromFrontNb() uint {
@@ -163,6 +179,7 @@ func (backRepo *BackRepoStruct) Backup(stage *models.StageStruct, dirPath string
 	backRepo.BackRepoClassdiagram.Backup(dirPath)
 	backRepo.BackRepoClassshape.Backup(dirPath)
 	backRepo.BackRepoField.Backup(dirPath)
+	backRepo.BackRepoGongStruct.Backup(dirPath)
 	backRepo.BackRepoGongdocCommand.Backup(dirPath)
 	backRepo.BackRepoGongdocStatus.Backup(dirPath)
 	backRepo.BackRepoLink.Backup(dirPath)
@@ -184,6 +201,7 @@ func (backRepo *BackRepoStruct) BackupXL(stage *models.StageStruct, dirPath stri
 	backRepo.BackRepoClassdiagram.BackupXL(file)
 	backRepo.BackRepoClassshape.BackupXL(file)
 	backRepo.BackRepoField.BackupXL(file)
+	backRepo.BackRepoGongStruct.BackupXL(file)
 	backRepo.BackRepoGongdocCommand.BackupXL(file)
 	backRepo.BackRepoGongdocStatus.BackupXL(file)
 	backRepo.BackRepoLink.BackupXL(file)
@@ -219,6 +237,7 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	backRepo.BackRepoClassdiagram.RestorePhaseOne(dirPath)
 	backRepo.BackRepoClassshape.RestorePhaseOne(dirPath)
 	backRepo.BackRepoField.RestorePhaseOne(dirPath)
+	backRepo.BackRepoGongStruct.RestorePhaseOne(dirPath)
 	backRepo.BackRepoGongdocCommand.RestorePhaseOne(dirPath)
 	backRepo.BackRepoGongdocStatus.RestorePhaseOne(dirPath)
 	backRepo.BackRepoLink.RestorePhaseOne(dirPath)
@@ -236,6 +255,7 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	backRepo.BackRepoClassdiagram.RestorePhaseTwo()
 	backRepo.BackRepoClassshape.RestorePhaseTwo()
 	backRepo.BackRepoField.RestorePhaseTwo()
+	backRepo.BackRepoGongStruct.RestorePhaseTwo()
 	backRepo.BackRepoGongdocCommand.RestorePhaseTwo()
 	backRepo.BackRepoGongdocStatus.RestorePhaseTwo()
 	backRepo.BackRepoLink.RestorePhaseTwo()
@@ -273,6 +293,7 @@ func (backRepo *BackRepoStruct) RestoreXL(stage *models.StageStruct, dirPath str
 	backRepo.BackRepoClassdiagram.RestoreXLPhaseOne(file)
 	backRepo.BackRepoClassshape.RestoreXLPhaseOne(file)
 	backRepo.BackRepoField.RestoreXLPhaseOne(file)
+	backRepo.BackRepoGongStruct.RestoreXLPhaseOne(file)
 	backRepo.BackRepoGongdocCommand.RestoreXLPhaseOne(file)
 	backRepo.BackRepoGongdocStatus.RestoreXLPhaseOne(file)
 	backRepo.BackRepoLink.RestoreXLPhaseOne(file)

@@ -69,7 +69,7 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
   // the saving it into the Link object
   public Map_CellId_LinkDB = new Map<string, gongdoc.LinkDB>();
 
-  // store the id of the drawn classdiagram. Usefull for knowing if
+  // idOfDrawnClassDiagram stores the id of the drawn classdiagram. Usefull for knowing if
   // one has to redraw the diagram by comparaison with the route
   public idOfDrawnClassDiagram: number = 0
 
@@ -133,6 +133,7 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
               this.pullGongdocAndDrawDiagram()
               this.lastCommitNb = commitNb
               this.lastDiagramId = id
+              this.idOfDrawnClassDiagram = id
             }
           }
         )

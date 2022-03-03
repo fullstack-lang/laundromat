@@ -64,6 +64,13 @@ func RegisterControllers(r *gin.Engine) {
 		v1.PUT("/v1/fields/:id", UpdateField)
 		v1.DELETE("/v1/fields/:id", DeleteField)
 
+		v1.GET("/v1/gongstructs", GetGongStructs)
+		v1.GET("/v1/gongstructs/:id", GetGongStruct)
+		v1.POST("/v1/gongstructs", PostGongStruct)
+		v1.PATCH("/v1/gongstructs/:id", UpdateGongStruct)
+		v1.PUT("/v1/gongstructs/:id", UpdateGongStruct)
+		v1.DELETE("/v1/gongstructs/:id", DeleteGongStruct)
+
 		v1.GET("/v1/gongdoccommands", GetGongdocCommands)
 		v1.GET("/v1/gongdoccommands/:id", GetGongdocCommand)
 		v1.POST("/v1/gongdoccommands", PostGongdocCommand)
@@ -120,14 +127,14 @@ func RegisterControllers(r *gin.Engine) {
 		v1.PUT("/v1/vertices/:id", UpdateVertice)
 		v1.DELETE("/v1/vertices/:id", DeleteVertice)
 
-		v1.GET("/commitnb", GetLastCommitNb)
+		v1.GET("/commitfrombacknb", GetLastCommitFromBackNb)
 		v1.GET("/pushfromfrontnb", GetLastPushFromFrontNb)
 	}
 }
 
-// swagger:route GET /commitnb backrepo GetLastCommitNb
-func GetLastCommitNb(c *gin.Context) {
-	res := orm.GetLastCommitNb()
+// swagger:route GET /commitfrombacknb backrepo GetLastCommitFromBackNb
+func GetLastCommitFromBackNb(c *gin.Context) {
+	res := orm.GetLastCommitFromBackNb()
 
 	c.JSON(http.StatusOK, res)
 }

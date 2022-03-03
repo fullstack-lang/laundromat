@@ -36,6 +36,7 @@ enum ClassshapeDetailComponentState {
 export class ClassshapeDetailComponent implements OnInit {
 
 	// insertion point for declarations
+	ShowNbInstancesFormControl = new FormControl(false);
 	ClassshapeTargetTypeList: ClassshapeTargetTypeSelect[] = []
 
 	// the ClassshapeDB of interest
@@ -135,6 +136,7 @@ export class ClassshapeDetailComponent implements OnInit {
 				}
 
 				// insertion point for recovery of form controls value for bool fields
+				this.ShowNbInstancesFormControl.setValue(this.classshape.ShowNbInstances)
 			}
 		)
 
@@ -157,6 +159,17 @@ export class ClassshapeDetailComponent implements OnInit {
 			this.classshape.PositionID.Int64 = 0
 			this.classshape.PositionID.Valid = true
 		}
+		if (this.classshape.GongStructID == undefined) {
+			this.classshape.GongStructID = new NullInt64
+		}
+		if (this.classshape.GongStruct != undefined) {
+			this.classshape.GongStructID.Int64 = this.classshape.GongStruct.ID
+			this.classshape.GongStructID.Valid = true
+		} else {
+			this.classshape.GongStructID.Int64 = 0
+			this.classshape.GongStructID.Valid = true
+		}
+		this.classshape.ShowNbInstances = this.ShowNbInstancesFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
 
