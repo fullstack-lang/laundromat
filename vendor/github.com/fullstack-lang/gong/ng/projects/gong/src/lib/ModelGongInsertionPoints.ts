@@ -6,10 +6,13 @@ export enum ModelGongInsertionPoints {
 	ModelGongInsertionArrayNil = 7,
 	ModelGongInsertionArrayReset = 6,
 	ModelGongInsertionCommitCheckoutSignature = 0,
+	ModelGongInsertionComputeNbInstances = 10,
 	ModelGongInsertionCreateCallback = 2,
 	ModelGongInsertionDeleteCallback = 3,
 	ModelGongInsertionStageFunctions = 1,
-	ModelGongInsertionsNb = 8,
+	ModelGongInsertionUnmarshallDeclarations = 8,
+	ModelGongInsertionUnmarshallPointersInitializations = 9,
+	ModelGongInsertionsNb = 11,
 }
 
 export interface ModelGongInsertionPointsSelect {
@@ -23,8 +26,11 @@ export const ModelGongInsertionPointsList: ModelGongInsertionPointsSelect[] = [ 
 	{ value: 'ModelGongInsertionArrayNil', viewValue: '7' },
 	{ value: 'ModelGongInsertionArrayReset', viewValue: '6' },
 	{ value: 'ModelGongInsertionCommitCheckoutSignature', viewValue: '0' },
+	{ value: 'ModelGongInsertionComputeNbInstances', viewValue: '10' },
 	{ value: 'ModelGongInsertionCreateCallback', viewValue: '2' },
 	{ value: 'ModelGongInsertionDeleteCallback', viewValue: '3' },
 	{ value: 'ModelGongInsertionStageFunctions', viewValue: '1' },
-	{ value: 'ModelGongInsertionsNb', viewValue: '8' },
+	{ value: 'ModelGongInsertionUnmarshallDeclarations', viewValue: '8' },
+	{ value: 'ModelGongInsertionUnmarshallPointersInitializations', viewValue: '9' },
+	{ value: 'ModelGongInsertionsNb', viewValue: '11' },
 ];

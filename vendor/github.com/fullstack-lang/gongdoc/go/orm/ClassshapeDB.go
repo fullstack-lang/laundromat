@@ -50,6 +50,10 @@ type ClassshapePointersEnconding struct {
 	// This field is generated into another field to enable AS ONE association
 	PositionID sql.NullInt64
 
+	// field GongStruct is a pointer to another Struct (optional or 0..1)
+	// This field is generated into another field to enable AS ONE association
+	GongStructID sql.NullInt64
+
 	// Implementation of a reverse ID for field Classdiagram{}.Classshapes []*Classshape
 	Classdiagram_ClassshapesDBID sql.NullInt64
 
@@ -73,6 +77,13 @@ type ClassshapeDB struct {
 
 	// Declation for basic field classshapeDB.Structname {{BasicKind}} (to be completed)
 	Structname_Data sql.NullString
+
+	// Declation for basic field classshapeDB.ShowNbInstances bool (to be completed)
+	// provide the sql storage for the boolan
+	ShowNbInstances_Data sql.NullBool
+
+	// Declation for basic field classshapeDB.NbInstances {{BasicKind}} (to be completed)
+	NbInstances_Data sql.NullInt64
 
 	// Declation for basic field classshapeDB.Width {{BasicKind}} (to be completed)
 	Width_Data sql.NullFloat64
@@ -107,11 +118,15 @@ type ClassshapeWOP struct {
 
 	Structname string `xlsx:"2"`
 
-	Width float64 `xlsx:"3"`
+	ShowNbInstances bool `xlsx:"3"`
 
-	Heigth float64 `xlsx:"4"`
+	NbInstances int `xlsx:"4"`
 
-	ClassshapeTargetType models.ClassshapeTargetType `xlsx:"5"`
+	Width float64 `xlsx:"5"`
+
+	Heigth float64 `xlsx:"6"`
+
+	ClassshapeTargetType models.ClassshapeTargetType `xlsx:"7"`
 	// insertion for WOP pointer fields
 }
 
@@ -120,6 +135,8 @@ var Classshape_Fields = []string{
 	"ID",
 	"Name",
 	"Structname",
+	"ShowNbInstances",
+	"NbInstances",
 	"Width",
 	"Heigth",
 	"ClassshapeTargetType",
@@ -275,6 +292,15 @@ func (backRepoClassshape *BackRepoClassshapeStruct) CommitPhaseTwoInstance(backR
 			}
 		}
 
+		// commit pointer value classshape.GongStruct translates to updating the classshape.GongStructID
+		classshapeDB.GongStructID.Valid = true // allow for a 0 value (nil association)
+		if classshape.GongStruct != nil {
+			if GongStructId, ok := (*backRepo.BackRepoGongStruct.Map_GongStructPtr_GongStructDBID)[classshape.GongStruct]; ok {
+				classshapeDB.GongStructID.Int64 = int64(GongStructId)
+				classshapeDB.GongStructID.Valid = true
+			}
+		}
+
 		// This loop encodes the slice of pointers classshape.Fields into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
@@ -422,6 +448,10 @@ func (backRepoClassshape *BackRepoClassshapeStruct) CheckoutPhaseTwoInstance(bac
 	if classshapeDB.PositionID.Int64 != 0 {
 		classshape.Position = (*backRepo.BackRepoPosition.Map_PositionDBID_PositionPtr)[uint(classshapeDB.PositionID.Int64)]
 	}
+	// GongStruct field
+	if classshapeDB.GongStructID.Int64 != 0 {
+		classshape.GongStruct = (*backRepo.BackRepoGongStruct.Map_GongStructDBID_GongStructPtr)[uint(classshapeDB.GongStructID.Int64)]
+	}
 	// This loop redeem classshape.Fields in the stage from the encode in the back repo
 	// It parses all FieldDB in the back repo and if the reverse pointer encoding matches the back repo ID
 	// it appends the stage instance
@@ -515,6 +545,12 @@ func (classshapeDB *ClassshapeDB) CopyBasicFieldsFromClassshape(classshape *mode
 	classshapeDB.Structname_Data.String = classshape.Structname
 	classshapeDB.Structname_Data.Valid = true
 
+	classshapeDB.ShowNbInstances_Data.Bool = classshape.ShowNbInstances
+	classshapeDB.ShowNbInstances_Data.Valid = true
+
+	classshapeDB.NbInstances_Data.Int64 = int64(classshape.NbInstances)
+	classshapeDB.NbInstances_Data.Valid = true
+
 	classshapeDB.Width_Data.Float64 = classshape.Width
 	classshapeDB.Width_Data.Valid = true
 
@@ -535,6 +571,12 @@ func (classshapeDB *ClassshapeDB) CopyBasicFieldsFromClassshapeWOP(classshape *C
 	classshapeDB.Structname_Data.String = classshape.Structname
 	classshapeDB.Structname_Data.Valid = true
 
+	classshapeDB.ShowNbInstances_Data.Bool = classshape.ShowNbInstances
+	classshapeDB.ShowNbInstances_Data.Valid = true
+
+	classshapeDB.NbInstances_Data.Int64 = int64(classshape.NbInstances)
+	classshapeDB.NbInstances_Data.Valid = true
+
 	classshapeDB.Width_Data.Float64 = classshape.Width
 	classshapeDB.Width_Data.Valid = true
 
@@ -550,6 +592,8 @@ func (classshapeDB *ClassshapeDB) CopyBasicFieldsToClassshape(classshape *models
 	// insertion point for checkout of basic fields (back repo to stage)
 	classshape.Name = classshapeDB.Name_Data.String
 	classshape.Structname = classshapeDB.Structname_Data.String
+	classshape.ShowNbInstances = classshapeDB.ShowNbInstances_Data.Bool
+	classshape.NbInstances = int(classshapeDB.NbInstances_Data.Int64)
 	classshape.Width = classshapeDB.Width_Data.Float64
 	classshape.Heigth = classshapeDB.Heigth_Data.Float64
 	classshape.ClassshapeTargetType = models.ClassshapeTargetType(classshapeDB.ClassshapeTargetType_Data.String)
@@ -561,6 +605,8 @@ func (classshapeDB *ClassshapeDB) CopyBasicFieldsToClassshapeWOP(classshape *Cla
 	// insertion point for checkout of basic fields (back repo to stage)
 	classshape.Name = classshapeDB.Name_Data.String
 	classshape.Structname = classshapeDB.Structname_Data.String
+	classshape.ShowNbInstances = classshapeDB.ShowNbInstances_Data.Bool
+	classshape.NbInstances = int(classshapeDB.NbInstances_Data.Int64)
 	classshape.Width = classshapeDB.Width_Data.Float64
 	classshape.Heigth = classshapeDB.Heigth_Data.Float64
 	classshape.ClassshapeTargetType = models.ClassshapeTargetType(classshapeDB.ClassshapeTargetType_Data.String)
@@ -725,6 +771,12 @@ func (backRepoClassshape *BackRepoClassshapeStruct) RestorePhaseTwo() {
 		if classshapeDB.PositionID.Int64 != 0 {
 			classshapeDB.PositionID.Int64 = int64(BackRepoPositionid_atBckpTime_newID[uint(classshapeDB.PositionID.Int64)])
 			classshapeDB.PositionID.Valid = true
+		}
+
+		// reindexing GongStruct field
+		if classshapeDB.GongStructID.Int64 != 0 {
+			classshapeDB.GongStructID.Int64 = int64(BackRepoGongStructid_atBckpTime_newID[uint(classshapeDB.GongStructID.Int64)])
+			classshapeDB.GongStructID.Valid = true
 		}
 
 		// This reindex classshape.Classshapes
