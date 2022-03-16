@@ -8,6 +8,8 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
+// insertion point for additional imports
+
 export interface machineDummyElement {
 }
 
@@ -21,11 +23,12 @@ const ELEMENT_DATA: machineDummyElement[] = [
 })
 export class MachinePresentationComponent implements OnInit {
 
-	// insertion point for declarations
+	// insertion point for additionnal time duration declarations
 	// fields from RemainingTime
 	RemainingTime_Hours: number = 0
 	RemainingTime_Minutes: number = 0
 	RemainingTime_Seconds: number = 0
+	// insertion point for additionnal enum int field declarations
 
 	displayedColumns: string[] = []
 	dataSource = ELEMENT_DATA
@@ -72,6 +75,7 @@ export class MachinePresentationComponent implements OnInit {
 				this.RemainingTime_Hours = Math.floor(this.machine.RemainingTime / (3600 * 1000 * 1000 * 1000))
 				this.RemainingTime_Minutes = Math.floor(this.machine.RemainingTime % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000))
 				this.RemainingTime_Seconds = this.machine.RemainingTime % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000)
+				// insertion point for recovery of enum tint
 			}
 		);
 	}

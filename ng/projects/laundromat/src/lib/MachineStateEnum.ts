@@ -12,7 +12,7 @@ export interface MachineStateEnumSelect {
 }
 
 export const MachineStateEnumList: MachineStateEnumSelect[] = [ // insertion point	
-	{ value: 'MACHINE_DOOR_CLOSED_IDLE', viewValue: '"MACHINE_DOOR_CLOSED_IDLE"' },
-	{ value: 'MACHINE_DOOR_CLOSED_RUNNING', viewValue: '"MACHINE_DOOR_CLOSED_RUNNING"' },
-	{ value: 'MACHINE_DOOR_OPEN', viewValue: '"MACHINE_DOOR_OPEN"' },
+	{ value: MachineStateEnum.MACHINE_DOOR_CLOSED_IDLE, viewValue: "MACHINE_DOOR_CLOSED_IDLE" },
+	{ value: MachineStateEnum.MACHINE_DOOR_CLOSED_RUNNING, viewValue: "MACHINE_DOOR_CLOSED_RUNNING" },
+	{ value: MachineStateEnum.MACHINE_DOOR_OPEN, viewValue: "MACHINE_DOOR_OPEN" },
 ];

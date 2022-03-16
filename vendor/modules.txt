@@ -54,8 +54,6 @@ github.com/fullstack-lang/gongsim/go/controllers
 github.com/fullstack-lang/gongsim/go/models
 github.com/fullstack-lang/gongsim/go/orm
 github.com/fullstack-lang/gongsim/ng
-# github.com/fullstack-lang/gongsvg v0.0.0-20220303101147-1d1db23ce316
-## explicit; go 1.17
 # github.com/gin-contrib/cors v1.3.1
 ## explicit; go 1.13
 github.com/gin-contrib/cors
@@ -142,8 +140,6 @@ github.com/leodido/go-urn
 # github.com/mattn/go-isatty v0.0.14
 ## explicit; go 1.12
 github.com/mattn/go-isatty
-# github.com/mattn/go-sqlite3 v1.14.10
-## explicit; go 1.12
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 ## explicit
 github.com/modern-go/concurrent
@@ -281,8 +277,6 @@ google.golang.org/protobuf/types/descriptorpb
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
-# gorm.io/driver/sqlite v1.1.6
-## explicit; go 1.14
 # gorm.io/gorm v1.22.5
 ## explicit; go 1.14
 gorm.io/gorm

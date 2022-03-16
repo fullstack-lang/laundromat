@@ -416,7 +416,7 @@ func (machineDB *MachineDB) CopyBasicFieldsFromMachine(machine *models.Machine) 
 	machineDB.Cleanedlaundry_Data.Bool = machine.Cleanedlaundry
 	machineDB.Cleanedlaundry_Data.Valid = true
 
-	machineDB.State_Data.String = string(machine.State)
+	machineDB.State_Data.String = machine.State.ToString()
 	machineDB.State_Data.Valid = true
 }
 
@@ -439,7 +439,7 @@ func (machineDB *MachineDB) CopyBasicFieldsFromMachineWOP(machine *MachineWOP) {
 	machineDB.Cleanedlaundry_Data.Bool = machine.Cleanedlaundry
 	machineDB.Cleanedlaundry_Data.Valid = true
 
-	machineDB.State_Data.String = string(machine.State)
+	machineDB.State_Data.String = machine.State.ToString()
 	machineDB.State_Data.Valid = true
 }
 
@@ -451,7 +451,7 @@ func (machineDB *MachineDB) CopyBasicFieldsToMachine(machine *models.Machine) {
 	machine.DrumLoad = machineDB.DrumLoad_Data.Float64
 	machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)
 	machine.Cleanedlaundry = machineDB.Cleanedlaundry_Data.Bool
-	machine.State = models.MachineStateEnum(machineDB.State_Data.String)
+	machine.State.FromString(machineDB.State_Data.String)
 }
 
 // CopyBasicFieldsToMachineWOP
@@ -463,7 +463,7 @@ func (machineDB *MachineDB) CopyBasicFieldsToMachineWOP(machine *MachineWOP) {
 	machine.DrumLoad = machineDB.DrumLoad_Data.Float64
 	machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)
 	machine.Cleanedlaundry = machineDB.Cleanedlaundry_Data.Bool
-	machine.State = models.MachineStateEnum(machineDB.State_Data.String)
+	machine.State.FromString(machineDB.State_Data.String)
 }
 
 // Backup generates a json file from a slice of all MachineDB instances in the backrepo

@@ -16,11 +16,11 @@ export interface WasherStateEnumSelect {
 }
 
 export const WasherStateEnumList: WasherStateEnumSelect[] = [ // insertion point	
-	{ value: 'WASHER_CLOSE_DOOR', viewValue: '"WASHER_CLOSE_DOOR"' },
-	{ value: 'WASHER_IDLE', viewValue: '"WASHER_IDLE"' },
-	{ value: 'WASHER_LOAD_DRUM', viewValue: '"WASHER_LOAD_DRUM"' },
-	{ value: 'WASHER_OPEN_DOOR', viewValue: '"WASHER_OPEN_DOOR"' },
-	{ value: 'WASHER_START_PROGRAM', viewValue: '"WASHER_START_PROGRAM"' },
-	{ value: 'WASHER_UNLOAD_DRUM', viewValue: '"WASHER_UNLOAD_DRUM"' },
-	{ value: 'WASHER_WAIT_PROGRAM_END', viewValue: '"WASHER_WAIT_PROGRAM_END"' },
+	{ value: WasherStateEnum.WASHER_CLOSE_DOOR, viewValue: "WASHER_CLOSE_DOOR" },
+	{ value: WasherStateEnum.WASHER_IDLE, viewValue: "WASHER_IDLE" },
+	{ value: WasherStateEnum.WASHER_LOAD_DRUM, viewValue: "WASHER_LOAD_DRUM" },
+	{ value: WasherStateEnum.WASHER_OPEN_DOOR, viewValue: "WASHER_OPEN_DOOR" },
+	{ value: WasherStateEnum.WASHER_START_PROGRAM, viewValue: "WASHER_START_PROGRAM" },
+	{ value: WasherStateEnum.WASHER_UNLOAD_DRUM, viewValue: "WASHER_UNLOAD_DRUM" },
+	{ value: WasherStateEnum.WASHER_WAIT_PROGRAM_END, viewValue: "WASHER_WAIT_PROGRAM_END" },
 ];

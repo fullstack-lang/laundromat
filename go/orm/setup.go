@@ -3,7 +3,6 @@ package orm
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
@@ -51,7 +50,7 @@ func AutoMigrate(db *gorm.DB) {
 		msg := err.Error()
 		panic("problem with migration " + msg + " on package github.com/fullstack-lang/laundromat/go")
 	}
-	log.Printf("Database Migration of package github.com/fullstack-lang/laundromat/go is OK")
+	// log.Printf("Database Migration of package github.com/fullstack-lang/laundromat/go is OK")
 
 	BackRepo.init(db)
 }

@@ -420,7 +420,7 @@ func (washerDB *WasherDB) CopyBasicFieldsFromWasher(washer *models.Washer) {
 	washerDB.DirtyLaundryWeight_Data.Float64 = washer.DirtyLaundryWeight
 	washerDB.DirtyLaundryWeight_Data.Valid = true
 
-	washerDB.State_Data.String = string(washer.State)
+	washerDB.State_Data.String = washer.State.ToString()
 	washerDB.State_Data.Valid = true
 
 	washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
@@ -440,7 +440,7 @@ func (washerDB *WasherDB) CopyBasicFieldsFromWasherWOP(washer *WasherWOP) {
 	washerDB.DirtyLaundryWeight_Data.Float64 = washer.DirtyLaundryWeight
 	washerDB.DirtyLaundryWeight_Data.Valid = true
 
-	washerDB.State_Data.String = string(washer.State)
+	washerDB.State_Data.String = washer.State.ToString()
 	washerDB.State_Data.Valid = true
 
 	washerDB.CleanedLaundryWeight_Data.Float64 = washer.CleanedLaundryWeight
@@ -453,7 +453,7 @@ func (washerDB *WasherDB) CopyBasicFieldsToWasher(washer *models.Washer) {
 	washer.TechName = washerDB.TechName_Data.String
 	washer.Name = washerDB.Name_Data.String
 	washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
-	washer.State = models.WasherStateEnum(washerDB.State_Data.String)
+	washer.State.FromString(washerDB.State_Data.String)
 	washer.CleanedLaundryWeight = washerDB.CleanedLaundryWeight_Data.Float64
 }
 
@@ -464,7 +464,7 @@ func (washerDB *WasherDB) CopyBasicFieldsToWasherWOP(washer *WasherWOP) {
 	washer.TechName = washerDB.TechName_Data.String
 	washer.Name = washerDB.Name_Data.String
 	washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
-	washer.State = models.WasherStateEnum(washerDB.State_Data.String)
+	washer.State.FromString(washerDB.State_Data.String)
 	washer.CleanedLaundryWeight = washerDB.CleanedLaundryWeight_Data.Float64
 }
 

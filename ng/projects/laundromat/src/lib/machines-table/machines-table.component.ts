@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { MachineDB } from '../machine-db'
 import { MachineService } from '../machine.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -185,7 +187,7 @@ export class MachinesTableComponent implements OnInit {
 
         this.machines = this.frontRepo.Machines_array;
 
-        // insertion point for variables Recoveries
+        // insertion point for time duration Recoveries
         // compute strings for durations
         for (let machine of this.machines) {
           machine.RemainingTime_string =
@@ -193,7 +195,8 @@ export class MachinesTableComponent implements OnInit {
             Math.floor(machine.RemainingTime % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000)) + "M " +
             machine.RemainingTime % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000) + "S"
         }
-
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let machine of this.machines) {

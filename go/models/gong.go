@@ -501,7 +501,7 @@ const IdentifiersDecls = `
 	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: "{{GeneratedFieldNameValue}}"}).Stage()`
 
 const StringInitStatement = `
-	{{Identifier}}.{{GeneratedFieldName}} = "{{GeneratedFieldNameValue}}"`
+	{{Identifier}}.{{GeneratedFieldName}} = ` + "`" + `{{GeneratedFieldNameValue}}` + "`"
 
 const NumberInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`
@@ -698,7 +698,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
-
 	// insertion initialization of objects to stage
 	for idx, machine := range machineOrdered {
 		var setPointerField string
@@ -754,7 +753,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
-
 	res = strings.ReplaceAll(res, "{{Identifiers}}", identifiersDecl)
 	res = strings.ReplaceAll(res, "{{ValueInitializers}}", initializerStatements)
 	res = strings.ReplaceAll(res, "{{PointersInitializers}}", pointersInitializesStatements)
@@ -777,3 +775,83 @@ func generatesIdentifier(gongStructName string, idx int, instanceName string) (i
 
 	return
 }
+
+// insertion point of enum utility functions
+// Utility function for MachineStateEnum
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (machinestateenum MachineStateEnum) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch machinestateenum {
+	// insertion code per enum code
+	case MACHINE_DOOR_CLOSED_IDLE:
+		res = "MACHINE_DOOR_CLOSED_IDLE"
+	case MACHINE_DOOR_CLOSED_RUNNING:
+		res = "MACHINE_DOOR_CLOSED_RUNNING"
+	case MACHINE_DOOR_OPEN:
+		res = "MACHINE_DOOR_OPEN"
+	}
+	return
+}
+
+func (machinestateenum *MachineStateEnum) FromString(input string) {
+
+	switch input {
+	// insertion code per enum code
+	case "MACHINE_DOOR_CLOSED_IDLE":
+		*machinestateenum = MACHINE_DOOR_CLOSED_IDLE
+	case "MACHINE_DOOR_CLOSED_RUNNING":
+		*machinestateenum = MACHINE_DOOR_CLOSED_RUNNING
+	case "MACHINE_DOOR_OPEN":
+		*machinestateenum = MACHINE_DOOR_OPEN
+	}
+}
+
+// Utility function for WasherStateEnum
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (washerstateenum WasherStateEnum) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch washerstateenum {
+	// insertion code per enum code
+	case WASHER_CLOSE_DOOR:
+		res = "WASHER_CLOSE_DOOR"
+	case WASHER_IDLE:
+		res = "WASHER_IDLE"
+	case WASHER_LOAD_DRUM:
+		res = "WASHER_LOAD_DRUM"
+	case WASHER_OPEN_DOOR:
+		res = "WASHER_OPEN_DOOR"
+	case WASHER_START_PROGRAM:
+		res = "WASHER_START_PROGRAM"
+	case WASHER_UNLOAD_DRUM:
+		res = "WASHER_UNLOAD_DRUM"
+	case WASHER_WAIT_PROGRAM_END:
+		res = "WASHER_WAIT_PROGRAM_END"
+	}
+	return
+}
+
+func (washerstateenum *WasherStateEnum) FromString(input string) {
+
+	switch input {
+	// insertion code per enum code
+	case "WASHER_CLOSE_DOOR":
+		*washerstateenum = WASHER_CLOSE_DOOR
+	case "WASHER_IDLE":
+		*washerstateenum = WASHER_IDLE
+	case "WASHER_LOAD_DRUM":
+		*washerstateenum = WASHER_LOAD_DRUM
+	case "WASHER_OPEN_DOOR":
+		*washerstateenum = WASHER_OPEN_DOOR
+	case "WASHER_START_PROGRAM":
+		*washerstateenum = WASHER_START_PROGRAM
+	case "WASHER_UNLOAD_DRUM":
+		*washerstateenum = WASHER_UNLOAD_DRUM
+	case "WASHER_WAIT_PROGRAM_END":
+		*washerstateenum = WASHER_WAIT_PROGRAM_END
+	}
+}
+
