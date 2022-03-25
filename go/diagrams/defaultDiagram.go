@@ -73,7 +73,7 @@ var defaultDiagram uml.Classdiagram = uml.Classdiagram{
 						X: 590.000000,
 						Y: 200.000000,
 					},
-					Multiplicity: "0..1",
+					TargetMultiplicity: "0..1",
 				},
 			},
 			Fields: []*uml.Field{

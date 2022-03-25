@@ -16,7 +16,8 @@ type Field struct {
 	Name string
 
 	// swagger:ignore
-	Field             interface{} `gorm:"-"` // field that is diagrammed
+	// actual go field in the models that is diagrammed, for instance "models.Point{}.X"
+	Field             interface{} `gorm:"-"`
 	Fieldname         string
 	FieldTypeAsString string
 	Structname        string
@@ -80,6 +81,7 @@ func (field *Field) Unmarshall(expr ast.Expr, fset *token.FileSet) {
 			structnameWithX := ident2.Name + "." + se2.Sel.Name
 			field.Structname = se2.Sel.Name
 			field.Fieldname = se.Sel.Name
+			field.Name = field.Fieldname
 
 			// now, let's find the field target !!!
 			fieldname := fmt.Sprintf("%s{}.%s", structnameWithX, field.Fieldname)

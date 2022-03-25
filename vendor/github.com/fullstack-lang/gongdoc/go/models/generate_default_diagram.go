@@ -93,7 +93,7 @@ func GenGoDefaultDiagram(modelPkg *gong_models.ModelPkg, pkgPath string) {
 						link.Fieldname = pointerToGongStructField.Name
 						link.Structname = _struct.Name
 						link.Field = _field
-						link.Multiplicity = ZERO_ONE
+						link.TargetMultiplicity = ZERO_ONE
 
 						link.Middlevertice = new(Vertice)
 						link.Middlevertice.X = 40 + 300.0*float64(idx) + 250
@@ -108,7 +108,7 @@ func GenGoDefaultDiagram(modelPkg *gong_models.ModelPkg, pkgPath string) {
 						link.Fieldname = sliceOfPointerToGongStructField.Name
 						link.Structname = _struct.Name
 						link.Field = _field
-						link.Multiplicity = MANY
+						link.TargetMultiplicity = MANY
 
 						link.Middlevertice = new(Vertice)
 						link.Middlevertice.X = 40 + 300.0*float64(idx) + 250
@@ -137,7 +137,7 @@ func GenGoDefaultDiagram(modelPkg *gong_models.ModelPkg, pkgPath string) {
 
 	// generates all diagrams
 	if !os.IsNotExist(err) {
-		pkgelt.Unmarshall(diagramPkgPath)
+		pkgelt.Unmarshall(modelPkg.PkgPath, diagramPkgPath)
 
 		for _, classDiagram := range pkgelt.Classdiagrams {
 			classDiagram.OutputSVG(diagramPkgPath)

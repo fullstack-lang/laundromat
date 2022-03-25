@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { LinkDB } from '../link-db'
 import { LinkService } from '../link.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -78,8 +80,11 @@ export class LinksTableComponent implements OnInit {
         case 'Fieldtypename':
           return linkDB.Fieldtypename;
 
-        case 'Multiplicity':
-          return linkDB.Multiplicity;
+        case 'TargetMultiplicity':
+          return linkDB.TargetMultiplicity;
+
+        case 'SourceMultiplicity':
+          return linkDB.SourceMultiplicity;
 
         case 'Middlevertice':
           return (linkDB.Middlevertice ? linkDB.Middlevertice.Name : '');
@@ -105,7 +110,8 @@ export class LinksTableComponent implements OnInit {
       mergedContent += linkDB.Fieldname.toLowerCase()
       mergedContent += linkDB.Structname.toLowerCase()
       mergedContent += linkDB.Fieldtypename.toLowerCase()
-      mergedContent += linkDB.Multiplicity.toLowerCase()
+      mergedContent += linkDB.TargetMultiplicity.toLowerCase()
+      mergedContent += linkDB.SourceMultiplicity.toLowerCase()
       if (linkDB.Middlevertice) {
         mergedContent += linkDB.Middlevertice.Name.toLowerCase()
       }
@@ -167,7 +173,8 @@ export class LinksTableComponent implements OnInit {
         "Fieldname",
         "Structname",
         "Fieldtypename",
-        "Multiplicity",
+        "TargetMultiplicity",
+        "SourceMultiplicity",
         "Middlevertice",
         "Classshape_Links",
       ]
@@ -177,7 +184,8 @@ export class LinksTableComponent implements OnInit {
         "Fieldname",
         "Structname",
         "Fieldtypename",
-        "Multiplicity",
+        "TargetMultiplicity",
+        "SourceMultiplicity",
         "Middlevertice",
         "Classshape_Links",
       ]
@@ -198,8 +206,9 @@ export class LinksTableComponent implements OnInit {
 
         this.links = this.frontRepo.Links_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let link of this.links) {

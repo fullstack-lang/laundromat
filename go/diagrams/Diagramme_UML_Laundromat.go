@@ -50,7 +50,7 @@ var Diagramme_UML_Laundromat uml.Classdiagram = uml.Classdiagram{
 						X: 420.000000,
 						Y: 70.000000,
 					},
-					Multiplicity: "0..1",
+					TargetMultiplicity: "0..1",
 				},
 			},
 			Fields: []*uml.Field{
