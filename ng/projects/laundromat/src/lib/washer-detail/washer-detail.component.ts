@@ -253,7 +253,7 @@ export class WasherDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.washer.Name == undefined) {
+		if (this.washer.Name == "") {
 			this.washer.Name = event.value.Name
 		}
 	}

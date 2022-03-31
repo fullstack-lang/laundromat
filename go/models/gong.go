@@ -17,6 +17,14 @@ type __void struct{}
 // needed for creating set of instances in the stage
 var __member __void
 
+// GongStructInterface is the interface met by GongStructs
+// It allows runtime reflexion of instances (without the hassle of the "reflect" package)
+type GongStructInterface interface {
+	GetName() (res string)
+	GetFields() (res []string)
+	GetFieldStringValue(fieldName string) (res string)
+}
+
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
@@ -230,6 +238,36 @@ func DeleteORMMachine(machine *Machine) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (machine *Machine) GetName() (res string) {
+	return machine.Name
+}
+
+func (machine *Machine) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"TechName", "Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State",  }
+	return
+}
+
+func (machine *Machine) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "TechName":
+		res = machine.TechName
+	case "Name":
+		res = machine.Name
+	case "DrumLoad":
+		res = fmt.Sprintf("%f", machine.DrumLoad)
+	case "RemainingTime":
+		res = fmt.Sprintf("%d", machine.RemainingTime)
+	case "Cleanedlaundry":
+		res = fmt.Sprintf("%t", machine.Cleanedlaundry)
+	case "State":
+		res = machine.State.ToCodeString()
+	}
+	return
+}
+
 func (stage *StageStruct) getSimulationOrderedStructWithNameField() []*Simulation {
 	// have alphabetical order generation
 	simulationOrdered := []*Simulation{}
@@ -330,6 +368,36 @@ func DeleteORMSimulation(simulation *Simulation) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMSimulation(simulation)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (simulation *Simulation) GetName() (res string) {
+	return simulation.Name
+}
+
+func (simulation *Simulation) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Machine", "Washer", "LastCommitNb",  }
+	return
+}
+
+func (simulation *Simulation) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = simulation.Name
+	case "Machine":
+		if simulation.Machine != nil {
+			res = simulation.Machine.Name
+		}
+	case "Washer":
+		if simulation.Washer != nil {
+			res = simulation.Washer.Name
+		}
+	case "LastCommitNb":
+		res = fmt.Sprintf("%d", simulation.LastCommitNb)
+	}
+	return
 }
 
 func (stage *StageStruct) getWasherOrderedStructWithNameField() []*Washer {
@@ -434,6 +502,38 @@ func DeleteORMWasher(washer *Washer) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (washer *Washer) GetName() (res string) {
+	return washer.Name
+}
+
+func (washer *Washer) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"TechName", "Name", "DirtyLaundryWeight", "State", "Machine", "CleanedLaundryWeight",  }
+	return
+}
+
+func (washer *Washer) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "TechName":
+		res = washer.TechName
+	case "Name":
+		res = washer.Name
+	case "DirtyLaundryWeight":
+		res = fmt.Sprintf("%f", washer.DirtyLaundryWeight)
+	case "State":
+		res = washer.State.ToCodeString()
+	case "Machine":
+		if washer.Machine != nil {
+			res = washer.Machine.Name
+		}
+	case "CleanedLaundryWeight":
+		res = fmt.Sprintf("%f", washer.CleanedLaundryWeight)
+	}
+	return
+}
+
 // swagger:ignore
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
 	CreateORMMachine(Machine *Machine)
@@ -502,6 +602,9 @@ const IdentifiersDecls = `
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = ` + "`" + `{{GeneratedFieldNameValue}}` + "`"
+
+const StringEnumInitStatement = `
+	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`
 
 const NumberInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`
@@ -596,11 +699,13 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%t", machine.Cleanedlaundry))
 		initializerStatements += setValueField
 
-		setValueField = StringInitStatement
-		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "State")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(machine.State))
-		initializerStatements += setValueField
+		if machine.State != "" {
+			setValueField = StringEnumInitStatement
+			setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+			setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "State")
+			setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", "models."+machine.State.ToCodeString())
+			initializerStatements += setValueField
+		}
 
 	}
 
@@ -684,11 +789,13 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%f", washer.DirtyLaundryWeight))
 		initializerStatements += setValueField
 
-		setValueField = StringInitStatement
-		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "State")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(washer.State))
-		initializerStatements += setValueField
+		if washer.State != "" {
+			setValueField = StringEnumInitStatement
+			setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+			setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "State")
+			setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", "models."+washer.State.ToCodeString())
+			initializerStatements += setValueField
+		}
 
 		setValueField = NumberInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -808,6 +915,20 @@ func (machinestateenum *MachineStateEnum) FromString(input string) {
 	}
 }
 
+func (machinestateenum *MachineStateEnum) ToCodeString() (res string) {
+
+	switch *machinestateenum {
+	// insertion code per enum code
+	case MACHINE_DOOR_CLOSED_IDLE:
+		res = "MACHINE_DOOR_CLOSED_IDLE"
+	case MACHINE_DOOR_CLOSED_RUNNING:
+		res = "MACHINE_DOOR_CLOSED_RUNNING"
+	case MACHINE_DOOR_OPEN:
+		res = "MACHINE_DOOR_OPEN"
+	}
+	return
+}
+
 // Utility function for WasherStateEnum
 // if enum values are string, it is stored with the value
 // if enum values are int, they are stored with the code of the value
@@ -853,5 +974,27 @@ func (washerstateenum *WasherStateEnum) FromString(input string) {
 	case "WASHER_WAIT_PROGRAM_END":
 		*washerstateenum = WASHER_WAIT_PROGRAM_END
 	}
+}
+
+func (washerstateenum *WasherStateEnum) ToCodeString() (res string) {
+
+	switch *washerstateenum {
+	// insertion code per enum code
+	case WASHER_CLOSE_DOOR:
+		res = "WASHER_CLOSE_DOOR"
+	case WASHER_IDLE:
+		res = "WASHER_IDLE"
+	case WASHER_LOAD_DRUM:
+		res = "WASHER_LOAD_DRUM"
+	case WASHER_OPEN_DOOR:
+		res = "WASHER_OPEN_DOOR"
+	case WASHER_START_PROGRAM:
+		res = "WASHER_START_PROGRAM"
+	case WASHER_UNLOAD_DRUM:
+		res = "WASHER_UNLOAD_DRUM"
+	case WASHER_WAIT_PROGRAM_END:
+		res = "WASHER_WAIT_PROGRAM_END"
+	}
+	return
 }
 

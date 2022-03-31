@@ -257,7 +257,7 @@ export class MachineDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.machine.Name == undefined) {
+		if (this.machine.Name == "") {
 			this.machine.Name = event.value.Name
 		}
 	}

@@ -260,7 +260,7 @@ export class SimulationDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.simulation.Name == undefined) {
+		if (this.simulation.Name == "") {
 			this.simulation.Name = event.value.Name
 		}
 	}
