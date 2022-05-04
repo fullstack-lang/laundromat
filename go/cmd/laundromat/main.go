@@ -85,7 +85,7 @@ func main() {
 	// stage gongdoc stack
 	//
 	var pkgelt gongdoc_models.Pkgelt
-	pkgelt.Unmarshall("../../diagrams")
+	pkgelt.Unmarshall(modelPkg.PkgPath, "../../diagrams")
 	pkgelt.SerializeToStage()
 
 	//
