@@ -244,8 +244,8 @@ func (machine *Machine) GetName() (res string) {
 }
 
 func (machine *Machine) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"TechName", "Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State",  }
+	// list of fields
+	res = []string{"TechName", "Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State"}
 	return
 }
 
@@ -376,8 +376,8 @@ func (simulation *Simulation) GetName() (res string) {
 }
 
 func (simulation *Simulation) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "Machine", "Washer", "LastCommitNb",  }
+	// list of fields
+	res = []string{"Name", "Machine", "Washer", "LastCommitNb"}
 	return
 }
 
@@ -508,8 +508,8 @@ func (washer *Washer) GetName() (res string) {
 }
 
 func (washer *Washer) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"TechName", "Name", "DirtyLaundryWeight", "State", "Machine", "CleanedLaundryWeight",  }
+	// list of fields
+	res = []string{"TechName", "Name", "DirtyLaundryWeight", "State", "Machine", "CleanedLaundryWeight"}
 	return
 }
 
@@ -882,6 +882,74 @@ func generatesIdentifier(gongStructName string, idx int, instanceName string) (i
 
 	return
 }
+
+// insertion point of functions that provide maps for reverse associations
+// generate function for reverse association maps of Machine
+// generate function for reverse association maps of Simulation
+func (stageStruct *StageStruct) CreateReverseMap_Simulation_Machine() (res map[*Machine][]*Simulation) {
+	res = make(map[*Machine][]*Simulation)
+
+	for simulation := range stageStruct.Simulations {
+		if simulation.Machine != nil {
+			machine_ := simulation.Machine
+			var simulations []*Simulation
+			_, ok := res[machine_]
+			if ok {
+				simulations = res[machine_]
+			} else {
+				simulations = make([]*Simulation, 0)
+			}
+			simulations = append(simulations, simulation)
+			res[machine_] = simulations
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_Simulation_Washer() (res map[*Washer][]*Simulation) {
+	res = make(map[*Washer][]*Simulation)
+
+	for simulation := range stageStruct.Simulations {
+		if simulation.Washer != nil {
+			washer_ := simulation.Washer
+			var simulations []*Simulation
+			_, ok := res[washer_]
+			if ok {
+				simulations = res[washer_]
+			} else {
+				simulations = make([]*Simulation, 0)
+			}
+			simulations = append(simulations, simulation)
+			res[washer_] = simulations
+		}
+	}
+
+	return
+}
+
+// generate function for reverse association maps of Washer
+func (stageStruct *StageStruct) CreateReverseMap_Washer_Machine() (res map[*Machine][]*Washer) {
+	res = make(map[*Machine][]*Washer)
+
+	for washer := range stageStruct.Washers {
+		if washer.Machine != nil {
+			machine_ := washer.Machine
+			var washers []*Washer
+			_, ok := res[machine_]
+			if ok {
+				washers = res[machine_]
+			} else {
+				washers = make([]*Washer, 0)
+			}
+			washers = append(washers, washer)
+			res[machine_] = washers
+		}
+	}
+
+	return
+}
+
 
 // insertion point of enum utility functions
 // Utility function for MachineStateEnum
