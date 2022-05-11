@@ -11,6 +11,7 @@ export * from './lib/sidebar/sidebar.component'
 export * from './lib/front-repo.service'
 export * from './lib/null-int64'
 export * from './lib/commitnb.service'
+export * from './lib/gongstruct-selection.service'
 export * from './lib/push_from_front_nb.service'
 
 
@@ -100,6 +101,7 @@ export * from './lib/vertice.service'
 
 
 export * from './lib/ClassshapeTargetType'
+export * from './lib/EditionMode'
 export * from './lib/GongdocCommandType'
 export * from './lib/GongdocNodeType'
 export * from './lib/MultiplicityType'

@@ -246,7 +246,7 @@ export class EngineDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.engine.Name == undefined) {
+		if (this.engine.Name == "") {
 			this.engine.Name = event.value.Name
 		}
 	}

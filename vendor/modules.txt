@@ -34,13 +34,13 @@ github.com/dsnet/compress/internal/errors
 # github.com/frankban/quicktest v1.13.1
 ## explicit; go 1.13
 github.com/frankban/quicktest
-# github.com/fullstack-lang/gong v0.0.0-20220306205459-a0b273b32f20
+# github.com/fullstack-lang/gong v0.0.0-20220507103513-19aef7df6fb3
 ## explicit; go 1.17
 github.com/fullstack-lang/gong/go/controllers
 github.com/fullstack-lang/gong/go/models
 github.com/fullstack-lang/gong/go/orm
 github.com/fullstack-lang/gong/ng
-# github.com/fullstack-lang/gongdoc v0.0.0-20220325104006-b061f982cca1
+# github.com/fullstack-lang/gongdoc v0.0.0-20220510055725-7d5692a767d6
 ## explicit; go 1.17
 github.com/fullstack-lang/gongdoc/go/controllers
 github.com/fullstack-lang/gongdoc/go/models
@@ -48,12 +48,14 @@ github.com/fullstack-lang/gongdoc/go/orm
 github.com/fullstack-lang/gongdoc/go/static
 github.com/fullstack-lang/gongdoc/go/walk
 github.com/fullstack-lang/gongdoc/ng
-# github.com/fullstack-lang/gongsim v0.0.0-20220303100932-5c2dbfac71a2
+# github.com/fullstack-lang/gongsim v0.0.0-20220507103516-e44c800ee5d7
 ## explicit; go 1.17
 github.com/fullstack-lang/gongsim/go/controllers
 github.com/fullstack-lang/gongsim/go/models
 github.com/fullstack-lang/gongsim/go/orm
 github.com/fullstack-lang/gongsim/ng
+# github.com/fullstack-lang/gongsvg v0.0.0-20220507103516-d66df0229c63
+## explicit; go 1.17
 # github.com/gin-contrib/cors v1.3.1
 ## explicit; go 1.13
 github.com/gin-contrib/cors

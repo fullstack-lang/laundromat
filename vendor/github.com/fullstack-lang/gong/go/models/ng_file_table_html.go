@@ -53,7 +53,7 @@ const NgTableTemplateHTML = `<div>
             <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
         </tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[10, 20, 50, 100, 500, 1000]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[50, 100, 500, 1000]" showFirstLastButtons></mat-paginator>
 </div>
 <button class="table__save" color="primary" *ngIf="dialogData" mat-raised-button (click)="save()">
     Save
@@ -71,6 +71,7 @@ type NgTableHTMLSubTemplate int
 
 const (
 	NgTableHTMLBasicField NgTableHTMLSubTemplate = iota
+	NgTableHTMLEnumIntField
 	NgTableHTMLTimeField
 	NgTableHTMLBasicFloat64Field
 	NgTableHTMLBasicFieldTimeDuration
@@ -87,6 +88,15 @@ var NgTableHTMLSubTemplateCode map[NgTableHTMLSubTemplate]string = map[NgTableHT
             <th mat-header-cell *matHeaderCellDef mat-sort-header> {{FieldName}} </th>
             <td mat-cell *matCellDef="let {{Structname}}">
                 {{{{Structname}}.{{FieldName}}}}
+            </td>
+        </ng-container>`,
+
+	NgTableHTMLEnumIntField: `
+        <!-- -->
+        <ng-container matColumnDef="{{FieldName}}">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{FieldName}} </th>
+            <td mat-cell *matCellDef="let {{Structname}}">
+                {{{{Structname}}.{{FieldName}}_string}}
             </td>
         </ng-container>`,
 

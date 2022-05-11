@@ -251,7 +251,7 @@ export class EventDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.event.Name == undefined) {
+		if (this.event.Name == "") {
 			this.event.Name = event.value.Name
 		}
 	}

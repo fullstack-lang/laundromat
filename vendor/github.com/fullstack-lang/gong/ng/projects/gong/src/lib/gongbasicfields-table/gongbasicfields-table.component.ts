@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { GongBasicFieldDB } from '../gongbasicfield-db'
 import { GongBasicFieldService } from '../gongbasicfield.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -82,7 +84,11 @@ export class GongBasicFieldsTableComponent implements OnInit {
           return gongbasicfieldDB.Index;
 
         case 'GongStruct_GongBasicFields':
-          return this.frontRepo.GongStructs.get(gongbasicfieldDB.GongStruct_GongBasicFieldsDBID.Int64)!.Name;
+          if (this.frontRepo.GongStructs.get(gongbasicfieldDB.GongStruct_GongBasicFieldsDBID.Int64) != undefined) {
+            return this.frontRepo.GongStructs.get(gongbasicfieldDB.GongStruct_GongBasicFieldsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")
@@ -192,8 +198,9 @@ export class GongBasicFieldsTableComponent implements OnInit {
 
         this.gongbasicfields = this.frontRepo.GongBasicFields_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let gongbasicfield of this.gongbasicfields) {

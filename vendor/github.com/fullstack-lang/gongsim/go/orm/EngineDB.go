@@ -427,10 +427,10 @@ func (engineDB *EngineDB) CopyBasicFieldsFromEngine(engine *models.Engine) {
 	engineDB.Fired_Data.Int64 = int64(engine.Fired)
 	engineDB.Fired_Data.Valid = true
 
-	engineDB.ControlMode_Data.String = string(engine.ControlMode)
+	engineDB.ControlMode_Data.String = engine.ControlMode.ToString()
 	engineDB.ControlMode_Data.Valid = true
 
-	engineDB.State_Data.String = string(engine.State)
+	engineDB.State_Data.String = engine.State.ToString()
 	engineDB.State_Data.Valid = true
 
 	engineDB.Speed_Data.Float64 = engine.Speed
@@ -456,10 +456,10 @@ func (engineDB *EngineDB) CopyBasicFieldsFromEngineWOP(engine *EngineWOP) {
 	engineDB.Fired_Data.Int64 = int64(engine.Fired)
 	engineDB.Fired_Data.Valid = true
 
-	engineDB.ControlMode_Data.String = string(engine.ControlMode)
+	engineDB.ControlMode_Data.String = engine.ControlMode.ToString()
 	engineDB.ControlMode_Data.Valid = true
 
-	engineDB.State_Data.String = string(engine.State)
+	engineDB.State_Data.String = engine.State.ToString()
 	engineDB.State_Data.Valid = true
 
 	engineDB.Speed_Data.Float64 = engine.Speed
@@ -474,8 +474,8 @@ func (engineDB *EngineDB) CopyBasicFieldsToEngine(engine *models.Engine) {
 	engine.CurrentTime = engineDB.CurrentTime_Data.String
 	engine.SecondsSinceStart = engineDB.SecondsSinceStart_Data.Float64
 	engine.Fired = int(engineDB.Fired_Data.Int64)
-	engine.ControlMode = models.ControlMode(engineDB.ControlMode_Data.String)
-	engine.State = models.EngineState(engineDB.State_Data.String)
+	engine.ControlMode.FromString(engineDB.ControlMode_Data.String)
+	engine.State.FromString(engineDB.State_Data.String)
 	engine.Speed = engineDB.Speed_Data.Float64
 }
 
@@ -488,8 +488,8 @@ func (engineDB *EngineDB) CopyBasicFieldsToEngineWOP(engine *EngineWOP) {
 	engine.CurrentTime = engineDB.CurrentTime_Data.String
 	engine.SecondsSinceStart = engineDB.SecondsSinceStart_Data.Float64
 	engine.Fired = int(engineDB.Fired_Data.Int64)
-	engine.ControlMode = models.ControlMode(engineDB.ControlMode_Data.String)
-	engine.State = models.EngineState(engineDB.State_Data.String)
+	engine.ControlMode.FromString(engineDB.ControlMode_Data.String)
+	engine.State.FromString(engineDB.State_Data.String)
 	engine.Speed = engineDB.Speed_Data.Float64
 }
 

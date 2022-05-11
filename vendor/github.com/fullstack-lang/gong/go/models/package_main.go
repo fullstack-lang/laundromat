@@ -36,15 +36,14 @@ import (
 )
 
 var (
-	logDBFlag         = flag.Bool("logDB", false, "log mode for db")
-	logGINFlag        = flag.Bool("logGIN", false, "log mode for gin")
+	logDBFlag  = flag.Bool("logDB", false, "log mode for db")
+	logGINFlag = flag.Bool("logGIN", false, "log mode for gin")
 
 	marshallOnStartup = flag.String("marshallOnStartup", "", "at startup, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
 	unmarshall        = flag.String("unmarshall", "", "unmarshall data from marshall name and '.go' (must be lowercased without spaces), If unmarshall arg is '', no unmarshalling")
 	marshallOnCommit  = flag.String("marshallOnCommit", "", "on all commits, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
 
 	diagrams = flag.Bool("diagrams", true, "parse/analysis go/models and go/diagrams (takes a few seconds)")
-
 )
 
 // InjectionGateway is the singloton that stores all functions
@@ -67,7 +66,6 @@ func (impl *BeforeCommitImplementation) BeforeCommit(stage *models.StageStruct) 
 	models.Stage.Marshall(file, "{{PkgPathRoot}}/models", "main")
 }
 
-
 func main() {
 
 	log.SetPrefix("{{pkgname}}: ")
@@ -87,7 +85,7 @@ func main() {
 	// setup GORM
 	db := orm.SetupModels(*logDBFlag, "./test.db")
 	dbDB, err := db.DB()
-	
+
 	//
 	// gong and gongdoc databases do not need to be persisted.
 	// therefore, they are in memory
@@ -151,23 +149,35 @@ func main() {
 	}
 	dbDB.SetMaxOpenConns(1)
 
-	// load package to analyse
-	modelPkg := &gong_models.ModelPkg{}
 	if *diagrams {
+		// load package to analyse
+		modelPkg := &gong_models.ModelPkg{}
+
 		gong_models.Walk("../../models", modelPkg)
 		modelPkg.SerializeToStage()
-	}
+		gong_models.Stage.Commit()
 
-	// create the diagrams
-	// prepare the model views
-	pkgelt := new(gongdoc_models.Pkgelt)
+		// create the diagrams
+		// prepare the model views
+		pkgelt := new(gongdoc_models.Pkgelt)
 
-	// classdiagram can only be fully in memory when they are Unmarshalled
-	// for instance, the Name of diagrams or the Name of the Link
-	if *diagrams {
-		pkgelt.Unmarshall("../../diagrams")
+		// first, get all gong struct in the model
+		for gongStruct := range gong_models.Stage.GongStructs {
+
+			// let create the gong struct in the gongdoc models
+			// and put the numbre of instances
+			gongStruct_ := (&gongdoc_models.GongStruct{Name: gongStruct.Name}).Stage()
+			nbInstances, ok := models.Stage.Map_GongStructName_InstancesNb[gongStruct.Name]
+			if ok {
+				gongStruct_.NbInstances = nbInstances
+			}
+		}
+
+		// classdiagram can only be fully in memory when they are Unmarshalled
+		// for instance, the Name of diagrams or the Name of the Link
+		pkgelt.Unmarshall(modelPkg.PkgPath, "../../diagrams")
+		pkgelt.SerializeToStage()
 	}
-	pkgelt.SerializeToStage()
 
 	controllers.RegisterControllers(r)
 	gongdoc_controllers.RegisterControllers(r)

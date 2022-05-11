@@ -262,7 +262,7 @@ export class UpdateStateDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.updatestate.Name == undefined) {
+		if (this.updatestate.Name == "") {
 			this.updatestate.Name = event.value.Name
 		}
 	}

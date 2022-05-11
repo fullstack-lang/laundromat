@@ -10,15 +10,15 @@ export enum EngineDriverState {
 }
 
 export interface EngineDriverStateSelect {
-	value: string;
+	value: number;
 	viewValue: string;
 }
 
 export const EngineDriverStateList: EngineDriverStateSelect[] = [ // insertion point	
-	{ value: 'CHECKOUT_AGENT_STATES', viewValue: '1' },
-	{ value: 'COMMIT_AGENT_STATES', viewValue: '0' },
-	{ value: 'FIRE_ONE_EVENT', viewValue: '2' },
-	{ value: 'RESET_SIMULATION', viewValue: '4' },
-	{ value: 'SLEEP_100_MS', viewValue: '3' },
-	{ value: 'UNKOWN', viewValue: '5' },
+	{ value: EngineDriverState.CHECKOUT_AGENT_STATES, viewValue: "CHECKOUT_AGENT_STATES" },
+	{ value: EngineDriverState.COMMIT_AGENT_STATES, viewValue: "COMMIT_AGENT_STATES" },
+	{ value: EngineDriverState.FIRE_ONE_EVENT, viewValue: "FIRE_ONE_EVENT" },
+	{ value: EngineDriverState.RESET_SIMULATION, viewValue: "RESET_SIMULATION" },
+	{ value: EngineDriverState.SLEEP_100_MS, viewValue: "SLEEP_100_MS" },
+	{ value: EngineDriverState.UNKOWN, viewValue: "UNKOWN" },
 ];

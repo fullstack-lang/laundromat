@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { UpdateStateDB } from '../updatestate-db'
 import { UpdateStateService } from '../updatestate.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -167,7 +169,7 @@ export class UpdateStatesTableComponent implements OnInit {
 
         this.updatestates = this.frontRepo.UpdateStates_array;
 
-        // insertion point for variables Recoveries
+        // insertion point for time duration Recoveries
         // compute strings for durations
         for (let updatestate of this.updatestates) {
           updatestate.Duration_string =
@@ -182,7 +184,8 @@ export class UpdateStatesTableComponent implements OnInit {
             Math.floor(updatestate.Period % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000)) + "M " +
             updatestate.Period % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000) + "S"
         }
-
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let updatestate of this.updatestates) {

@@ -12,7 +12,7 @@ const VsCodeTasksConfig = `{
 		"command": "go",
 		"args": [
 		  "run",
-		  "main.go",
+		  ".",
 		  "-diagrams",
 		],
 		"group": "build"
@@ -26,7 +26,7 @@ const VsCodeTasksConfig = `{
 		"command": "go",
 		"args": [
 		  "run",
-		  "main.go",
+		  ".",
 		  "-diagrams=false"
 		],
 		"group": "build"
@@ -71,6 +71,31 @@ const VsCodeTasksConfig = `{
 		"group": "build",
 		"args": [
 		  "-backendOnly"
+		]
+	  },
+	  {
+		"label": "01 - gongc {{pkgname}} -skipGoModCommands",
+		"type": "shell",
+		"options": {
+		  "cwd": "${workspaceFolder}/go/models"
+		},
+		"command": "gongc",
+		"group": "build",
+		"args": [
+			"-skipGoModCommands"
+		]
+	  },
+	  {
+		"label": "01 - gongc {{pkgname}} -backendOnly -skipGoModCommands",
+		"type": "shell",
+		"options": {
+		  "cwd": "${workspaceFolder}/go/models"
+		},
+		"command": "gongc",
+		"group": "build",
+		"args": [
+		  "-backendOnly",
+		  " -skipGoModCommands"
 		]
 	  },
 	  {

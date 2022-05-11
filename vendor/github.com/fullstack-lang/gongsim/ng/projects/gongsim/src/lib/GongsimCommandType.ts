@@ -15,10 +15,10 @@ export interface GongsimCommandTypeSelect {
 }
 
 export const GongsimCommandTypeList: GongsimCommandTypeSelect[] = [ // insertion point	
-	{ value: 'COMMAND_ADVANCE_10_MIN', viewValue: '"ADVANCE_10_MIN"' },
-	{ value: 'COMMAND_FIRE_EVENT_TILL_STATES_CHANGE', viewValue: '"FIRE_EVENT_TILL_STATES_CHANGE"' },
-	{ value: 'COMMAND_FIRE_NEXT_EVENT', viewValue: '"FIRE_NEXT_EVENT"' },
-	{ value: 'COMMAND_PAUSE', viewValue: '"PAUSE"' },
-	{ value: 'COMMAND_PLAY', viewValue: '"PLAY"' },
-	{ value: 'COMMAND_RESET', viewValue: '"RESET"' },
+	{ value: GongsimCommandType.COMMAND_ADVANCE_10_MIN, viewValue: "ADVANCE_10_MIN" },
+	{ value: GongsimCommandType.COMMAND_FIRE_EVENT_TILL_STATES_CHANGE, viewValue: "FIRE_EVENT_TILL_STATES_CHANGE" },
+	{ value: GongsimCommandType.COMMAND_FIRE_NEXT_EVENT, viewValue: "FIRE_NEXT_EVENT" },
+	{ value: GongsimCommandType.COMMAND_PAUSE, viewValue: "PAUSE" },
+	{ value: GongsimCommandType.COMMAND_PLAY, viewValue: "PLAY" },
+	{ value: GongsimCommandType.COMMAND_RESET, viewValue: "RESET" },
 ];

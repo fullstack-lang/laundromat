@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { DummyAgentDB } from '../dummyagent-db'
 import { DummyAgentService } from '../dummyagent.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -171,8 +173,9 @@ export class DummyAgentsTableComponent implements OnInit {
 
         this.dummyagents = this.frontRepo.DummyAgents_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let dummyagent of this.dummyagents) {

@@ -6,11 +6,11 @@ export enum EngineRunMode {
 }
 
 export interface EngineRunModeSelect {
-	value: string;
+	value: number;
 	viewValue: string;
 }
 
 export const EngineRunModeList: EngineRunModeSelect[] = [ // insertion point	
-	{ value: 'FULL_SPEED', viewValue: '1' },
-	{ value: 'RELATIVE_SPEED', viewValue: '0' },
+	{ value: EngineRunMode.FULL_SPEED, viewValue: "FULL_SPEED" },
+	{ value: EngineRunMode.RELATIVE_SPEED, viewValue: "RELATIVE_SPEED" },
 ];

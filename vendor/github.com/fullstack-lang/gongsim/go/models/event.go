@@ -44,8 +44,5 @@ type EventInterface interface {
 	GetAgent() *Agent
 }
 
-// GetName ..
-func (event *Event) GetName() string { return event.Name }
-
 func (event *Event) GetAgent() *Agent      { return event.agent }
 func (event *Event) SetAgent(agent *Agent) { event.agent = agent }

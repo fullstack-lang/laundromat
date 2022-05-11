@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"go/constant"
 	"go/types"
 	"log"
 	"path/filepath"
@@ -49,7 +50,7 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 	if err != nil {
 		log.Panic("Path does not exist %s ;" + directory)
 	}
-	log.Println("Loading package " + directory)
+	// log.Println("Loading package " + directory)
 
 	//
 	// prepare package load
@@ -95,14 +96,14 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 	for _, eltName := range scope.Names() {
 
 		obj := scope.Lookup(eltName)
-		log.Printf("obj name is %s", obj.Name())
+		// log.Printf("obj name is %s", obj.Name())
 
 		//
 		// collect gong Enum from go const declaration
 		//
 		switch obj.(type) {
 		case *types.TypeName:
-			log.Printf("obj is a Type declation %s", obj.Name())
+			// log.Printf("obj is a Type declation %s", obj.Name())
 
 		// a types.Const is a gong Enum
 		case *types.Const:
@@ -116,7 +117,7 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 				continue
 			}
 
-			log.Printf("%s is a Const declation with type %s of package path %s", cst.Name(), named.Obj().Name(), named.Obj().Pkg().Path())
+			// log.Printf("%s is a Const declation with type %s of package path %s", cst.Name(), named.Obj().Name(), named.Obj().Pkg().Path())
 
 			// if type of the const is not a gong type (a type of the package), do not take into account
 			if named.Obj().Pkg().Path() != PkgGoPath {
@@ -126,8 +127,17 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 			// fetch the enum, if it does not exist, create it
 			var modelEnum *GongEnum
 			if modelEnum = modelPkg.GongEnums[modelPkg.PkgPath+"."+named.Obj().Name()]; modelEnum == nil {
+
+				var enumType GongEnumType
+				if cst.Val().Kind() == constant.Kind(constant.Int) {
+					enumType = Int
+				} else {
+					enumType = String
+				}
+
 				modelEnum = &GongEnum{
 					Name: named.Obj().Name(),
+					Type: enumType,
 				}
 				modelPkg.GongEnums[modelPkg.PkgPath+"."+named.Obj().Name()] = modelEnum
 			}
@@ -153,8 +163,8 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 
 		// we are only interested in struct
 		case *types.Struct:
-			longName := obj.Type().String()
-			log.Println("name : " + longName)
+			// longName := obj.Type().String()
+			// log.Println("name : " + longName)
 
 			cmt, hasComments := FindComments(pkg, obj.Name())
 			if !hasComments {
@@ -163,7 +173,7 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 
 				// do not generage something for struct with swwager:ignore
 				if strings.Contains(cmt.Text(), "swagger:ignore") {
-					log.Printf("swagger:ignore \n\n%s\n", cmt.Text())
+					// log.Printf("swagger:ignore \n\n%s\n", cmt.Text())
 					continue
 				}
 			}
@@ -174,7 +184,7 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 
 		case *types.Basic:
 			// probably a struct
-			log.Printf("Detected a typedef with basic underlying %s\n", obj.Type().String())
+			// log.Printf("Detected a typedef with basic underlying %s\n", obj.Type().String())
 		default:
 		}
 	}
@@ -189,7 +199,7 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 
 		switch obj.(type) {
 		case *types.TypeName:
-			log.Printf("obj is a Type declation, therefore a Struct, hence %s", obj.Name())
+			// log.Printf("obj is a Type declation, therefore a Struct, hence %s", obj.Name())
 
 		default:
 			// we are not interested
@@ -201,13 +211,13 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 		switch underlyingType := underlying.(type) {
 
 		case *types.Named:
-			log.Printf("named %s\n", underlyingType.String())
+			// log.Printf("named %s\n", underlyingType.String())
 
 		case *types.Signature:
-			log.Printf("signature %s\n", underlyingType.String())
+			// log.Printf("signature %s\n", underlyingType.String())
 
 		case *types.Tuple:
-			log.Printf("tuple %s\n", underlyingType.String())
+			// log.Printf("tuple %s\n", underlyingType.String())
 
 		case *types.Struct:
 			__struct := underlying.(*types.Struct)
@@ -219,7 +229,7 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 
 				// do not generage something for struct with swwager:ignore
 				if strings.Contains(cmt.Text(), "swagger:ignore") {
-					log.Printf("swagger:ignore \n\n%s\n", cmt.Text())
+					// log.Printf("swagger:ignore \n\n%s\n", cmt.Text())
 					continue
 				}
 			}
@@ -228,7 +238,8 @@ func Walk(relativePathToModel string, modelPkg *ModelPkg) {
 			GenerateFields(structName, __struct, pkg, modelPkg)
 
 		default:
+			_ = underlyingType
 		}
 	}
-	log.Printf("%T", modelPkg)
+	// log.Printf("%T", modelPkg)
 }

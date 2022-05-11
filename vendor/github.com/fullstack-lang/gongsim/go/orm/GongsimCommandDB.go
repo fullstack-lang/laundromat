@@ -397,13 +397,13 @@ func (gongsimcommandDB *GongsimCommandDB) CopyBasicFieldsFromGongsimCommand(gong
 	gongsimcommandDB.Name_Data.String = gongsimcommand.Name
 	gongsimcommandDB.Name_Data.Valid = true
 
-	gongsimcommandDB.Command_Data.String = string(gongsimcommand.Command)
+	gongsimcommandDB.Command_Data.String = gongsimcommand.Command.ToString()
 	gongsimcommandDB.Command_Data.Valid = true
 
 	gongsimcommandDB.CommandDate_Data.String = gongsimcommand.CommandDate
 	gongsimcommandDB.CommandDate_Data.Valid = true
 
-	gongsimcommandDB.SpeedCommandType_Data.String = string(gongsimcommand.SpeedCommandType)
+	gongsimcommandDB.SpeedCommandType_Data.String = gongsimcommand.SpeedCommandType.ToString()
 	gongsimcommandDB.SpeedCommandType_Data.Valid = true
 
 	gongsimcommandDB.DateSpeedCommand_Data.String = gongsimcommand.DateSpeedCommand
@@ -417,13 +417,13 @@ func (gongsimcommandDB *GongsimCommandDB) CopyBasicFieldsFromGongsimCommandWOP(g
 	gongsimcommandDB.Name_Data.String = gongsimcommand.Name
 	gongsimcommandDB.Name_Data.Valid = true
 
-	gongsimcommandDB.Command_Data.String = string(gongsimcommand.Command)
+	gongsimcommandDB.Command_Data.String = gongsimcommand.Command.ToString()
 	gongsimcommandDB.Command_Data.Valid = true
 
 	gongsimcommandDB.CommandDate_Data.String = gongsimcommand.CommandDate
 	gongsimcommandDB.CommandDate_Data.Valid = true
 
-	gongsimcommandDB.SpeedCommandType_Data.String = string(gongsimcommand.SpeedCommandType)
+	gongsimcommandDB.SpeedCommandType_Data.String = gongsimcommand.SpeedCommandType.ToString()
 	gongsimcommandDB.SpeedCommandType_Data.Valid = true
 
 	gongsimcommandDB.DateSpeedCommand_Data.String = gongsimcommand.DateSpeedCommand
@@ -434,9 +434,9 @@ func (gongsimcommandDB *GongsimCommandDB) CopyBasicFieldsFromGongsimCommandWOP(g
 func (gongsimcommandDB *GongsimCommandDB) CopyBasicFieldsToGongsimCommand(gongsimcommand *models.GongsimCommand) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	gongsimcommand.Name = gongsimcommandDB.Name_Data.String
-	gongsimcommand.Command = models.GongsimCommandType(gongsimcommandDB.Command_Data.String)
+	gongsimcommand.Command.FromString(gongsimcommandDB.Command_Data.String)
 	gongsimcommand.CommandDate = gongsimcommandDB.CommandDate_Data.String
-	gongsimcommand.SpeedCommandType = models.SpeedCommandType(gongsimcommandDB.SpeedCommandType_Data.String)
+	gongsimcommand.SpeedCommandType.FromString(gongsimcommandDB.SpeedCommandType_Data.String)
 	gongsimcommand.DateSpeedCommand = gongsimcommandDB.DateSpeedCommand_Data.String
 }
 
@@ -445,9 +445,9 @@ func (gongsimcommandDB *GongsimCommandDB) CopyBasicFieldsToGongsimCommandWOP(gon
 	gongsimcommand.ID = int(gongsimcommandDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	gongsimcommand.Name = gongsimcommandDB.Name_Data.String
-	gongsimcommand.Command = models.GongsimCommandType(gongsimcommandDB.Command_Data.String)
+	gongsimcommand.Command.FromString(gongsimcommandDB.Command_Data.String)
 	gongsimcommand.CommandDate = gongsimcommandDB.CommandDate_Data.String
-	gongsimcommand.SpeedCommandType = models.SpeedCommandType(gongsimcommandDB.SpeedCommandType_Data.String)
+	gongsimcommand.SpeedCommandType.FromString(gongsimcommandDB.SpeedCommandType_Data.String)
 	gongsimcommand.DateSpeedCommand = gongsimcommandDB.DateSpeedCommand_Data.String
 }
 

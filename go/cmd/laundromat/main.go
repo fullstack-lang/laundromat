@@ -82,6 +82,13 @@ func main() {
 	gong_orm.AutoMigrate(db)
 
 	//
+	// stage gong stack
+	//
+	modelPkg := &gong_models.ModelPkg{}
+	gong_models.Walk("../../models", modelPkg)
+	modelPkg.SerializeToStage()
+
+	//
 	// stage gongdoc stack
 	//
 	var pkgelt gongdoc_models.Pkgelt
@@ -93,13 +100,6 @@ func main() {
 	//
 	simulation := laundromat_models.NewSimulation()
 	simulation.Stage()
-
-	//
-	// stage gong stack
-	//
-	modelPkg := &gong_models.ModelPkg{}
-	gong_models.Walk("../../models", modelPkg)
-	modelPkg.SerializeToStage()
 
 	//
 	//  setup controlers

@@ -246,7 +246,7 @@ export class GongsimCommandDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.gongsimcommand.Name == undefined) {
+		if (this.gongsimcommand.Name == "") {
 			this.gongsimcommand.Name = event.value.Name
 		}
 	}

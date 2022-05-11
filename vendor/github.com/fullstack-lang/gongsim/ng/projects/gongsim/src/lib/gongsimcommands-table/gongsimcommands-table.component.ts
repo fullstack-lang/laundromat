@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { GongsimCommandDB } from '../gongsimcommand-db'
 import { GongsimCommandService } from '../gongsimcommand.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -181,8 +183,9 @@ export class GongsimCommandsTableComponent implements OnInit {
 
         this.gongsimcommands = this.frontRepo.GongsimCommands_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let gongsimcommand of this.gongsimcommands) {

@@ -3,9 +3,9 @@ module github.com/fullstack-lang/laundromat
 go 1.17
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20220306205459-a0b273b32f20
-	github.com/fullstack-lang/gongdoc v0.0.0-20220325104006-b061f982cca1
-	github.com/fullstack-lang/gongsim v0.0.0-20220303100932-5c2dbfac71a2
+	github.com/fullstack-lang/gong v0.0.0-20220507103513-19aef7df6fb3
+	github.com/fullstack-lang/gongdoc v0.0.0-20220510055725-7d5692a767d6
+	github.com/fullstack-lang/gongsim v0.0.0-20220507103516-e44c800ee5d7
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.7.4
@@ -22,6 +22,7 @@ require (
 	github.com/benoitkugler/textlayout v0.0.1 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.13.1 // indirect
+	github.com/fullstack-lang/gongsvg v0.0.0-20220507103516-d66df0229c63 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.14.7 // indirect
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect

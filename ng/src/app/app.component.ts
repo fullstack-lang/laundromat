@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   view = 'Simu view' // the curent view
   simu = 'Simu view'
   data = 'Data view'
-  diagrams = 'Diagrams view'
+  diagrams = 'UML view'
   sim = 'Sim view'
   views: string[] = [this.simu, this.data, this.sim, this.diagrams];
 

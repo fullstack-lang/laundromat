@@ -250,7 +250,7 @@ export class DummyAgentDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.dummyagent.Name == undefined) {
+		if (this.dummyagent.Name == "") {
 			this.dummyagent.Name = event.value.Name
 		}
 	}

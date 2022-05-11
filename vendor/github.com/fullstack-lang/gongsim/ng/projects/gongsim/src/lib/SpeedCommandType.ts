@@ -12,7 +12,7 @@ export interface SpeedCommandTypeSelect {
 }
 
 export const SpeedCommandTypeList: SpeedCommandTypeSelect[] = [ // insertion point	
-	{ value: 'COMMAND_DECREASE_SPEED_50_PERCENTS', viewValue: '"COMMAND_DECREASE_SPEED_50_PERCENTS "' },
-	{ value: 'COMMAND_INCREASE_SPEED_100_PERCENTS', viewValue: '"INCREASE_SPEED_100_PERCENTS"' },
-	{ value: 'COMMAND_SPEED_STEADY', viewValue: '"COMMAND_SPEED_STEADY"' },
+	{ value: SpeedCommandType.COMMAND_DECREASE_SPEED_50_PERCENTS, viewValue: "COMMAND_DECREASE_SPEED_50_PERCENTS " },
+	{ value: SpeedCommandType.COMMAND_INCREASE_SPEED_100_PERCENTS, viewValue: "INCREASE_SPEED_100_PERCENTS" },
+	{ value: SpeedCommandType.COMMAND_SPEED_STEADY, viewValue: "COMMAND_SPEED_STEADY" },
 ];

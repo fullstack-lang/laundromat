@@ -11,6 +11,6 @@ export interface ControlModeSelect {
 }
 
 export const ControlModeList: ControlModeSelect[] = [ // insertion point	
-	{ value: 'AUTONOMOUS', viewValue: '"Autonomous"' },
-	{ value: 'CLIENT_CONTROL', viewValue: '"ClientControl"' },
+	{ value: ControlMode.AUTONOMOUS, viewValue: "Autonomous" },
+	{ value: ControlMode.CLIENT_CONTROL, viewValue: "ClientControl" },
 ];

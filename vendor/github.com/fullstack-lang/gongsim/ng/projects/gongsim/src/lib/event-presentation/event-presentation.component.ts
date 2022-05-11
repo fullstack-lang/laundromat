@@ -8,6 +8,8 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
+// insertion point for additional imports
+
 export interface eventDummyElement {
 }
 
@@ -21,11 +23,12 @@ const ELEMENT_DATA: eventDummyElement[] = [
 })
 export class EventPresentationComponent implements OnInit {
 
-	// insertion point for declarations
+	// insertion point for additionnal time duration declarations
 	// fields from Duration
 	Duration_Hours: number = 0
 	Duration_Minutes: number = 0
 	Duration_Seconds: number = 0
+	// insertion point for additionnal enum int field declarations
 
 	displayedColumns: string[] = []
 	dataSource = ELEMENT_DATA
@@ -72,6 +75,7 @@ export class EventPresentationComponent implements OnInit {
 				this.Duration_Hours = Math.floor(this.event.Duration / (3600 * 1000 * 1000 * 1000))
 				this.Duration_Minutes = Math.floor(this.event.Duration % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000))
 				this.Duration_Seconds = this.event.Duration % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000)
+				// insertion point for recovery of enum tint
 			}
 		);
 	}

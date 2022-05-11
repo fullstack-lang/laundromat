@@ -397,13 +397,13 @@ func (gongsimstatusDB *GongsimStatusDB) CopyBasicFieldsFromGongsimStatus(gongsim
 	gongsimstatusDB.Name_Data.String = gongsimstatus.Name
 	gongsimstatusDB.Name_Data.Valid = true
 
-	gongsimstatusDB.CurrentCommand_Data.String = string(gongsimstatus.CurrentCommand)
+	gongsimstatusDB.CurrentCommand_Data.String = gongsimstatus.CurrentCommand.ToString()
 	gongsimstatusDB.CurrentCommand_Data.Valid = true
 
 	gongsimstatusDB.CompletionDate_Data.String = gongsimstatus.CompletionDate
 	gongsimstatusDB.CompletionDate_Data.Valid = true
 
-	gongsimstatusDB.CurrentSpeedCommand_Data.String = string(gongsimstatus.CurrentSpeedCommand)
+	gongsimstatusDB.CurrentSpeedCommand_Data.String = gongsimstatus.CurrentSpeedCommand.ToString()
 	gongsimstatusDB.CurrentSpeedCommand_Data.Valid = true
 
 	gongsimstatusDB.SpeedCommandCompletionDate_Data.String = gongsimstatus.SpeedCommandCompletionDate
@@ -417,13 +417,13 @@ func (gongsimstatusDB *GongsimStatusDB) CopyBasicFieldsFromGongsimStatusWOP(gong
 	gongsimstatusDB.Name_Data.String = gongsimstatus.Name
 	gongsimstatusDB.Name_Data.Valid = true
 
-	gongsimstatusDB.CurrentCommand_Data.String = string(gongsimstatus.CurrentCommand)
+	gongsimstatusDB.CurrentCommand_Data.String = gongsimstatus.CurrentCommand.ToString()
 	gongsimstatusDB.CurrentCommand_Data.Valid = true
 
 	gongsimstatusDB.CompletionDate_Data.String = gongsimstatus.CompletionDate
 	gongsimstatusDB.CompletionDate_Data.Valid = true
 
-	gongsimstatusDB.CurrentSpeedCommand_Data.String = string(gongsimstatus.CurrentSpeedCommand)
+	gongsimstatusDB.CurrentSpeedCommand_Data.String = gongsimstatus.CurrentSpeedCommand.ToString()
 	gongsimstatusDB.CurrentSpeedCommand_Data.Valid = true
 
 	gongsimstatusDB.SpeedCommandCompletionDate_Data.String = gongsimstatus.SpeedCommandCompletionDate
@@ -434,9 +434,9 @@ func (gongsimstatusDB *GongsimStatusDB) CopyBasicFieldsFromGongsimStatusWOP(gong
 func (gongsimstatusDB *GongsimStatusDB) CopyBasicFieldsToGongsimStatus(gongsimstatus *models.GongsimStatus) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	gongsimstatus.Name = gongsimstatusDB.Name_Data.String
-	gongsimstatus.CurrentCommand = models.GongsimCommandType(gongsimstatusDB.CurrentCommand_Data.String)
+	gongsimstatus.CurrentCommand.FromString(gongsimstatusDB.CurrentCommand_Data.String)
 	gongsimstatus.CompletionDate = gongsimstatusDB.CompletionDate_Data.String
-	gongsimstatus.CurrentSpeedCommand = models.SpeedCommandType(gongsimstatusDB.CurrentSpeedCommand_Data.String)
+	gongsimstatus.CurrentSpeedCommand.FromString(gongsimstatusDB.CurrentSpeedCommand_Data.String)
 	gongsimstatus.SpeedCommandCompletionDate = gongsimstatusDB.SpeedCommandCompletionDate_Data.String
 }
 
@@ -445,9 +445,9 @@ func (gongsimstatusDB *GongsimStatusDB) CopyBasicFieldsToGongsimStatusWOP(gongsi
 	gongsimstatus.ID = int(gongsimstatusDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	gongsimstatus.Name = gongsimstatusDB.Name_Data.String
-	gongsimstatus.CurrentCommand = models.GongsimCommandType(gongsimstatusDB.CurrentCommand_Data.String)
+	gongsimstatus.CurrentCommand.FromString(gongsimstatusDB.CurrentCommand_Data.String)
 	gongsimstatus.CompletionDate = gongsimstatusDB.CompletionDate_Data.String
-	gongsimstatus.CurrentSpeedCommand = models.SpeedCommandType(gongsimstatusDB.CurrentSpeedCommand_Data.String)
+	gongsimstatus.CurrentSpeedCommand.FromString(gongsimstatusDB.CurrentSpeedCommand_Data.String)
 	gongsimstatus.SpeedCommandCompletionDate = gongsimstatusDB.SpeedCommandCompletionDate_Data.String
 }
 

@@ -12,7 +12,7 @@ export interface EngineStateSelect {
 }
 
 export const EngineStateList: EngineStateSelect[] = [ // insertion point	
-	{ value: 'OVER', viewValue: '"OVER"' },
-	{ value: 'PAUSED', viewValue: '"PAUSED"' },
-	{ value: 'RUNNING', viewValue: '"RUNNING"' },
+	{ value: EngineState.OVER, viewValue: "OVER" },
+	{ value: EngineState.PAUSED, viewValue: "PAUSED" },
+	{ value: EngineState.RUNNING, viewValue: "RUNNING" },
 ];

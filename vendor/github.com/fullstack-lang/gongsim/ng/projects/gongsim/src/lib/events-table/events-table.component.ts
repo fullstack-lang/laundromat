@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { EventDB } from '../event-db'
 import { EventService } from '../event.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -162,7 +164,7 @@ export class EventsTableComponent implements OnInit {
 
         this.events = this.frontRepo.Events_array;
 
-        // insertion point for variables Recoveries
+        // insertion point for time duration Recoveries
         // compute strings for durations
         for (let event of this.events) {
           event.Duration_string =
@@ -170,7 +172,8 @@ export class EventsTableComponent implements OnInit {
             Math.floor(event.Duration % (3600 * 1000 * 1000 * 1000) / (60 * 1000 * 1000 * 1000)) + "M " +
             event.Duration % (60 * 1000 * 1000 * 1000) / (1000 * 1000 * 1000) + "S"
         }
-
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let event of this.events) {

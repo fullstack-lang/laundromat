@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { SliceOfPointerToGongStructFieldDB } from '../sliceofpointertogongstructfield-db'
 import { SliceOfPointerToGongStructFieldService } from '../sliceofpointertogongstructfield.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -76,7 +78,11 @@ export class SliceOfPointerToGongStructFieldsTableComponent implements OnInit {
           return sliceofpointertogongstructfieldDB.Index;
 
         case 'GongStruct_SliceOfPointerToGongStructFields':
-          return this.frontRepo.GongStructs.get(sliceofpointertogongstructfieldDB.GongStruct_SliceOfPointerToGongStructFieldsDBID.Int64)!.Name;
+          if (this.frontRepo.GongStructs.get(sliceofpointertogongstructfieldDB.GongStruct_SliceOfPointerToGongStructFieldsDBID.Int64) != undefined) {
+            return this.frontRepo.GongStructs.get(sliceofpointertogongstructfieldDB.GongStruct_SliceOfPointerToGongStructFieldsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")
@@ -180,8 +186,9 @@ export class SliceOfPointerToGongStructFieldsTableComponent implements OnInit {
 
         this.sliceofpointertogongstructfields = this.frontRepo.SliceOfPointerToGongStructFields_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let sliceofpointertogongstructfield of this.sliceofpointertogongstructfields) {

@@ -6,11 +6,11 @@ export enum EngineStopMode {
 }
 
 export interface EngineStopModeSelect {
-	value: string;
+	value: number;
 	viewValue: string;
 }
 
 export const EngineStopModeList: EngineStopModeSelect[] = [ // insertion point	
-	{ value: 'STATE_CHANGED', viewValue: '1' },
-	{ value: 'TEN_MINUTES', viewValue: '0' },
+	{ value: EngineStopMode.STATE_CHANGED, viewValue: "STATE_CHANGED" },
+	{ value: EngineStopMode.TEN_MINUTES, viewValue: "TEN_MINUTES" },
 ];

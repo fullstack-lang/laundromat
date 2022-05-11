@@ -18,10 +18,10 @@ type GongBasicField struct {
 	Index int
 }
 
-func (gongBasicField *GongBasicField) GetName() string {
-	return gongBasicField.Name
-}
-
 func (gongBasicField *GongBasicField) GetIndex() int {
 	return gongBasicField.Index
+}
+
+func (gongBasicField *GongBasicField) GetBasicKind() types.BasicKind {
+	return gongBasicField.basicKind
 }
