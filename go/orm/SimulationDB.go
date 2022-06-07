@@ -293,7 +293,7 @@ func (backRepoSimulation *BackRepoSimulationStruct) CheckoutPhaseOne() (Error er
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	simulationInstancesToBeRemovedFromTheStage := make(map[*models.Simulation]struct{})
+	simulationInstancesToBeRemovedFromTheStage := make(map[*models.Simulation]any)
 	for key, value := range models.Stage.Simulations {
 		simulationInstancesToBeRemovedFromTheStage[key] = value
 	}

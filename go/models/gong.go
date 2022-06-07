@@ -12,7 +12,7 @@ import (
 )
 
 // swagger:ignore
-type __void struct{}
+type __void any
 
 // needed for creating set of instances in the stage
 var __member __void
@@ -28,13 +28,13 @@ type GongStructInterface interface {
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
-	Machines           map[*Machine]struct{}
+	Machines           map[*Machine]any
 	Machines_mapString map[string]*Machine
 
-	Simulations           map[*Simulation]struct{}
+	Simulations           map[*Simulation]any
 	Simulations_mapString map[string]*Simulation
 
-	Washers           map[*Washer]struct{}
+	Washers           map[*Washer]any
 	Washers_mapString map[string]*Washer
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
@@ -76,13 +76,13 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Machines:           make(map[*Machine]struct{}),
+	Machines:           make(map[*Machine]any),
 	Machines_mapString: make(map[string]*Machine),
 
-	Simulations:           make(map[*Simulation]struct{}),
+	Simulations:           make(map[*Simulation]any),
 	Simulations_mapString: make(map[string]*Simulation),
 
-	Washers:           make(map[*Washer]struct{}),
+	Washers:           make(map[*Washer]any),
 	Washers_mapString: make(map[string]*Washer),
 
 	// end of insertion point
@@ -548,13 +548,13 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
-	stage.Machines = make(map[*Machine]struct{})
+	stage.Machines = make(map[*Machine]any)
 	stage.Machines_mapString = make(map[string]*Machine)
 
-	stage.Simulations = make(map[*Simulation]struct{})
+	stage.Simulations = make(map[*Simulation]any)
 	stage.Simulations_mapString = make(map[string]*Simulation)
 
-	stage.Washers = make(map[*Washer]struct{})
+	stage.Washers = make(map[*Washer]any)
 	stage.Washers_mapString = make(map[string]*Washer)
 
 }
@@ -884,7 +884,9 @@ func generatesIdentifier(gongStructName string, idx int, instanceName string) (i
 }
 
 // insertion point of functions that provide maps for reverse associations
+
 // generate function for reverse association maps of Machine
+
 // generate function for reverse association maps of Simulation
 func (stageStruct *StageStruct) CreateReverseMap_Simulation_Machine() (res map[*Machine][]*Simulation) {
 	res = make(map[*Machine][]*Simulation)
@@ -906,7 +908,6 @@ func (stageStruct *StageStruct) CreateReverseMap_Simulation_Machine() (res map[*
 
 	return
 }
-
 func (stageStruct *StageStruct) CreateReverseMap_Simulation_Washer() (res map[*Washer][]*Simulation) {
 	res = make(map[*Washer][]*Simulation)
 
@@ -950,6 +951,59 @@ func (stageStruct *StageStruct) CreateReverseMap_Washer_Machine() (res map[*Mach
 	return
 }
 
+type GongstructSet interface {
+	map[any]any |
+		// insertion point for generic types
+		map[*Machine]any |
+		map[*Simulation]any |
+		map[*Washer]any |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+type GongstructMapString interface {
+	map[any]any |
+		// insertion point for generic types
+		map[string]*Machine |
+		map[string]*Simulation |
+		map[string]*Washer |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+// GongGetSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetSet[Type GongstructSet]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[*Machine]any:
+		return any(&Stage.Machines).(*Type)
+	case map[*Simulation]any:
+		return any(&Stage.Simulations).(*Type)
+	case map[*Washer]any:
+		return any(&Stage.Washers).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GongGetMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetMap[Type GongstructMapString]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[string]*Machine:
+		return any(&Stage.Machines_mapString).(*Type)
+	case map[string]*Simulation:
+		return any(&Stage.Simulations_mapString).(*Type)
+	case map[string]*Washer:
+		return any(&Stage.Washers_mapString).(*Type)
+	default:
+		return nil
+	}
+}
 
 // insertion point of enum utility functions
 // Utility function for MachineStateEnum
