@@ -951,6 +951,15 @@ func (stageStruct *StageStruct) CreateReverseMap_Washer_Machine() (res map[*Mach
 	return
 }
 
+// Gongstruct is the type paramter for generated generic function that allows 
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type Gongstruct interface {
+	// insertion point for generic types
+	Machine | Simulation | Washer
+}
+
 type GongstructSet interface {
 	map[any]any |
 		// insertion point for generic types
@@ -1004,6 +1013,187 @@ func GongGetMap[Type GongstructMapString]() *Type {
 		return nil
 	}
 }
+
+// GetGongstructInstancesSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gongstruct identifier
+func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Machine:
+		return any(&Stage.Machines).(*map[*Type]any)
+	case Simulation:
+		return any(&Stage.Simulations).(*map[*Type]any)
+	case Washer:
+		return any(&Stage.Washers).(*map[*Type]any)
+	default:
+		return nil
+	}
+}
+
+// GetGongstructInstancesMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GetGongstructInstancesMap[Type Gongstruct]() *map[string]*Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Machine:
+		return any(&Stage.Machines_mapString).(*map[string]*Type)
+	case Simulation:
+		return any(&Stage.Simulations_mapString).(*map[string]*Type)
+	case Washer:
+		return any(&Stage.Washers_mapString).(*map[string]*Type)
+	default:
+		return nil
+	}
+}
+
+// GetAssociationName is a generic function that returns an instance of Type
+// where each association is filled with an instance whose name is the name of the association
+//
+// This function can be handy for generating navigation function that are refactorable
+func GetAssociationName[Type Gongstruct]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for instance with special fields
+	case Machine:
+		return any(&Machine{
+			// Initialisation of associations
+		}).(*Type)
+	case Simulation:
+		return any(&Simulation{
+			// Initialisation of associations
+			// field is initialized with an instance of Machine with the name of the field
+			Machine: &Machine{Name: "Machine"},
+			// field is initialized with an instance of Washer with the name of the field
+			Washer: &Washer{Name: "Washer"},
+		}).(*Type)
+	case Washer:
+		return any(&Washer{
+			// Initialisation of associations
+			// field is initialized with an instance of Machine with the name of the field
+			Machine: &Machine{Name: "Machine"},
+		}).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GetPointerReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..1) that is a pointer from one staged Gongstruct (type Start)
+// instances to another (type End)
+//
+// The function provides a map with keys as instances of End and values to arrays of *Start
+// the map is construed by iterating over all Start instances and populationg keys with End instances
+// and values with slice of Start instances
+func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Machine
+	case Machine:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Simulation
+	case Simulation:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Machine":
+			res := make(map[*Machine][]*Simulation)
+			for simulation := range Stage.Simulations {
+				if simulation.Machine != nil {
+					machine_ := simulation.Machine
+					var simulations []*Simulation
+					_, ok := res[machine_]
+					if ok {
+						simulations = res[machine_]
+					} else {
+						simulations = make([]*Simulation, 0)
+					}
+					simulations = append(simulations, simulation)
+					res[machine_] = simulations
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		case "Washer":
+			res := make(map[*Washer][]*Simulation)
+			for simulation := range Stage.Simulations {
+				if simulation.Washer != nil {
+					washer_ := simulation.Washer
+					var simulations []*Simulation
+					_, ok := res[washer_]
+					if ok {
+						simulations = res[washer_]
+					} else {
+						simulations = make([]*Simulation, 0)
+					}
+					simulations = append(simulations, simulation)
+					res[washer_] = simulations
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		}
+	// reverse maps of direct associations of Washer
+	case Washer:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Machine":
+			res := make(map[*Machine][]*Washer)
+			for washer := range Stage.Washers {
+				if washer.Machine != nil {
+					machine_ := washer.Machine
+					var washers []*Washer
+					_, ok := res[machine_]
+					if ok {
+						washers = res[machine_]
+					} else {
+						washers = make([]*Washer, 0)
+					}
+					washers = append(washers, washer)
+					res[machine_] = washers
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		}
+	}
+	return nil
+}
+
+// GetSliceOfPointersReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..N) between one staged Gongstruct instances and many others
+//
+// The function provides a map with keys as instances of End and values to *Start instances
+// the map is construed by iterating over all Start instances and populating keys with End instances
+// and values with the Start instances
+func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*End]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Machine
+	case Machine:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Simulation
+	case Simulation:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Washer
+	case Washer:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	}
+	return nil
+}
+
 
 // insertion point of enum utility functions
 // Utility function for MachineStateEnum
