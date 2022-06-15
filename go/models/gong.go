@@ -243,31 +243,6 @@ func (machine *Machine) GetName() (res string) {
 	return machine.Name
 }
 
-func (machine *Machine) GetFields() (res []string) {
-	// list of fields
-	res = []string{"TechName", "Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State"}
-	return
-}
-
-func (machine *Machine) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "TechName":
-		res = machine.TechName
-	case "Name":
-		res = machine.Name
-	case "DrumLoad":
-		res = fmt.Sprintf("%f", machine.DrumLoad)
-	case "RemainingTime":
-		res = fmt.Sprintf("%d", machine.RemainingTime)
-	case "Cleanedlaundry":
-		res = fmt.Sprintf("%t", machine.Cleanedlaundry)
-	case "State":
-		res = machine.State.ToCodeString()
-	}
-	return
-}
-
 func (stage *StageStruct) getSimulationOrderedStructWithNameField() []*Simulation {
 	// have alphabetical order generation
 	simulationOrdered := []*Simulation{}
@@ -375,31 +350,6 @@ func (simulation *Simulation) GetName() (res string) {
 	return simulation.Name
 }
 
-func (simulation *Simulation) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Machine", "Washer", "LastCommitNb"}
-	return
-}
-
-func (simulation *Simulation) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = simulation.Name
-	case "Machine":
-		if simulation.Machine != nil {
-			res = simulation.Machine.Name
-		}
-	case "Washer":
-		if simulation.Washer != nil {
-			res = simulation.Washer.Name
-		}
-	case "LastCommitNb":
-		res = fmt.Sprintf("%d", simulation.LastCommitNb)
-	}
-	return
-}
-
 func (stage *StageStruct) getWasherOrderedStructWithNameField() []*Washer {
 	// have alphabetical order generation
 	washerOrdered := []*Washer{}
@@ -505,33 +455,6 @@ func DeleteORMWasher(washer *Washer) {
 // for satisfaction of GongStruct interface
 func (washer *Washer) GetName() (res string) {
 	return washer.Name
-}
-
-func (washer *Washer) GetFields() (res []string) {
-	// list of fields
-	res = []string{"TechName", "Name", "DirtyLaundryWeight", "State", "Machine", "CleanedLaundryWeight"}
-	return
-}
-
-func (washer *Washer) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "TechName":
-		res = washer.TechName
-	case "Name":
-		res = washer.Name
-	case "DirtyLaundryWeight":
-		res = fmt.Sprintf("%f", washer.DirtyLaundryWeight)
-	case "State":
-		res = washer.State.ToCodeString()
-	case "Machine":
-		if washer.Machine != nil {
-			res = washer.Machine.Name
-		}
-	case "CleanedLaundryWeight":
-		res = fmt.Sprintf("%f", washer.CleanedLaundryWeight)
-	}
-	return
 }
 
 // swagger:ignore
@@ -655,7 +578,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(machineOrdered[:], func(i, j int) bool {
 		return machineOrdered[i].Name < machineOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Machine")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Machine"
 	for idx, machine := range machineOrdered {
 
 		id = generatesIdentifier("Machine", idx, machine.Name)
@@ -719,7 +642,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(simulationOrdered[:], func(i, j int) bool {
 		return simulationOrdered[i].Name < simulationOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Simulation")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Simulation"
 	for idx, simulation := range simulationOrdered {
 
 		id = generatesIdentifier("Simulation", idx, simulation.Name)
@@ -757,7 +680,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(washerOrdered[:], func(i, j int) bool {
 		return washerOrdered[i].Name < washerOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Washer")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Washer"
 	for idx, washer := range washerOrdered {
 
 		id = generatesIdentifier("Washer", idx, washer.Name)
@@ -951,7 +874,7 @@ func (stageStruct *StageStruct) CreateReverseMap_Washer_Machine() (res map[*Mach
 	return
 }
 
-// Gongstruct is the type paramter for generated generic function that allows 
+// Gongstruct is the type paramter for generated generic function that allows
 // - access to staged instances
 // - navigation between staged instances by going backward association links between gongstruct
 // - full refactoring of Gongstruct identifiers / fields
@@ -1194,6 +1117,101 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 	return nil
 }
 
+// GetGongstructName returns the name of the Gongstruct
+// this can be usefull if one want program robust to refactoring
+func GetGongstructName[Type Gongstruct]() (res string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Machine:
+		res = "Machine"
+	case Simulation:
+		res = "Simulation"
+	case Washer:
+		res = "Washer"
+	}
+	return res
+}
+
+// GetFields return the array of the fields
+func GetFields[Type Gongstruct]() (res []string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Machine:
+		res = []string{"TechName", "Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State"}
+	case Simulation:
+		res = []string{"Name", "Machine", "Washer", "LastCommitNb"}
+	case Washer:
+		res = []string{"TechName", "Name", "DirtyLaundryWeight", "State", "Machine", "CleanedLaundryWeight"}
+	}
+	return
+}
+
+func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res string) {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct field value
+	case Machine:
+		switch fieldName {
+		// string value of fields
+		case "TechName":
+			res = any(instance).(Machine).TechName
+		case "Name":
+			res = any(instance).(Machine).Name
+		case "DrumLoad":
+			res = fmt.Sprintf("%f", any(instance).(Machine).DrumLoad)
+		case "RemainingTime":
+			res = fmt.Sprintf("%d", any(instance).(Machine).RemainingTime)
+		case "Cleanedlaundry":
+			res = fmt.Sprintf("%t", any(instance).(Machine).Cleanedlaundry)
+		case "State":
+			enum := any(instance).(Machine).State
+			res = enum.ToCodeString()
+		}
+	case Simulation:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Simulation).Name
+		case "Machine":
+			if any(instance).(Simulation).Machine != nil {
+				res = any(instance).(Simulation).Machine.Name
+			}
+		case "Washer":
+			if any(instance).(Simulation).Washer != nil {
+				res = any(instance).(Simulation).Washer.Name
+			}
+		case "LastCommitNb":
+			res = fmt.Sprintf("%d", any(instance).(Simulation).LastCommitNb)
+		}
+	case Washer:
+		switch fieldName {
+		// string value of fields
+		case "TechName":
+			res = any(instance).(Washer).TechName
+		case "Name":
+			res = any(instance).(Washer).Name
+		case "DirtyLaundryWeight":
+			res = fmt.Sprintf("%f", any(instance).(Washer).DirtyLaundryWeight)
+		case "State":
+			enum := any(instance).(Washer).State
+			res = enum.ToCodeString()
+		case "Machine":
+			if any(instance).(Washer).Machine != nil {
+				res = any(instance).(Washer).Machine.Name
+			}
+		case "CleanedLaundryWeight":
+			res = fmt.Sprintf("%f", any(instance).(Washer).CleanedLaundryWeight)
+		}
+	}
+	return
+}
 
 // insertion point of enum utility functions
 // Utility function for MachineStateEnum
