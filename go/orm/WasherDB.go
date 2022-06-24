@@ -45,10 +45,6 @@ type WasherAPI struct {
 // reverse pointers of slice of poitners to Struct
 type WasherPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
-
-	// field Machine is a pointer to another Struct (optional or 0..1)
-	// This field is generated into another field to enable AS ONE association
-	MachineID sql.NullInt64
 }
 
 // WasherDB describes a washer in the database
@@ -62,19 +58,16 @@ type WasherDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field washerDB.TechName {{BasicKind}} (to be completed)
-	TechName_Data sql.NullString
-
-	// Declation for basic field washerDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field washerDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field washerDB.DirtyLaundryWeight {{BasicKind}} (to be completed)
+	// Declation for basic field washerDB.DirtyLaundryWeight
 	DirtyLaundryWeight_Data sql.NullFloat64
 
-	// Declation for basic field washerDB.State {{BasicKind}} (to be completed)
+	// Declation for basic field washerDB.State
 	State_Data sql.NullString
 
-	// Declation for basic field washerDB.CleanedLaundryWeight {{BasicKind}} (to be completed)
+	// Declation for basic field washerDB.CleanedLaundryWeight
 	CleanedLaundryWeight_Data sql.NullFloat64
 	// encoding of pointers
 	WasherPointersEnconding
@@ -97,22 +90,19 @@ type WasherWOP struct {
 
 	// insertion for WOP basic fields
 
-	TechName string `xlsx:"1"`
+	Name string `xlsx:"1"`
 
-	Name string `xlsx:"2"`
+	DirtyLaundryWeight float64 `xlsx:"2"`
 
-	DirtyLaundryWeight float64 `xlsx:"3"`
+	State models.WasherStateEnum `xlsx:"3"`
 
-	State models.WasherStateEnum `xlsx:"4"`
-
-	CleanedLaundryWeight float64 `xlsx:"5"`
+	CleanedLaundryWeight float64 `xlsx:"4"`
 	// insertion for WOP pointer fields
 }
 
 var Washer_Fields = []string{
 	// insertion for WOP basic fields
 	"ID",
-	"TechName",
 	"Name",
 	"DirtyLaundryWeight",
 	"State",
@@ -260,15 +250,6 @@ func (backRepoWasher *BackRepoWasherStruct) CommitPhaseTwoInstance(backRepo *Bac
 		washerDB.CopyBasicFieldsFromWasher(washer)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// commit pointer value washer.Machine translates to updating the washer.MachineID
-		washerDB.MachineID.Valid = true // allow for a 0 value (nil association)
-		if washer.Machine != nil {
-			if MachineId, ok := (*backRepo.BackRepoMachine.Map_MachinePtr_MachineDBID)[washer.Machine]; ok {
-				washerDB.MachineID.Int64 = int64(MachineId)
-				washerDB.MachineID.Valid = true
-			}
-		}
-
 		query := backRepoWasher.db.Save(&washerDB)
 		if query.Error != nil {
 			return query.Error
@@ -374,10 +355,6 @@ func (backRepoWasher *BackRepoWasherStruct) CheckoutPhaseTwoInstance(backRepo *B
 	_ = washer // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
-	// Machine field
-	if washerDB.MachineID.Int64 != 0 {
-		washer.Machine = (*backRepo.BackRepoMachine.Map_MachineDBID_MachinePtr)[uint(washerDB.MachineID.Int64)]
-	}
 	return
 }
 
@@ -411,9 +388,6 @@ func (backRepo *BackRepoStruct) CheckoutWasher(washer *models.Washer) {
 func (washerDB *WasherDB) CopyBasicFieldsFromWasher(washer *models.Washer) {
 	// insertion point for fields commit
 
-	washerDB.TechName_Data.String = washer.TechName
-	washerDB.TechName_Data.Valid = true
-
 	washerDB.Name_Data.String = washer.Name
 	washerDB.Name_Data.Valid = true
 
@@ -431,9 +405,6 @@ func (washerDB *WasherDB) CopyBasicFieldsFromWasher(washer *models.Washer) {
 func (washerDB *WasherDB) CopyBasicFieldsFromWasherWOP(washer *WasherWOP) {
 	// insertion point for fields commit
 
-	washerDB.TechName_Data.String = washer.TechName
-	washerDB.TechName_Data.Valid = true
-
 	washerDB.Name_Data.String = washer.Name
 	washerDB.Name_Data.Valid = true
 
@@ -450,7 +421,6 @@ func (washerDB *WasherDB) CopyBasicFieldsFromWasherWOP(washer *WasherWOP) {
 // CopyBasicFieldsToWasher
 func (washerDB *WasherDB) CopyBasicFieldsToWasher(washer *models.Washer) {
 	// insertion point for checkout of basic fields (back repo to stage)
-	washer.TechName = washerDB.TechName_Data.String
 	washer.Name = washerDB.Name_Data.String
 	washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
 	washer.State.FromString(washerDB.State_Data.String)
@@ -461,7 +431,6 @@ func (washerDB *WasherDB) CopyBasicFieldsToWasher(washer *models.Washer) {
 func (washerDB *WasherDB) CopyBasicFieldsToWasherWOP(washer *WasherWOP) {
 	washer.ID = int(washerDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
-	washer.TechName = washerDB.TechName_Data.String
 	washer.Name = washerDB.Name_Data.String
 	washer.DirtyLaundryWeight = washerDB.DirtyLaundryWeight_Data.Float64
 	washer.State.FromString(washerDB.State_Data.String)
@@ -623,12 +592,6 @@ func (backRepoWasher *BackRepoWasherStruct) RestorePhaseTwo() {
 		_ = washerDB
 
 		// insertion point for reindexing pointers encoding
-		// reindexing Machine field
-		if washerDB.MachineID.Int64 != 0 {
-			washerDB.MachineID.Int64 = int64(BackRepoMachineid_atBckpTime_newID[uint(washerDB.MachineID.Int64)])
-			washerDB.MachineID.Valid = true
-		}
-
 		// update databse with new index encoding
 		query := backRepoWasher.db.Model(washerDB).Updates(*washerDB)
 		if query.Error != nil {

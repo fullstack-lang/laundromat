@@ -14,7 +14,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { WasherDB } from './washer-db';
 
 // insertion point for imports
-import { MachineDB } from './machine-db'
 
 @Injectable({
   providedIn: 'root'
@@ -71,7 +70,6 @@ export class WasherService {
   postWasher(washerdb: WasherDB): Observable<WasherDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    washerdb.Machine = new MachineDB
 
     return this.http.post<WasherDB>(this.washersUrl, washerdb, this.httpOptions).pipe(
       tap(_ => {
@@ -99,7 +97,6 @@ export class WasherService {
     const url = `${this.washersUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    washerdb.Machine = new MachineDB
 
     return this.http.put<WasherDB>(url, washerdb, this.httpOptions).pipe(
       tap(_ => {

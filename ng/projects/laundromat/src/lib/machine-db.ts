@@ -9,7 +9,6 @@ export class MachineDB {
 	ID: number = 0
 
 	// insertion point for basic fields declarations
-	TechName: string = ""
 	Name: string = ""
 	DrumLoad: number = 0
 	RemainingTime: number = 0

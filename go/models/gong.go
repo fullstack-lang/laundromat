@@ -594,12 +594,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "TechName")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(machine.TechName))
-		initializerStatements += setValueField
-
-		setValueField = StringInitStatement
-		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Name")
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(machine.Name))
 		initializerStatements += setValueField
@@ -696,12 +690,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "TechName")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(washer.TechName))
-		initializerStatements += setValueField
-
-		setValueField = StringInitStatement
-		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Name")
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(washer.Name))
 		initializerStatements += setValueField
@@ -773,14 +761,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		map_Washer_Identifiers[washer] = id
 
 		// Initialisation of values
-		if washer.Machine != nil {
-			setPointerField = PointerFieldInitStatement
-			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Machine")
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Machine_Identifiers[washer.Machine])
-			pointersInitializesStatements += setPointerField
-		}
-
 	}
 
 	res = strings.ReplaceAll(res, "{{Identifiers}}", identifiersDecl)
@@ -853,26 +833,6 @@ func (stageStruct *StageStruct) CreateReverseMap_Simulation_Washer() (res map[*W
 }
 
 // generate function for reverse association maps of Washer
-func (stageStruct *StageStruct) CreateReverseMap_Washer_Machine() (res map[*Machine][]*Washer) {
-	res = make(map[*Machine][]*Washer)
-
-	for washer := range stageStruct.Washers {
-		if washer.Machine != nil {
-			machine_ := washer.Machine
-			var washers []*Washer
-			_, ok := res[machine_]
-			if ok {
-				washers = res[machine_]
-			} else {
-				washers = make([]*Washer, 0)
-			}
-			washers = append(washers, washer)
-			res[machine_] = washers
-		}
-	}
-
-	return
-}
 
 // Gongstruct is the type paramter for generated generic function that allows
 // - access to staged instances
@@ -997,8 +957,6 @@ func GetAssociationName[Type Gongstruct]() *Type {
 	case Washer:
 		return any(&Washer{
 			// Initialisation of associations
-			// field is initialized with an instance of Machine with the name of the field
-			Machine: &Machine{Name: "Machine"},
 		}).(*Type)
 	default:
 		return nil
@@ -1065,23 +1023,6 @@ func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*S
 	case Washer:
 		switch fieldname {
 		// insertion point for per direct association field
-		case "Machine":
-			res := make(map[*Machine][]*Washer)
-			for washer := range Stage.Washers {
-				if washer.Machine != nil {
-					machine_ := washer.Machine
-					var washers []*Washer
-					_, ok := res[machine_]
-					if ok {
-						washers = res[machine_]
-					} else {
-						washers = make([]*Washer, 0)
-					}
-					washers = append(washers, washer)
-					res[machine_] = washers
-				}
-			}
-			return any(res).(map[*End][]*Start)
 		}
 	}
 	return nil
@@ -1143,11 +1084,11 @@ func GetFields[Type Gongstruct]() (res []string) {
 	switch any(ret).(type) {
 	// insertion point for generic get gongstruct name
 	case Machine:
-		res = []string{"TechName", "Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State"}
+		res = []string{"Name", "DrumLoad", "RemainingTime", "Cleanedlaundry", "State"}
 	case Simulation:
 		res = []string{"Name", "Machine", "Washer", "LastCommitNb"}
 	case Washer:
-		res = []string{"TechName", "Name", "DirtyLaundryWeight", "State", "Machine", "CleanedLaundryWeight"}
+		res = []string{"Name", "DirtyLaundryWeight", "State", "CleanedLaundryWeight"}
 	}
 	return
 }
@@ -1160,8 +1101,6 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 	case Machine:
 		switch fieldName {
 		// string value of fields
-		case "TechName":
-			res = any(instance).(Machine).TechName
 		case "Name":
 			res = any(instance).(Machine).Name
 		case "DrumLoad":
@@ -1193,8 +1132,6 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 	case Washer:
 		switch fieldName {
 		// string value of fields
-		case "TechName":
-			res = any(instance).(Washer).TechName
 		case "Name":
 			res = any(instance).(Washer).Name
 		case "DirtyLaundryWeight":
@@ -1202,10 +1139,6 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 		case "State":
 			enum := any(instance).(Washer).State
 			res = enum.ToCodeString()
-		case "Machine":
-			if any(instance).(Washer).Machine != nil {
-				res = any(instance).(Washer).Machine.Name
-			}
 		case "CleanedLaundryWeight":
 			res = fmt.Sprintf("%f", any(instance).(Washer).CleanedLaundryWeight)
 		}
@@ -1222,12 +1155,12 @@ func (machinestateenum MachineStateEnum) ToString() (res string) {
 	// migration of former implementation of enum
 	switch machinestateenum {
 	// insertion code per enum code
-	case MACHINE_DOOR_CLOSED_IDLE:
-		res = "MACHINE_DOOR_CLOSED_IDLE"
-	case MACHINE_DOOR_CLOSED_RUNNING:
-		res = "MACHINE_DOOR_CLOSED_RUNNING"
 	case MACHINE_DOOR_OPEN:
 		res = "MACHINE_DOOR_OPEN"
+	case MACHINE_DOOR_CLOSED_RUNNING:
+		res = "MACHINE_DOOR_CLOSED_RUNNING"
+	case MACHINE_DOOR_CLOSED_IDLE:
+		res = "MACHINE_DOOR_CLOSED_IDLE"
 	}
 	return
 }
@@ -1236,12 +1169,12 @@ func (machinestateenum *MachineStateEnum) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "MACHINE_DOOR_CLOSED_IDLE":
-		*machinestateenum = MACHINE_DOOR_CLOSED_IDLE
-	case "MACHINE_DOOR_CLOSED_RUNNING":
-		*machinestateenum = MACHINE_DOOR_CLOSED_RUNNING
 	case "MACHINE_DOOR_OPEN":
 		*machinestateenum = MACHINE_DOOR_OPEN
+	case "MACHINE_DOOR_CLOSED_RUNNING":
+		*machinestateenum = MACHINE_DOOR_CLOSED_RUNNING
+	case "MACHINE_DOOR_CLOSED_IDLE":
+		*machinestateenum = MACHINE_DOOR_CLOSED_IDLE
 	}
 }
 
@@ -1249,12 +1182,12 @@ func (machinestateenum *MachineStateEnum) ToCodeString() (res string) {
 
 	switch *machinestateenum {
 	// insertion code per enum code
-	case MACHINE_DOOR_CLOSED_IDLE:
-		res = "MACHINE_DOOR_CLOSED_IDLE"
-	case MACHINE_DOOR_CLOSED_RUNNING:
-		res = "MACHINE_DOOR_CLOSED_RUNNING"
 	case MACHINE_DOOR_OPEN:
 		res = "MACHINE_DOOR_OPEN"
+	case MACHINE_DOOR_CLOSED_RUNNING:
+		res = "MACHINE_DOOR_CLOSED_RUNNING"
+	case MACHINE_DOOR_CLOSED_IDLE:
+		res = "MACHINE_DOOR_CLOSED_IDLE"
 	}
 	return
 }
@@ -1267,20 +1200,20 @@ func (washerstateenum WasherStateEnum) ToString() (res string) {
 	// migration of former implementation of enum
 	switch washerstateenum {
 	// insertion code per enum code
-	case WASHER_CLOSE_DOOR:
-		res = "WASHER_CLOSE_DOOR"
 	case WASHER_IDLE:
 		res = "WASHER_IDLE"
 	case WASHER_LOAD_DRUM:
 		res = "WASHER_LOAD_DRUM"
 	case WASHER_OPEN_DOOR:
 		res = "WASHER_OPEN_DOOR"
-	case WASHER_START_PROGRAM:
-		res = "WASHER_START_PROGRAM"
-	case WASHER_UNLOAD_DRUM:
-		res = "WASHER_UNLOAD_DRUM"
 	case WASHER_WAIT_PROGRAM_END:
 		res = "WASHER_WAIT_PROGRAM_END"
+	case WASHER_CLOSE_DOOR:
+		res = "WASHER_CLOSE_DOOR"
+	case WASHER_UNLOAD_DRUM:
+		res = "WASHER_UNLOAD_DRUM"
+	case WASHER_START_PROGRAM:
+		res = "WASHER_START_PROGRAM"
 	}
 	return
 }
@@ -1289,20 +1222,20 @@ func (washerstateenum *WasherStateEnum) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "WASHER_CLOSE_DOOR":
-		*washerstateenum = WASHER_CLOSE_DOOR
 	case "WASHER_IDLE":
 		*washerstateenum = WASHER_IDLE
 	case "WASHER_LOAD_DRUM":
 		*washerstateenum = WASHER_LOAD_DRUM
 	case "WASHER_OPEN_DOOR":
 		*washerstateenum = WASHER_OPEN_DOOR
-	case "WASHER_START_PROGRAM":
-		*washerstateenum = WASHER_START_PROGRAM
-	case "WASHER_UNLOAD_DRUM":
-		*washerstateenum = WASHER_UNLOAD_DRUM
 	case "WASHER_WAIT_PROGRAM_END":
 		*washerstateenum = WASHER_WAIT_PROGRAM_END
+	case "WASHER_CLOSE_DOOR":
+		*washerstateenum = WASHER_CLOSE_DOOR
+	case "WASHER_UNLOAD_DRUM":
+		*washerstateenum = WASHER_UNLOAD_DRUM
+	case "WASHER_START_PROGRAM":
+		*washerstateenum = WASHER_START_PROGRAM
 	}
 }
 
@@ -1310,20 +1243,20 @@ func (washerstateenum *WasherStateEnum) ToCodeString() (res string) {
 
 	switch *washerstateenum {
 	// insertion code per enum code
-	case WASHER_CLOSE_DOOR:
-		res = "WASHER_CLOSE_DOOR"
 	case WASHER_IDLE:
 		res = "WASHER_IDLE"
 	case WASHER_LOAD_DRUM:
 		res = "WASHER_LOAD_DRUM"
 	case WASHER_OPEN_DOOR:
 		res = "WASHER_OPEN_DOOR"
-	case WASHER_START_PROGRAM:
-		res = "WASHER_START_PROGRAM"
-	case WASHER_UNLOAD_DRUM:
-		res = "WASHER_UNLOAD_DRUM"
 	case WASHER_WAIT_PROGRAM_END:
 		res = "WASHER_WAIT_PROGRAM_END"
+	case WASHER_CLOSE_DOOR:
+		res = "WASHER_CLOSE_DOOR"
+	case WASHER_UNLOAD_DRUM:
+		res = "WASHER_UNLOAD_DRUM"
+	case WASHER_START_PROGRAM:
+		res = "WASHER_START_PROGRAM"
 	}
 	return
 }

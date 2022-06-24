@@ -58,23 +58,20 @@ type MachineDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field machineDB.TechName {{BasicKind}} (to be completed)
-	TechName_Data sql.NullString
-
-	// Declation for basic field machineDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field machineDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field machineDB.DrumLoad {{BasicKind}} (to be completed)
+	// Declation for basic field machineDB.DrumLoad
 	DrumLoad_Data sql.NullFloat64
 
-	// Declation for basic field machineDB.RemainingTime {{BasicKind}} (to be completed)
+	// Declation for basic field machineDB.RemainingTime
 	RemainingTime_Data sql.NullInt64
 
-	// Declation for basic field machineDB.Cleanedlaundry bool (to be completed)
+	// Declation for basic field machineDB.Cleanedlaundry
 	// provide the sql storage for the boolan
 	Cleanedlaundry_Data sql.NullBool
 
-	// Declation for basic field machineDB.State {{BasicKind}} (to be completed)
+	// Declation for basic field machineDB.State
 	State_Data sql.NullString
 	// encoding of pointers
 	MachinePointersEnconding
@@ -97,24 +94,21 @@ type MachineWOP struct {
 
 	// insertion for WOP basic fields
 
-	TechName string `xlsx:"1"`
+	Name string `xlsx:"1"`
 
-	Name string `xlsx:"2"`
+	DrumLoad float64 `xlsx:"2"`
 
-	DrumLoad float64 `xlsx:"3"`
+	RemainingTime time.Duration `xlsx:"3"`
 
-	RemainingTime time.Duration `xlsx:"4"`
+	Cleanedlaundry bool `xlsx:"4"`
 
-	Cleanedlaundry bool `xlsx:"5"`
-
-	State models.MachineStateEnum `xlsx:"6"`
+	State models.MachineStateEnum `xlsx:"5"`
 	// insertion for WOP pointer fields
 }
 
 var Machine_Fields = []string{
 	// insertion for WOP basic fields
 	"ID",
-	"TechName",
 	"Name",
 	"DrumLoad",
 	"RemainingTime",
@@ -401,9 +395,6 @@ func (backRepo *BackRepoStruct) CheckoutMachine(machine *models.Machine) {
 func (machineDB *MachineDB) CopyBasicFieldsFromMachine(machine *models.Machine) {
 	// insertion point for fields commit
 
-	machineDB.TechName_Data.String = machine.TechName
-	machineDB.TechName_Data.Valid = true
-
 	machineDB.Name_Data.String = machine.Name
 	machineDB.Name_Data.Valid = true
 
@@ -424,9 +415,6 @@ func (machineDB *MachineDB) CopyBasicFieldsFromMachine(machine *models.Machine) 
 func (machineDB *MachineDB) CopyBasicFieldsFromMachineWOP(machine *MachineWOP) {
 	// insertion point for fields commit
 
-	machineDB.TechName_Data.String = machine.TechName
-	machineDB.TechName_Data.Valid = true
-
 	machineDB.Name_Data.String = machine.Name
 	machineDB.Name_Data.Valid = true
 
@@ -446,7 +434,6 @@ func (machineDB *MachineDB) CopyBasicFieldsFromMachineWOP(machine *MachineWOP) {
 // CopyBasicFieldsToMachine
 func (machineDB *MachineDB) CopyBasicFieldsToMachine(machine *models.Machine) {
 	// insertion point for checkout of basic fields (back repo to stage)
-	machine.TechName = machineDB.TechName_Data.String
 	machine.Name = machineDB.Name_Data.String
 	machine.DrumLoad = machineDB.DrumLoad_Data.Float64
 	machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)
@@ -458,7 +445,6 @@ func (machineDB *MachineDB) CopyBasicFieldsToMachine(machine *models.Machine) {
 func (machineDB *MachineDB) CopyBasicFieldsToMachineWOP(machine *MachineWOP) {
 	machine.ID = int(machineDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
-	machine.TechName = machineDB.TechName_Data.String
 	machine.Name = machineDB.Name_Data.String
 	machine.DrumLoad = machineDB.DrumLoad_Data.Float64
 	machine.RemainingTime = time.Duration(machineDB.RemainingTime_Data.Int64)

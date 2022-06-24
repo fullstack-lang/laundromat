@@ -68,9 +68,6 @@ export class WashersTableComponent implements OnInit {
           return washerDB.ID
 
         // insertion point for specific sorting accessor
-        case 'TechName':
-          return washerDB.TechName;
-
         case 'Name':
           return washerDB.Name;
 
@@ -79,9 +76,6 @@ export class WashersTableComponent implements OnInit {
 
         case 'State':
           return washerDB.State;
-
-        case 'Machine':
-          return (washerDB.Machine ? washerDB.Machine.Name : '');
 
         case 'CleanedLaundryWeight':
           return washerDB.CleanedLaundryWeight;
@@ -100,13 +94,9 @@ export class WashersTableComponent implements OnInit {
       let mergedContent = ""
 
       // insertion point for merging of fields
-      mergedContent += washerDB.TechName.toLowerCase()
       mergedContent += washerDB.Name.toLowerCase()
       mergedContent += washerDB.DirtyLaundryWeight.toString()
       mergedContent += washerDB.State.toLowerCase()
-      if (washerDB.Machine) {
-        mergedContent += washerDB.Machine.Name.toLowerCase()
-      }
       mergedContent += washerDB.CleanedLaundryWeight.toString()
 
       let isSelected = mergedContent.includes(filter.toLowerCase())
@@ -158,20 +148,16 @@ export class WashersTableComponent implements OnInit {
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
-        "TechName",
         "Name",
         "DirtyLaundryWeight",
         "State",
-        "Machine",
         "CleanedLaundryWeight",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
-        "TechName",
         "Name",
         "DirtyLaundryWeight",
         "State",
-        "Machine",
         "CleanedLaundryWeight",
       ]
       this.selection = new SelectionModel<WasherDB>(allowMultiSelect, this.initialSelection);

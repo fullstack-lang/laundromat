@@ -434,41 +434,6 @@ export class SidebarComponent implements OnInit {
           washerGongNodeStruct.children!.push(washerGongNodeInstance)
 
           // insertion point for per field code
-          /**
-          * let append a node for the association Machine
-          */
-          let MachineGongNodeAssociation: GongNode = {
-            name: "(Machine) Machine",
-            type: GongNodeType.ONE__ZERO_ONE_ASSOCIATION,
-            id: washerDB.ID,
-            uniqueIdPerStack: 17 * nonInstanceNodeId,
-            structName: "Washer",
-            associationField: "Machine",
-            associatedStructName: "Machine",
-            children: new Array<GongNode>()
-          }
-          nonInstanceNodeId = nonInstanceNodeId + 1
-          washerGongNodeInstance.children!.push(MachineGongNodeAssociation)
-
-          /**
-            * let append a node for the instance behind the asssociation Machine
-            */
-          if (washerDB.Machine != undefined) {
-            let washerGongNodeInstance_Machine: GongNode = {
-              name: washerDB.Machine.Name,
-              type: GongNodeType.INSTANCE,
-              id: washerDB.Machine.ID,
-              uniqueIdPerStack: // godel numbering (thank you kurt)
-                3 * getWasherUniqueID(washerDB.ID)
-                + 5 * getMachineUniqueID(washerDB.Machine.ID),
-              structName: "Machine",
-              associationField: "",
-              associatedStructName: "",
-              children: new Array<GongNode>()
-            }
-            MachineGongNodeAssociation.children.push(washerGongNodeInstance_Machine)
-          }
-
         }
       )
 

@@ -288,13 +288,6 @@ export class FrontRepoService {
             washers.forEach(
               washer => {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
-                // insertion point for pointer field Machine redeeming
-                {
-                  let _machine = FrontRepoSingloton.Machines.get(washer.MachineID.Int64)
-                  if (_machine) {
-                    washer.Machine = _machine
-                  }
-                }
 
                 // insertion point for redeeming ONE-MANY associations
               }
@@ -451,13 +444,6 @@ export class FrontRepoService {
                 FrontRepoSingloton.Washers_batch.set(washer.ID, washer)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
-                // insertion point for pointer field Machine redeeming
-                {
-                  let _machine = FrontRepoSingloton.Machines.get(washer.MachineID.Int64)
-                  if (_machine) {
-                    washer.Machine = _machine
-                  }
-                }
 
                 // insertion point for redeeming ONE-MANY associations
               }

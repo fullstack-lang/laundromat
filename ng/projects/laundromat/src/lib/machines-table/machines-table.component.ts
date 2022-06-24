@@ -68,9 +68,6 @@ export class MachinesTableComponent implements OnInit {
           return machineDB.ID
 
         // insertion point for specific sorting accessor
-        case 'TechName':
-          return machineDB.TechName;
-
         case 'Name':
           return machineDB.Name;
 
@@ -100,7 +97,6 @@ export class MachinesTableComponent implements OnInit {
       let mergedContent = ""
 
       // insertion point for merging of fields
-      mergedContent += machineDB.TechName.toLowerCase()
       mergedContent += machineDB.Name.toLowerCase()
       mergedContent += machineDB.DrumLoad.toString()
       mergedContent += machineDB.State.toLowerCase()
@@ -154,7 +150,6 @@ export class MachinesTableComponent implements OnInit {
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
-        "TechName",
         "Name",
         "DrumLoad",
         "RemainingTime",
@@ -163,7 +158,6 @@ export class MachinesTableComponent implements OnInit {
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
-        "TechName",
         "Name",
         "DrumLoad",
         "RemainingTime",

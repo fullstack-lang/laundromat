@@ -137,16 +137,6 @@ export class WasherDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
-		if (this.washer.MachineID == undefined) {
-			this.washer.MachineID = new NullInt64
-		}
-		if (this.washer.Machine != undefined) {
-			this.washer.MachineID.Int64 = this.washer.Machine.ID
-			this.washer.MachineID.Valid = true
-		} else {
-			this.washer.MachineID.Int64 = 0
-			this.washer.MachineID.Valid = true
-		}
 
 		// save from the front pointer space to the non pointer space for serialization
 

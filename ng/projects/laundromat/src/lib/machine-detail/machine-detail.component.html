@@ -1,26 +1,6 @@
 <form *ngIf="machine" class="details">
     <h2 class="details__title">machine</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("TechName")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="3">
-            <mat-form-field mat-form-field class="detail-full-width">
-                <mat-label>TechName</mat-label>
-                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.TechName">
-            </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile>
-            <button mat-raised-button (click)="toggleTextArea('TechName')">
-                <mat-icon>
-                    expand_more
-                </mat-icon>
-            </button>
-        </mat-grid-tile>
-    </mat-grid-list>
-    <mat-form-field *ngIf='isATextArea("TechName")' mat-form-field class="detail-full-width">
-        <mat-label>TechName</mat-label>
-        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="machine.TechName"></textarea>
-    </mat-form-field>
-
     <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
