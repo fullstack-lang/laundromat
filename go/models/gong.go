@@ -142,18 +142,6 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 }
 
 // insertion point for cumulative sub template with model space calls
-func (stage *StageStruct) getMachineOrderedStructWithNameField() []*Machine {
-	// have alphabetical order generation
-	machineOrdered := []*Machine{}
-	for machine := range stage.Machines {
-		machineOrdered = append(machineOrdered, machine)
-	}
-	sort.Slice(machineOrdered[:], func(i, j int) bool {
-		return machineOrdered[i].Name < machineOrdered[j].Name
-	})
-	return machineOrdered
-}
-
 // Stage puts machine to the model stage
 func (machine *Machine) Stage() *Machine {
 	Stage.Machines[machine] = __member
@@ -249,18 +237,6 @@ func (machine *Machine) GetName() (res string) {
 	return machine.Name
 }
 
-func (stage *StageStruct) getSimulationOrderedStructWithNameField() []*Simulation {
-	// have alphabetical order generation
-	simulationOrdered := []*Simulation{}
-	for simulation := range stage.Simulations {
-		simulationOrdered = append(simulationOrdered, simulation)
-	}
-	sort.Slice(simulationOrdered[:], func(i, j int) bool {
-		return simulationOrdered[i].Name < simulationOrdered[j].Name
-	})
-	return simulationOrdered
-}
-
 // Stage puts simulation to the model stage
 func (simulation *Simulation) Stage() *Simulation {
 	Stage.Simulations[simulation] = __member
@@ -354,18 +330,6 @@ func DeleteORMSimulation(simulation *Simulation) {
 // for satisfaction of GongStruct interface
 func (simulation *Simulation) GetName() (res string) {
 	return simulation.Name
-}
-
-func (stage *StageStruct) getWasherOrderedStructWithNameField() []*Washer {
-	// have alphabetical order generation
-	washerOrdered := []*Washer{}
-	for washer := range stage.Washers {
-		washerOrdered = append(washerOrdered, washer)
-	}
-	sort.Slice(washerOrdered[:], func(i, j int) bool {
-		return washerOrdered[i].Name < washerOrdered[j].Name
-	})
-	return washerOrdered
 }
 
 // Stage puts washer to the model stage
@@ -840,13 +804,23 @@ func (stageStruct *StageStruct) CreateReverseMap_Simulation_Washer() (res map[*W
 
 // generate function for reverse association maps of Washer
 
-// Gongstruct is the type paramter for generated generic function that allows
+// Gongstruct is the type parameter for generated generic function that allows
 // - access to staged instances
 // - navigation between staged instances by going backward association links between gongstruct
 // - full refactoring of Gongstruct identifiers / fields
 type Gongstruct interface {
 	// insertion point for generic types
 	Machine | Simulation | Washer
+}
+
+// Gongstruct is the type parameter for generated generic function that allows
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type PointerToGongstruct interface {
+	// insertion point for generic types
+	*Machine | *Simulation | *Washer
+	GetName() string
 }
 
 type GongstructSet interface {
@@ -1267,3 +1241,4 @@ func (washerstateenum *WasherStateEnum) ToCodeString() (res string) {
 	return
 }
 
+// Last line of the template
