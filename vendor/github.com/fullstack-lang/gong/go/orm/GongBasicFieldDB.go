@@ -68,16 +68,19 @@ type GongBasicFieldDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field gongbasicfieldDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field gongbasicfieldDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field gongbasicfieldDB.BasicKindName {{BasicKind}} (to be completed)
+	// Declation for basic field gongbasicfieldDB.BasicKindName
 	BasicKindName_Data sql.NullString
 
-	// Declation for basic field gongbasicfieldDB.DeclaredType {{BasicKind}} (to be completed)
+	// Declation for basic field gongbasicfieldDB.DeclaredType
 	DeclaredType_Data sql.NullString
 
-	// Declation for basic field gongbasicfieldDB.Index {{BasicKind}} (to be completed)
+	// Declation for basic field gongbasicfieldDB.CompositeStructName
+	CompositeStructName_Data sql.NullString
+
+	// Declation for basic field gongbasicfieldDB.Index
 	Index_Data sql.NullInt64
 	// encoding of pointers
 	GongBasicFieldPointersEnconding
@@ -106,7 +109,9 @@ type GongBasicFieldWOP struct {
 
 	DeclaredType string `xlsx:"3"`
 
-	Index int `xlsx:"4"`
+	CompositeStructName string `xlsx:"4"`
+
+	Index int `xlsx:"5"`
 	// insertion for WOP pointer fields
 }
 
@@ -116,6 +121,7 @@ var GongBasicField_Fields = []string{
 	"Name",
 	"BasicKindName",
 	"DeclaredType",
+	"CompositeStructName",
 	"Index",
 }
 
@@ -298,7 +304,7 @@ func (backRepoGongBasicField *BackRepoGongBasicFieldStruct) CheckoutPhaseOne() (
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	gongbasicfieldInstancesToBeRemovedFromTheStage := make(map[*models.GongBasicField]struct{})
+	gongbasicfieldInstancesToBeRemovedFromTheStage := make(map[*models.GongBasicField]any)
 	for key, value := range models.Stage.GongBasicFields {
 		gongbasicfieldInstancesToBeRemovedFromTheStage[key] = value
 	}
@@ -420,6 +426,9 @@ func (gongbasicfieldDB *GongBasicFieldDB) CopyBasicFieldsFromGongBasicField(gong
 	gongbasicfieldDB.DeclaredType_Data.String = gongbasicfield.DeclaredType
 	gongbasicfieldDB.DeclaredType_Data.Valid = true
 
+	gongbasicfieldDB.CompositeStructName_Data.String = gongbasicfield.CompositeStructName
+	gongbasicfieldDB.CompositeStructName_Data.Valid = true
+
 	gongbasicfieldDB.Index_Data.Int64 = int64(gongbasicfield.Index)
 	gongbasicfieldDB.Index_Data.Valid = true
 }
@@ -437,6 +446,9 @@ func (gongbasicfieldDB *GongBasicFieldDB) CopyBasicFieldsFromGongBasicFieldWOP(g
 	gongbasicfieldDB.DeclaredType_Data.String = gongbasicfield.DeclaredType
 	gongbasicfieldDB.DeclaredType_Data.Valid = true
 
+	gongbasicfieldDB.CompositeStructName_Data.String = gongbasicfield.CompositeStructName
+	gongbasicfieldDB.CompositeStructName_Data.Valid = true
+
 	gongbasicfieldDB.Index_Data.Int64 = int64(gongbasicfield.Index)
 	gongbasicfieldDB.Index_Data.Valid = true
 }
@@ -447,6 +459,7 @@ func (gongbasicfieldDB *GongBasicFieldDB) CopyBasicFieldsToGongBasicField(gongba
 	gongbasicfield.Name = gongbasicfieldDB.Name_Data.String
 	gongbasicfield.BasicKindName = gongbasicfieldDB.BasicKindName_Data.String
 	gongbasicfield.DeclaredType = gongbasicfieldDB.DeclaredType_Data.String
+	gongbasicfield.CompositeStructName = gongbasicfieldDB.CompositeStructName_Data.String
 	gongbasicfield.Index = int(gongbasicfieldDB.Index_Data.Int64)
 }
 
@@ -457,6 +470,7 @@ func (gongbasicfieldDB *GongBasicFieldDB) CopyBasicFieldsToGongBasicFieldWOP(gon
 	gongbasicfield.Name = gongbasicfieldDB.Name_Data.String
 	gongbasicfield.BasicKindName = gongbasicfieldDB.BasicKindName_Data.String
 	gongbasicfield.DeclaredType = gongbasicfieldDB.DeclaredType_Data.String
+	gongbasicfield.CompositeStructName = gongbasicfieldDB.CompositeStructName_Data.String
 	gongbasicfield.Index = int(gongbasicfieldDB.Index_Data.Int64)
 }
 

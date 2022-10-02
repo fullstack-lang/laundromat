@@ -64,10 +64,10 @@ type GongEnumValueDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field gongenumvalueDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field gongenumvalueDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field gongenumvalueDB.Value {{BasicKind}} (to be completed)
+	// Declation for basic field gongenumvalueDB.Value
 	Value_Data sql.NullString
 	// encoding of pointers
 	GongEnumValuePointersEnconding
@@ -273,7 +273,7 @@ func (backRepoGongEnumValue *BackRepoGongEnumValueStruct) CheckoutPhaseOne() (Er
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	gongenumvalueInstancesToBeRemovedFromTheStage := make(map[*models.GongEnumValue]struct{})
+	gongenumvalueInstancesToBeRemovedFromTheStage := make(map[*models.GongEnumValue]any)
 	for key, value := range models.Stage.GongEnumValues {
 		gongenumvalueInstancesToBeRemovedFromTheStage[key] = value
 	}

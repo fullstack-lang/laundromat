@@ -4,6 +4,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"go/token"
 	"io/fs"
 	"log"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/fullstack-lang/laundromat"
 	laundromat_controllers "github.com/fullstack-lang/laundromat/go/controllers"
+	"github.com/fullstack-lang/laundromat/go/models"
 	laundromat_models "github.com/fullstack-lang/laundromat/go/models"
 	laundromat_orm "github.com/fullstack-lang/laundromat/go/orm"
 
@@ -36,12 +38,14 @@ import (
 )
 
 var (
-	logDBFlag         = flag.Bool("logDB", false, "log mode for db")
-	logGINFlag        = flag.Bool("logGIN", false, "log mode for gin")
+	logDBFlag  = flag.Bool("logDB", false, "log mode for db")
+	logGINFlag = flag.Bool("logGIN", false, "log mode for gin")
+
+	diagrams = flag.Bool("diagrams", true, "parse/analysis go/models and go/diagrams (takes a few seconds)")
+
 	clientControlFlag = flag.Bool("client-control", false, "if true, engine waits for API calls")
 )
 
-//
 // generic code
 //
 // specific code is in laundromat_engine
@@ -81,19 +85,47 @@ func main() {
 	// add gong database
 	gong_orm.AutoMigrate(db)
 
-	//
-	// stage gong stack
-	//
-	modelPkg := &gong_models.ModelPkg{}
-	gong_models.Walk("../../models", modelPkg)
-	modelPkg.SerializeToStage()
+	if *diagrams {
 
-	//
-	// stage gongdoc stack
-	//
-	var pkgelt gongdoc_models.Pkgelt
-	pkgelt.Unmarshall(modelPkg.PkgPath, "../../diagrams")
-	pkgelt.SerializeToStage()
+		// Analyse package
+		modelPkg := &gong_models.ModelPkg{}
+
+		// since the source is embedded, one needs to
+		// compute the Abstract syntax tree in a special manner
+		pkgs := gong_models.ParseEmbedModel(laundromat.GoDir, "go/models")
+
+		gong_models.WalkParser(pkgs, modelPkg)
+		modelPkg.SerializeToStage()
+		gong_models.Stage.Commit()
+
+		// create the diagrams
+		// prepare the model views
+		pkgelt := new(gongdoc_models.Pkgelt)
+
+		// first, get all gong struct in the model
+		for gongStruct := range gong_models.Stage.GongStructs {
+
+			// let create the gong struct in the gongdoc models
+			// and put the numbre of instances
+			gongStruct_ := (&gongdoc_models.GongStruct{Name: gongStruct.Name}).Stage()
+			nbInstances, ok := models.Stage.Map_GongStructName_InstancesNb[gongStruct.Name]
+			if ok {
+				gongStruct_.NbInstances = nbInstances
+			}
+		}
+
+		// classdiagram can only be fully in memory when they are Unmarshalled
+		// for instance, the Name of diagrams or the Name of the Link
+		fset := new(token.FileSet)
+		pkgsParser := gong_models.ParseEmbedModel(laundromat.GoDir, "go/diagrams")
+		if len(pkgsParser) != 1 {
+			log.Panic("Unable to parser, wrong number of parsers ", len(pkgsParser))
+		}
+		if pkgParser, ok := pkgsParser["diagrams"]; ok {
+			pkgelt.Unmarshall(modelPkg, pkgParser, fset, "go/diagrams")
+		}
+		pkgelt.SerializeToStage()
+	}
 
 	//
 	// stage simulation stack (to be done after the gongdoc load)

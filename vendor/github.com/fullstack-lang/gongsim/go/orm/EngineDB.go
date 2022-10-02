@@ -58,28 +58,28 @@ type EngineDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field engineDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field engineDB.EndTime {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.EndTime
 	EndTime_Data sql.NullString
 
-	// Declation for basic field engineDB.CurrentTime {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.CurrentTime
 	CurrentTime_Data sql.NullString
 
-	// Declation for basic field engineDB.SecondsSinceStart {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.SecondsSinceStart
 	SecondsSinceStart_Data sql.NullFloat64
 
-	// Declation for basic field engineDB.Fired {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.Fired
 	Fired_Data sql.NullInt64
 
-	// Declation for basic field engineDB.ControlMode {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.ControlMode
 	ControlMode_Data sql.NullString
 
-	// Declation for basic field engineDB.State {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.State
 	State_Data sql.NullString
 
-	// Declation for basic field engineDB.Speed {{BasicKind}} (to be completed)
+	// Declation for basic field engineDB.Speed
 	Speed_Data sql.NullFloat64
 	// encoding of pointers
 	EnginePointersEnconding
@@ -303,7 +303,7 @@ func (backRepoEngine *BackRepoEngineStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	engineInstancesToBeRemovedFromTheStage := make(map[*models.Engine]struct{})
+	engineInstancesToBeRemovedFromTheStage := make(map[*models.Engine]any)
 	for key, value := range models.Stage.Engines {
 		engineInstancesToBeRemovedFromTheStage[key] = value
 	}

@@ -58,19 +58,19 @@ type GongsimStatusDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field gongsimstatusDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field gongsimstatusDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field gongsimstatusDB.CurrentCommand {{BasicKind}} (to be completed)
+	// Declation for basic field gongsimstatusDB.CurrentCommand
 	CurrentCommand_Data sql.NullString
 
-	// Declation for basic field gongsimstatusDB.CompletionDate {{BasicKind}} (to be completed)
+	// Declation for basic field gongsimstatusDB.CompletionDate
 	CompletionDate_Data sql.NullString
 
-	// Declation for basic field gongsimstatusDB.CurrentSpeedCommand {{BasicKind}} (to be completed)
+	// Declation for basic field gongsimstatusDB.CurrentSpeedCommand
 	CurrentSpeedCommand_Data sql.NullString
 
-	// Declation for basic field gongsimstatusDB.SpeedCommandCompletionDate {{BasicKind}} (to be completed)
+	// Declation for basic field gongsimstatusDB.SpeedCommandCompletionDate
 	SpeedCommandCompletionDate_Data sql.NullString
 	// encoding of pointers
 	GongsimStatusPointersEnconding
@@ -285,7 +285,7 @@ func (backRepoGongsimStatus *BackRepoGongsimStatusStruct) CheckoutPhaseOne() (Er
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	gongsimstatusInstancesToBeRemovedFromTheStage := make(map[*models.GongsimStatus]struct{})
+	gongsimstatusInstancesToBeRemovedFromTheStage := make(map[*models.GongsimStatus]any)
 	for key, value := range models.Stage.GongsimStatuss {
 		gongsimstatusInstancesToBeRemovedFromTheStage[key] = value
 	}

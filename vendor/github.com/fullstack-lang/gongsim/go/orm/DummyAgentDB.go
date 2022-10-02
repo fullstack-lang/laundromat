@@ -45,10 +45,6 @@ type DummyAgentAPI struct {
 // reverse pointers of slice of poitners to Struct
 type DummyAgentPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
-
-	// field Engine is a pointer to another Struct (optional or 0..1)
-	// This field is generated into another field to enable AS ONE association
-	EngineID sql.NullInt64
 }
 
 // DummyAgentDB describes a dummyagent in the database
@@ -62,10 +58,10 @@ type DummyAgentDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field dummyagentDB.TechName {{BasicKind}} (to be completed)
+	// Declation for basic field dummyagentDB.TechName
 	TechName_Data sql.NullString
 
-	// Declation for basic field dummyagentDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field dummyagentDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
 	DummyAgentPointersEnconding
@@ -242,15 +238,6 @@ func (backRepoDummyAgent *BackRepoDummyAgentStruct) CommitPhaseTwoInstance(backR
 		dummyagentDB.CopyBasicFieldsFromDummyAgent(dummyagent)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// commit pointer value dummyagent.Engine translates to updating the dummyagent.EngineID
-		dummyagentDB.EngineID.Valid = true // allow for a 0 value (nil association)
-		if dummyagent.Engine != nil {
-			if EngineId, ok := (*backRepo.BackRepoEngine.Map_EnginePtr_EngineDBID)[dummyagent.Engine]; ok {
-				dummyagentDB.EngineID.Int64 = int64(EngineId)
-				dummyagentDB.EngineID.Valid = true
-			}
-		}
-
 		query := backRepoDummyAgent.db.Save(&dummyagentDB)
 		if query.Error != nil {
 			return query.Error
@@ -280,7 +267,7 @@ func (backRepoDummyAgent *BackRepoDummyAgentStruct) CheckoutPhaseOne() (Error er
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	dummyagentInstancesToBeRemovedFromTheStage := make(map[*models.DummyAgent]struct{})
+	dummyagentInstancesToBeRemovedFromTheStage := make(map[*models.DummyAgent]any)
 	for key, value := range models.Stage.DummyAgents {
 		dummyagentInstancesToBeRemovedFromTheStage[key] = value
 	}
@@ -356,10 +343,6 @@ func (backRepoDummyAgent *BackRepoDummyAgentStruct) CheckoutPhaseTwoInstance(bac
 	_ = dummyagent // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
-	// Engine field
-	if dummyagentDB.EngineID.Int64 != 0 {
-		dummyagent.Engine = (*backRepo.BackRepoEngine.Map_EngineDBID_EnginePtr)[uint(dummyagentDB.EngineID.Int64)]
-	}
 	return
 }
 
@@ -581,12 +564,6 @@ func (backRepoDummyAgent *BackRepoDummyAgentStruct) RestorePhaseTwo() {
 		_ = dummyagentDB
 
 		// insertion point for reindexing pointers encoding
-		// reindexing Engine field
-		if dummyagentDB.EngineID.Int64 != 0 {
-			dummyagentDB.EngineID.Int64 = int64(BackRepoEngineid_atBckpTime_newID[uint(dummyagentDB.EngineID.Int64)])
-			dummyagentDB.EngineID.Valid = true
-		}
-
 		// update databse with new index encoding
 		query := backRepoDummyAgent.db.Model(dummyagentDB).Updates(*dummyagentDB)
 		if query.Error != nil {

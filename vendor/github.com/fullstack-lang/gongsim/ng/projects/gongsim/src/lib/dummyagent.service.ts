@@ -14,7 +14,6 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { DummyAgentDB } from './dummyagent-db';
 
 // insertion point for imports
-import { EngineDB } from './engine-db'
 
 @Injectable({
   providedIn: 'root'
@@ -71,7 +70,6 @@ export class DummyAgentService {
   postDummyAgent(dummyagentdb: DummyAgentDB): Observable<DummyAgentDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    dummyagentdb.Engine = new EngineDB
 
     return this.http.post<DummyAgentDB>(this.dummyagentsUrl, dummyagentdb, this.httpOptions).pipe(
       tap(_ => {
@@ -99,7 +97,6 @@ export class DummyAgentService {
     const url = `${this.dummyagentsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    dummyagentdb.Engine = new EngineDB
 
     return this.http.put<DummyAgentDB>(url, dummyagentdb, this.httpOptions).pipe(
       tap(_ => {

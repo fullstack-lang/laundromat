@@ -36,7 +36,7 @@ enum ClassshapeDetailComponentState {
 export class ClassshapeDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	ShowNbInstancesFormControl = new FormControl(false);
+	ShowNbInstancesFormControl: FormControl = new FormControl(false);
 	ClassshapeTargetTypeList: ClassshapeTargetTypeSelect[] = []
 
 	// the ClassshapeDB of interest

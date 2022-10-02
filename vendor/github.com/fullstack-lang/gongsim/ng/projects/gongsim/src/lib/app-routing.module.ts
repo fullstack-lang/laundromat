@@ -22,10 +22,6 @@ import { GongsimStatussTableComponent } from './gongsimstatuss-table/gongsimstat
 import { GongsimStatusDetailComponent } from './gongsimstatus-detail/gongsimstatus-detail.component'
 import { GongsimStatusPresentationComponent } from './gongsimstatus-presentation/gongsimstatus-presentation.component'
 
-import { UpdateStatesTableComponent } from './updatestates-table/updatestates-table.component'
-import { UpdateStateDetailComponent } from './updatestate-detail/updatestate-detail.component'
-import { UpdateStatePresentationComponent } from './updatestate-presentation/updatestate-presentation.component'
-
 
 const routes: Routes = [ // insertion point for routes declarations
 	{ path: 'github_com_fullstack_lang_gongsim_go-dummyagents', component: DummyAgentsTableComponent, outlet: 'github_com_fullstack_lang_gongsim_go_table' },
@@ -62,13 +58,6 @@ const routes: Routes = [ // insertion point for routes declarations
 	{ path: 'github_com_fullstack_lang_gongsim_go-gongsimstatus-detail/:id', component: GongsimStatusDetailComponent, outlet: 'github_com_fullstack_lang_gongsim_go_editor' },
 	{ path: 'github_com_fullstack_lang_gongsim_go-gongsimstatus-presentation/:id', component: GongsimStatusPresentationComponent, outlet: 'github_com_fullstack_lang_gongsim_go_presentation' },
 	{ path: 'github_com_fullstack_lang_gongsim_go-gongsimstatus-presentation-special/:id', component: GongsimStatusPresentationComponent, outlet: 'github_com_fullstack_lang_gongsim_gogongsimstatuspres' },
-
-	{ path: 'github_com_fullstack_lang_gongsim_go-updatestates', component: UpdateStatesTableComponent, outlet: 'github_com_fullstack_lang_gongsim_go_table' },
-	{ path: 'github_com_fullstack_lang_gongsim_go-updatestate-adder', component: UpdateStateDetailComponent, outlet: 'github_com_fullstack_lang_gongsim_go_editor' },
-	{ path: 'github_com_fullstack_lang_gongsim_go-updatestate-adder/:id/:originStruct/:originStructFieldName', component: UpdateStateDetailComponent, outlet: 'github_com_fullstack_lang_gongsim_go_editor' },
-	{ path: 'github_com_fullstack_lang_gongsim_go-updatestate-detail/:id', component: UpdateStateDetailComponent, outlet: 'github_com_fullstack_lang_gongsim_go_editor' },
-	{ path: 'github_com_fullstack_lang_gongsim_go-updatestate-presentation/:id', component: UpdateStatePresentationComponent, outlet: 'github_com_fullstack_lang_gongsim_go_presentation' },
-	{ path: 'github_com_fullstack_lang_gongsim_go-updatestate-presentation-special/:id', component: UpdateStatePresentationComponent, outlet: 'github_com_fullstack_lang_gongsim_goupdatestatepres' },
 
 ];
 

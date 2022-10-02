@@ -78,13 +78,6 @@ func RegisterControllers(r *gin.Engine) {
 		v1.PUT("/v1/gongsimstatuss/:id", UpdateGongsimStatus)
 		v1.DELETE("/v1/gongsimstatuss/:id", DeleteGongsimStatus)
 
-		v1.GET("/v1/updatestates", GetUpdateStates)
-		v1.GET("/v1/updatestates/:id", GetUpdateState)
-		v1.POST("/v1/updatestates", PostUpdateState)
-		v1.PATCH("/v1/updatestates/:id", UpdateUpdateState)
-		v1.PUT("/v1/updatestates/:id", UpdateUpdateState)
-		v1.DELETE("/v1/updatestates/:id", DeleteUpdateState)
-
 		v1.GET("/commitfrombacknb", GetLastCommitFromBackNb)
 		v1.GET("/pushfromfrontnb", GetLastPushFromFrontNb)
 	}

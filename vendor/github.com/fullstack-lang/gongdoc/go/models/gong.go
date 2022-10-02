@@ -12,7 +12,7 @@ import (
 )
 
 // swagger:ignore
-type __void struct{}
+type __void any
 
 // needed for creating set of instances in the stage
 var __member __void
@@ -28,40 +28,43 @@ type GongStructInterface interface {
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
-	Classdiagrams           map[*Classdiagram]struct{}
+	Classdiagrams           map[*Classdiagram]any
 	Classdiagrams_mapString map[string]*Classdiagram
 
-	Classshapes           map[*Classshape]struct{}
+	Classshapes           map[*Classshape]any
 	Classshapes_mapString map[string]*Classshape
 
-	Fields           map[*Field]struct{}
+	Fields           map[*Field]any
 	Fields_mapString map[string]*Field
 
-	GongStructs           map[*GongStruct]struct{}
+	GongStructs           map[*GongStruct]any
 	GongStructs_mapString map[string]*GongStruct
 
-	GongdocCommands           map[*GongdocCommand]struct{}
+	GongdocCommands           map[*GongdocCommand]any
 	GongdocCommands_mapString map[string]*GongdocCommand
 
-	GongdocStatuss           map[*GongdocStatus]struct{}
+	GongdocStatuss           map[*GongdocStatus]any
 	GongdocStatuss_mapString map[string]*GongdocStatus
 
-	Links           map[*Link]struct{}
+	Links           map[*Link]any
 	Links_mapString map[string]*Link
 
-	Pkgelts           map[*Pkgelt]struct{}
+	Notes           map[*Note]any
+	Notes_mapString map[string]*Note
+
+	Pkgelts           map[*Pkgelt]any
 	Pkgelts_mapString map[string]*Pkgelt
 
-	Positions           map[*Position]struct{}
+	Positions           map[*Position]any
 	Positions_mapString map[string]*Position
 
-	UmlStates           map[*UmlState]struct{}
+	UmlStates           map[*UmlState]any
 	UmlStates_mapString map[string]*UmlState
 
-	Umlscs           map[*Umlsc]struct{}
+	Umlscs           map[*Umlsc]any
 	Umlscs_mapString map[string]*Umlsc
 
-	Vertices           map[*Vertice]struct{}
+	Vertices           map[*Vertice]any
 	Vertices_mapString map[string]*Vertice
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
@@ -105,6 +108,8 @@ type BackRepoInterface interface {
 	CheckoutGongdocStatus(gongdocstatus *GongdocStatus)
 	CommitLink(link *Link)
 	CheckoutLink(link *Link)
+	CommitNote(note *Note)
+	CheckoutNote(note *Note)
 	CommitPkgelt(pkgelt *Pkgelt)
 	CheckoutPkgelt(pkgelt *Pkgelt)
 	CommitPosition(position *Position)
@@ -121,40 +126,43 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Classdiagrams:           make(map[*Classdiagram]struct{}),
+	Classdiagrams:           make(map[*Classdiagram]any),
 	Classdiagrams_mapString: make(map[string]*Classdiagram),
 
-	Classshapes:           make(map[*Classshape]struct{}),
+	Classshapes:           make(map[*Classshape]any),
 	Classshapes_mapString: make(map[string]*Classshape),
 
-	Fields:           make(map[*Field]struct{}),
+	Fields:           make(map[*Field]any),
 	Fields_mapString: make(map[string]*Field),
 
-	GongStructs:           make(map[*GongStruct]struct{}),
+	GongStructs:           make(map[*GongStruct]any),
 	GongStructs_mapString: make(map[string]*GongStruct),
 
-	GongdocCommands:           make(map[*GongdocCommand]struct{}),
+	GongdocCommands:           make(map[*GongdocCommand]any),
 	GongdocCommands_mapString: make(map[string]*GongdocCommand),
 
-	GongdocStatuss:           make(map[*GongdocStatus]struct{}),
+	GongdocStatuss:           make(map[*GongdocStatus]any),
 	GongdocStatuss_mapString: make(map[string]*GongdocStatus),
 
-	Links:           make(map[*Link]struct{}),
+	Links:           make(map[*Link]any),
 	Links_mapString: make(map[string]*Link),
 
-	Pkgelts:           make(map[*Pkgelt]struct{}),
+	Notes:           make(map[*Note]any),
+	Notes_mapString: make(map[string]*Note),
+
+	Pkgelts:           make(map[*Pkgelt]any),
 	Pkgelts_mapString: make(map[string]*Pkgelt),
 
-	Positions:           make(map[*Position]struct{}),
+	Positions:           make(map[*Position]any),
 	Positions_mapString: make(map[string]*Position),
 
-	UmlStates:           make(map[*UmlState]struct{}),
+	UmlStates:           make(map[*UmlState]any),
 	UmlStates_mapString: make(map[string]*UmlState),
 
-	Umlscs:           make(map[*Umlsc]struct{}),
+	Umlscs:           make(map[*Umlsc]any),
 	Umlscs_mapString: make(map[string]*Umlsc),
 
-	Vertices:           make(map[*Vertice]struct{}),
+	Vertices:           make(map[*Vertice]any),
 	Vertices_mapString: make(map[string]*Vertice),
 
 	// end of insertion point
@@ -174,6 +182,7 @@ func (stage *StageStruct) Commit() {
 	stage.Map_GongStructName_InstancesNb["GongdocCommand"] = len(stage.GongdocCommands)
 	stage.Map_GongStructName_InstancesNb["GongdocStatus"] = len(stage.GongdocStatuss)
 	stage.Map_GongStructName_InstancesNb["Link"] = len(stage.Links)
+	stage.Map_GongStructName_InstancesNb["Note"] = len(stage.Notes)
 	stage.Map_GongStructName_InstancesNb["Pkgelt"] = len(stage.Pkgelts)
 	stage.Map_GongStructName_InstancesNb["Position"] = len(stage.Positions)
 	stage.Map_GongStructName_InstancesNb["UmlState"] = len(stage.UmlStates)
@@ -186,6 +195,22 @@ func (stage *StageStruct) Checkout() {
 	if stage.BackRepo != nil {
 		stage.BackRepo.Checkout(stage)
 	}
+
+	// insertion point for computing the map of number of instances per gongstruct
+	stage.Map_GongStructName_InstancesNb["Classdiagram"] = len(stage.Classdiagrams)
+	stage.Map_GongStructName_InstancesNb["Classshape"] = len(stage.Classshapes)
+	stage.Map_GongStructName_InstancesNb["Field"] = len(stage.Fields)
+	stage.Map_GongStructName_InstancesNb["GongStruct"] = len(stage.GongStructs)
+	stage.Map_GongStructName_InstancesNb["GongdocCommand"] = len(stage.GongdocCommands)
+	stage.Map_GongStructName_InstancesNb["GongdocStatus"] = len(stage.GongdocStatuss)
+	stage.Map_GongStructName_InstancesNb["Link"] = len(stage.Links)
+	stage.Map_GongStructName_InstancesNb["Note"] = len(stage.Notes)
+	stage.Map_GongStructName_InstancesNb["Pkgelt"] = len(stage.Pkgelts)
+	stage.Map_GongStructName_InstancesNb["Position"] = len(stage.Positions)
+	stage.Map_GongStructName_InstancesNb["UmlState"] = len(stage.UmlStates)
+	stage.Map_GongStructName_InstancesNb["Umlsc"] = len(stage.Umlscs)
+	stage.Map_GongStructName_InstancesNb["Vertice"] = len(stage.Vertices)
+
 }
 
 // backup generates backup files in the dirPath
@@ -217,18 +242,6 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 }
 
 // insertion point for cumulative sub template with model space calls
-func (stage *StageStruct) getClassdiagramOrderedStructWithNameField() []*Classdiagram {
-	// have alphabetical order generation
-	classdiagramOrdered := []*Classdiagram{}
-	for classdiagram := range stage.Classdiagrams {
-		classdiagramOrdered = append(classdiagramOrdered, classdiagram)
-	}
-	sort.Slice(classdiagramOrdered[:], func(i, j int) bool {
-		return classdiagramOrdered[i].Name < classdiagramOrdered[j].Name
-	})
-	return classdiagramOrdered
-}
-
 // Stage puts classdiagram to the model stage
 func (classdiagram *Classdiagram) Stage() *Classdiagram {
 	Stage.Classdiagrams[classdiagram] = __member
@@ -322,42 +335,6 @@ func DeleteORMClassdiagram(classdiagram *Classdiagram) {
 // for satisfaction of GongStruct interface
 func (classdiagram *Classdiagram) GetName() (res string) {
 	return classdiagram.Name
-}
-
-func (classdiagram *Classdiagram) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Classshapes", "IsEditable"}
-	return
-}
-
-func (classdiagram *Classdiagram) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = classdiagram.Name
-	case "Classshapes":
-		for idx, __instance__ := range classdiagram.Classshapes {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "IsEditable":
-		res = fmt.Sprintf("%t", classdiagram.IsEditable)
-	}
-	return
-}
-
-func (stage *StageStruct) getClassshapeOrderedStructWithNameField() []*Classshape {
-	// have alphabetical order generation
-	classshapeOrdered := []*Classshape{}
-	for classshape := range stage.Classshapes {
-		classshapeOrdered = append(classshapeOrdered, classshape)
-	}
-	sort.Slice(classshapeOrdered[:], func(i, j int) bool {
-		return classshapeOrdered[i].Name < classshapeOrdered[j].Name
-	})
-	return classshapeOrdered
 }
 
 // Stage puts classshape to the model stage
@@ -455,67 +432,6 @@ func (classshape *Classshape) GetName() (res string) {
 	return classshape.Name
 }
 
-func (classshape *Classshape) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Position", "Structname", "GongStruct", "ShowNbInstances", "NbInstances", "Fields", "Links", "Width", "Heigth", "ClassshapeTargetType"}
-	return
-}
-
-func (classshape *Classshape) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = classshape.Name
-	case "Position":
-		if classshape.Position != nil {
-			res = classshape.Position.Name
-		}
-	case "Structname":
-		res = classshape.Structname
-	case "GongStruct":
-		if classshape.GongStruct != nil {
-			res = classshape.GongStruct.Name
-		}
-	case "ShowNbInstances":
-		res = fmt.Sprintf("%t", classshape.ShowNbInstances)
-	case "NbInstances":
-		res = fmt.Sprintf("%d", classshape.NbInstances)
-	case "Fields":
-		for idx, __instance__ := range classshape.Fields {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Links":
-		for idx, __instance__ := range classshape.Links {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Width":
-		res = fmt.Sprintf("%f", classshape.Width)
-	case "Heigth":
-		res = fmt.Sprintf("%f", classshape.Heigth)
-	case "ClassshapeTargetType":
-		res = classshape.ClassshapeTargetType.ToCodeString()
-	}
-	return
-}
-
-func (stage *StageStruct) getFieldOrderedStructWithNameField() []*Field {
-	// have alphabetical order generation
-	fieldOrdered := []*Field{}
-	for field := range stage.Fields {
-		fieldOrdered = append(fieldOrdered, field)
-	}
-	sort.Slice(fieldOrdered[:], func(i, j int) bool {
-		return fieldOrdered[i].Name < fieldOrdered[j].Name
-	})
-	return fieldOrdered
-}
-
 // Stage puts field to the model stage
 func (field *Field) Stage() *Field {
 	Stage.Fields[field] = __member
@@ -609,41 +525,6 @@ func DeleteORMField(field *Field) {
 // for satisfaction of GongStruct interface
 func (field *Field) GetName() (res string) {
 	return field.Name
-}
-
-func (field *Field) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Fieldname", "FieldTypeAsString", "Structname", "Fieldtypename"}
-	return
-}
-
-func (field *Field) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = field.Name
-	case "Fieldname":
-		res = field.Fieldname
-	case "FieldTypeAsString":
-		res = field.FieldTypeAsString
-	case "Structname":
-		res = field.Structname
-	case "Fieldtypename":
-		res = field.Fieldtypename
-	}
-	return
-}
-
-func (stage *StageStruct) getGongStructOrderedStructWithNameField() []*GongStruct {
-	// have alphabetical order generation
-	gongstructOrdered := []*GongStruct{}
-	for gongstruct := range stage.GongStructs {
-		gongstructOrdered = append(gongstructOrdered, gongstruct)
-	}
-	sort.Slice(gongstructOrdered[:], func(i, j int) bool {
-		return gongstructOrdered[i].Name < gongstructOrdered[j].Name
-	})
-	return gongstructOrdered
 }
 
 // Stage puts gongstruct to the model stage
@@ -741,35 +622,6 @@ func (gongstruct *GongStruct) GetName() (res string) {
 	return gongstruct.Name
 }
 
-func (gongstruct *GongStruct) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "NbInstances"}
-	return
-}
-
-func (gongstruct *GongStruct) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = gongstruct.Name
-	case "NbInstances":
-		res = fmt.Sprintf("%d", gongstruct.NbInstances)
-	}
-	return
-}
-
-func (stage *StageStruct) getGongdocCommandOrderedStructWithNameField() []*GongdocCommand {
-	// have alphabetical order generation
-	gongdoccommandOrdered := []*GongdocCommand{}
-	for gongdoccommand := range stage.GongdocCommands {
-		gongdoccommandOrdered = append(gongdoccommandOrdered, gongdoccommand)
-	}
-	sort.Slice(gongdoccommandOrdered[:], func(i, j int) bool {
-		return gongdoccommandOrdered[i].Name < gongdoccommandOrdered[j].Name
-	})
-	return gongdoccommandOrdered
-}
-
 // Stage puts gongdoccommand to the model stage
 func (gongdoccommand *GongdocCommand) Stage() *GongdocCommand {
 	Stage.GongdocCommands[gongdoccommand] = __member
@@ -863,51 +715,6 @@ func DeleteORMGongdocCommand(gongdoccommand *GongdocCommand) {
 // for satisfaction of GongStruct interface
 func (gongdoccommand *GongdocCommand) GetName() (res string) {
 	return gongdoccommand.Name
-}
-
-func (gongdoccommand *GongdocCommand) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Command", "DiagramName", "Date", "GongdocNodeType", "StructName", "FieldName", "FieldTypeName", "PositionX", "PositionY"}
-	return
-}
-
-func (gongdoccommand *GongdocCommand) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = gongdoccommand.Name
-	case "Command":
-		res = gongdoccommand.Command.ToCodeString()
-	case "DiagramName":
-		res = gongdoccommand.DiagramName
-	case "Date":
-		res = gongdoccommand.Date
-	case "GongdocNodeType":
-		res = gongdoccommand.GongdocNodeType.ToCodeString()
-	case "StructName":
-		res = gongdoccommand.StructName
-	case "FieldName":
-		res = gongdoccommand.FieldName
-	case "FieldTypeName":
-		res = gongdoccommand.FieldTypeName
-	case "PositionX":
-		res = fmt.Sprintf("%d", gongdoccommand.PositionX)
-	case "PositionY":
-		res = fmt.Sprintf("%d", gongdoccommand.PositionY)
-	}
-	return
-}
-
-func (stage *StageStruct) getGongdocStatusOrderedStructWithNameField() []*GongdocStatus {
-	// have alphabetical order generation
-	gongdocstatusOrdered := []*GongdocStatus{}
-	for gongdocstatus := range stage.GongdocStatuss {
-		gongdocstatusOrdered = append(gongdocstatusOrdered, gongdocstatus)
-	}
-	sort.Slice(gongdocstatusOrdered[:], func(i, j int) bool {
-		return gongdocstatusOrdered[i].Name < gongdocstatusOrdered[j].Name
-	})
-	return gongdocstatusOrdered
 }
 
 // Stage puts gongdocstatus to the model stage
@@ -1005,37 +812,6 @@ func (gongdocstatus *GongdocStatus) GetName() (res string) {
 	return gongdocstatus.Name
 }
 
-func (gongdocstatus *GongdocStatus) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Status", "CommandCompletionDate"}
-	return
-}
-
-func (gongdocstatus *GongdocStatus) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = gongdocstatus.Name
-	case "Status":
-		res = gongdocstatus.Status.ToCodeString()
-	case "CommandCompletionDate":
-		res = gongdocstatus.CommandCompletionDate
-	}
-	return
-}
-
-func (stage *StageStruct) getLinkOrderedStructWithNameField() []*Link {
-	// have alphabetical order generation
-	linkOrdered := []*Link{}
-	for link := range stage.Links {
-		linkOrdered = append(linkOrdered, link)
-	}
-	sort.Slice(linkOrdered[:], func(i, j int) bool {
-		return linkOrdered[i].Name < linkOrdered[j].Name
-	})
-	return linkOrdered
-}
-
 // Stage puts link to the model stage
 func (link *Link) Stage() *Link {
 	Stage.Links[link] = __member
@@ -1131,45 +907,99 @@ func (link *Link) GetName() (res string) {
 	return link.Name
 }
 
-func (link *Link) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Fieldname", "Structname", "Fieldtypename", "TargetMultiplicity", "SourceMultiplicity", "Middlevertice"}
-	return
+// Stage puts note to the model stage
+func (note *Note) Stage() *Note {
+	Stage.Notes[note] = __member
+	Stage.Notes_mapString[note.Name] = note
+
+	return note
 }
 
-func (link *Link) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = link.Name
-	case "Fieldname":
-		res = link.Fieldname
-	case "Structname":
-		res = link.Structname
-	case "Fieldtypename":
-		res = link.Fieldtypename
-	case "TargetMultiplicity":
-		res = link.TargetMultiplicity.ToCodeString()
-	case "SourceMultiplicity":
-		res = link.SourceMultiplicity.ToCodeString()
-	case "Middlevertice":
-		if link.Middlevertice != nil {
-			res = link.Middlevertice.Name
+// Unstage removes note off the model stage
+func (note *Note) Unstage() *Note {
+	delete(Stage.Notes, note)
+	delete(Stage.Notes_mapString, note.Name)
+	return note
+}
+
+// commit note to the back repo (if it is already staged)
+func (note *Note) Commit() *Note {
+	if _, ok := Stage.Notes[note]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CommitNote(note)
 		}
 	}
-	return
+	return note
 }
 
-func (stage *StageStruct) getPkgeltOrderedStructWithNameField() []*Pkgelt {
-	// have alphabetical order generation
-	pkgeltOrdered := []*Pkgelt{}
-	for pkgelt := range stage.Pkgelts {
-		pkgeltOrdered = append(pkgeltOrdered, pkgelt)
+// Checkout note to the back repo (if it is already staged)
+func (note *Note) Checkout() *Note {
+	if _, ok := Stage.Notes[note]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CheckoutNote(note)
+		}
 	}
-	sort.Slice(pkgeltOrdered[:], func(i, j int) bool {
-		return pkgeltOrdered[i].Name < pkgeltOrdered[j].Name
-	})
-	return pkgeltOrdered
+	return note
+}
+
+//
+// Legacy, to be deleted
+//
+
+// StageCopy appends a copy of note to the model stage
+func (note *Note) StageCopy() *Note {
+	_note := new(Note)
+	*_note = *note
+	_note.Stage()
+	return _note
+}
+
+// StageAndCommit appends note to the model stage and commit to the orm repo
+func (note *Note) StageAndCommit() *Note {
+	note.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMNote(note)
+	}
+	return note
+}
+
+// DeleteStageAndCommit appends note to the model stage and commit to the orm repo
+func (note *Note) DeleteStageAndCommit() *Note {
+	note.Unstage()
+	DeleteORMNote(note)
+	return note
+}
+
+// StageCopyAndCommit appends a copy of note to the model stage and commit to the orm repo
+func (note *Note) StageCopyAndCommit() *Note {
+	_note := new(Note)
+	*_note = *note
+	_note.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMNote(note)
+	}
+	return _note
+}
+
+// CreateORMNote enables dynamic staging of a Note instance
+func CreateORMNote(note *Note) {
+	note.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMNote(note)
+	}
+}
+
+// DeleteORMNote enables dynamic staging of a Note instance
+func DeleteORMNote(note *Note) {
+	note.Unstage()
+	if Stage.AllModelsStructDeleteCallback != nil {
+		Stage.AllModelsStructDeleteCallback.DeleteORMNote(note)
+	}
+}
+
+// for satisfaction of GongStruct interface
+func (note *Note) GetName() (res string) {
+	return note.Name
 }
 
 // Stage puts pkgelt to the model stage
@@ -1267,51 +1097,6 @@ func (pkgelt *Pkgelt) GetName() (res string) {
 	return pkgelt.Name
 }
 
-func (pkgelt *Pkgelt) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Path", "GongModelPath", "Classdiagrams", "Umlscs"}
-	return
-}
-
-func (pkgelt *Pkgelt) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = pkgelt.Name
-	case "Path":
-		res = pkgelt.Path
-	case "GongModelPath":
-		res = pkgelt.GongModelPath
-	case "Classdiagrams":
-		for idx, __instance__ := range pkgelt.Classdiagrams {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Umlscs":
-		for idx, __instance__ := range pkgelt.Umlscs {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getPositionOrderedStructWithNameField() []*Position {
-	// have alphabetical order generation
-	positionOrdered := []*Position{}
-	for position := range stage.Positions {
-		positionOrdered = append(positionOrdered, position)
-	}
-	sort.Slice(positionOrdered[:], func(i, j int) bool {
-		return positionOrdered[i].Name < positionOrdered[j].Name
-	})
-	return positionOrdered
-}
-
 // Stage puts position to the model stage
 func (position *Position) Stage() *Position {
 	Stage.Positions[position] = __member
@@ -1405,37 +1190,6 @@ func DeleteORMPosition(position *Position) {
 // for satisfaction of GongStruct interface
 func (position *Position) GetName() (res string) {
 	return position.Name
-}
-
-func (position *Position) GetFields() (res []string) {
-	// list of fields
-	res = []string{"X", "Y", "Name"}
-	return
-}
-
-func (position *Position) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "X":
-		res = fmt.Sprintf("%f", position.X)
-	case "Y":
-		res = fmt.Sprintf("%f", position.Y)
-	case "Name":
-		res = position.Name
-	}
-	return
-}
-
-func (stage *StageStruct) getUmlStateOrderedStructWithNameField() []*UmlState {
-	// have alphabetical order generation
-	umlstateOrdered := []*UmlState{}
-	for umlstate := range stage.UmlStates {
-		umlstateOrdered = append(umlstateOrdered, umlstate)
-	}
-	sort.Slice(umlstateOrdered[:], func(i, j int) bool {
-		return umlstateOrdered[i].Name < umlstateOrdered[j].Name
-	})
-	return umlstateOrdered
 }
 
 // Stage puts umlstate to the model stage
@@ -1533,37 +1287,6 @@ func (umlstate *UmlState) GetName() (res string) {
 	return umlstate.Name
 }
 
-func (umlstate *UmlState) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "X", "Y"}
-	return
-}
-
-func (umlstate *UmlState) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = umlstate.Name
-	case "X":
-		res = fmt.Sprintf("%f", umlstate.X)
-	case "Y":
-		res = fmt.Sprintf("%f", umlstate.Y)
-	}
-	return
-}
-
-func (stage *StageStruct) getUmlscOrderedStructWithNameField() []*Umlsc {
-	// have alphabetical order generation
-	umlscOrdered := []*Umlsc{}
-	for umlsc := range stage.Umlscs {
-		umlscOrdered = append(umlscOrdered, umlsc)
-	}
-	sort.Slice(umlscOrdered[:], func(i, j int) bool {
-		return umlscOrdered[i].Name < umlscOrdered[j].Name
-	})
-	return umlscOrdered
-}
-
 // Stage puts umlsc to the model stage
 func (umlsc *Umlsc) Stage() *Umlsc {
 	Stage.Umlscs[umlsc] = __member
@@ -1657,42 +1380,6 @@ func DeleteORMUmlsc(umlsc *Umlsc) {
 // for satisfaction of GongStruct interface
 func (umlsc *Umlsc) GetName() (res string) {
 	return umlsc.Name
-}
-
-func (umlsc *Umlsc) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "States", "Activestate"}
-	return
-}
-
-func (umlsc *Umlsc) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = umlsc.Name
-	case "States":
-		for idx, __instance__ := range umlsc.States {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Activestate":
-		res = umlsc.Activestate
-	}
-	return
-}
-
-func (stage *StageStruct) getVerticeOrderedStructWithNameField() []*Vertice {
-	// have alphabetical order generation
-	verticeOrdered := []*Vertice{}
-	for vertice := range stage.Vertices {
-		verticeOrdered = append(verticeOrdered, vertice)
-	}
-	sort.Slice(verticeOrdered[:], func(i, j int) bool {
-		return verticeOrdered[i].Name < verticeOrdered[j].Name
-	})
-	return verticeOrdered
 }
 
 // Stage puts vertice to the model stage
@@ -1790,25 +1477,6 @@ func (vertice *Vertice) GetName() (res string) {
 	return vertice.Name
 }
 
-func (vertice *Vertice) GetFields() (res []string) {
-	// list of fields
-	res = []string{"X", "Y", "Name"}
-	return
-}
-
-func (vertice *Vertice) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "X":
-		res = fmt.Sprintf("%f", vertice.X)
-	case "Y":
-		res = fmt.Sprintf("%f", vertice.Y)
-	case "Name":
-		res = vertice.Name
-	}
-	return
-}
-
 // swagger:ignore
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
 	CreateORMClassdiagram(Classdiagram *Classdiagram)
@@ -1818,6 +1486,7 @@ type AllModelsStructCreateInterface interface { // insertion point for Callbacks
 	CreateORMGongdocCommand(GongdocCommand *GongdocCommand)
 	CreateORMGongdocStatus(GongdocStatus *GongdocStatus)
 	CreateORMLink(Link *Link)
+	CreateORMNote(Note *Note)
 	CreateORMPkgelt(Pkgelt *Pkgelt)
 	CreateORMPosition(Position *Position)
 	CreateORMUmlState(UmlState *UmlState)
@@ -1833,6 +1502,7 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 	DeleteORMGongdocCommand(GongdocCommand *GongdocCommand)
 	DeleteORMGongdocStatus(GongdocStatus *GongdocStatus)
 	DeleteORMLink(Link *Link)
+	DeleteORMNote(Note *Note)
 	DeleteORMPkgelt(Pkgelt *Pkgelt)
 	DeleteORMPosition(Position *Position)
 	DeleteORMUmlState(UmlState *UmlState)
@@ -1841,40 +1511,43 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
-	stage.Classdiagrams = make(map[*Classdiagram]struct{})
+	stage.Classdiagrams = make(map[*Classdiagram]any)
 	stage.Classdiagrams_mapString = make(map[string]*Classdiagram)
 
-	stage.Classshapes = make(map[*Classshape]struct{})
+	stage.Classshapes = make(map[*Classshape]any)
 	stage.Classshapes_mapString = make(map[string]*Classshape)
 
-	stage.Fields = make(map[*Field]struct{})
+	stage.Fields = make(map[*Field]any)
 	stage.Fields_mapString = make(map[string]*Field)
 
-	stage.GongStructs = make(map[*GongStruct]struct{})
+	stage.GongStructs = make(map[*GongStruct]any)
 	stage.GongStructs_mapString = make(map[string]*GongStruct)
 
-	stage.GongdocCommands = make(map[*GongdocCommand]struct{})
+	stage.GongdocCommands = make(map[*GongdocCommand]any)
 	stage.GongdocCommands_mapString = make(map[string]*GongdocCommand)
 
-	stage.GongdocStatuss = make(map[*GongdocStatus]struct{})
+	stage.GongdocStatuss = make(map[*GongdocStatus]any)
 	stage.GongdocStatuss_mapString = make(map[string]*GongdocStatus)
 
-	stage.Links = make(map[*Link]struct{})
+	stage.Links = make(map[*Link]any)
 	stage.Links_mapString = make(map[string]*Link)
 
-	stage.Pkgelts = make(map[*Pkgelt]struct{})
+	stage.Notes = make(map[*Note]any)
+	stage.Notes_mapString = make(map[string]*Note)
+
+	stage.Pkgelts = make(map[*Pkgelt]any)
 	stage.Pkgelts_mapString = make(map[string]*Pkgelt)
 
-	stage.Positions = make(map[*Position]struct{})
+	stage.Positions = make(map[*Position]any)
 	stage.Positions_mapString = make(map[string]*Position)
 
-	stage.UmlStates = make(map[*UmlState]struct{})
+	stage.UmlStates = make(map[*UmlState]any)
 	stage.UmlStates_mapString = make(map[string]*UmlState)
 
-	stage.Umlscs = make(map[*Umlsc]struct{})
+	stage.Umlscs = make(map[*Umlsc]any)
 	stage.Umlscs_mapString = make(map[string]*Umlsc)
 
-	stage.Vertices = make(map[*Vertice]struct{})
+	stage.Vertices = make(map[*Vertice]any)
 	stage.Vertices_mapString = make(map[string]*Vertice)
 
 }
@@ -1900,6 +1573,9 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 	stage.Links = nil
 	stage.Links_mapString = nil
+
+	stage.Notes = nil
+	stage.Notes_mapString = nil
 
 	stage.Pkgelts = nil
 	stage.Pkgelts_mapString = nil
@@ -2002,7 +1678,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(classdiagramOrdered[:], func(i, j int) bool {
 		return classdiagramOrdered[i].Name < classdiagramOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Classdiagram")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Classdiagram"
 	for idx, classdiagram := range classdiagramOrdered {
 
 		id = generatesIdentifier("Classdiagram", idx, classdiagram.Name)
@@ -2040,7 +1716,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(classshapeOrdered[:], func(i, j int) bool {
 		return classshapeOrdered[i].Name < classshapeOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Classshape")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Classshape"
 	for idx, classshape := range classshapeOrdered {
 
 		id = generatesIdentifier("Classshape", idx, classshape.Name)
@@ -2110,7 +1786,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(fieldOrdered[:], func(i, j int) bool {
 		return fieldOrdered[i].Name < fieldOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Field")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Field"
 	for idx, field := range fieldOrdered {
 
 		id = generatesIdentifier("Field", idx, field.Name)
@@ -2166,7 +1842,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(gongstructOrdered[:], func(i, j int) bool {
 		return gongstructOrdered[i].Name < gongstructOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of GongStruct")
+	identifiersDecl += "\n\n	// Declarations of staged instances of GongStruct"
 	for idx, gongstruct := range gongstructOrdered {
 
 		id = generatesIdentifier("GongStruct", idx, gongstruct.Name)
@@ -2204,7 +1880,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(gongdoccommandOrdered[:], func(i, j int) bool {
 		return gongdoccommandOrdered[i].Name < gongdoccommandOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of GongdocCommand")
+	identifiersDecl += "\n\n	// Declarations of staged instances of GongdocCommand"
 	for idx, gongdoccommand := range gongdoccommandOrdered {
 
 		id = generatesIdentifier("GongdocCommand", idx, gongdoccommand.Name)
@@ -2282,6 +1958,12 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%d", gongdoccommand.PositionY))
 		initializerStatements += setValueField
 
+		setValueField = StringInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "NoteName")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(gongdoccommand.NoteName))
+		initializerStatements += setValueField
+
 	}
 
 	map_GongdocStatus_Identifiers := make(map[*GongdocStatus]string)
@@ -2294,7 +1976,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(gongdocstatusOrdered[:], func(i, j int) bool {
 		return gongdocstatusOrdered[i].Name < gongdocstatusOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of GongdocStatus")
+	identifiersDecl += "\n\n	// Declarations of staged instances of GongdocStatus"
 	for idx, gongdocstatus := range gongdocstatusOrdered {
 
 		id = generatesIdentifier("GongdocStatus", idx, gongdocstatus.Name)
@@ -2340,7 +2022,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(linkOrdered[:], func(i, j int) bool {
 		return linkOrdered[i].Name < linkOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Link")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Link"
 	for idx, link := range linkOrdered {
 
 		id = generatesIdentifier("Link", idx, link.Name)
@@ -2396,6 +2078,68 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	map_Note_Identifiers := make(map[*Note]string)
+	_ = map_Note_Identifiers
+
+	noteOrdered := []*Note{}
+	for note := range stage.Notes {
+		noteOrdered = append(noteOrdered, note)
+	}
+	sort.Slice(noteOrdered[:], func(i, j int) bool {
+		return noteOrdered[i].Name < noteOrdered[j].Name
+	})
+	identifiersDecl += "\n\n	// Declarations of staged instances of Note"
+	for idx, note := range noteOrdered {
+
+		id = generatesIdentifier("Note", idx, note.Name)
+		map_Note_Identifiers[note] = id
+
+		decl = IdentifiersDecls
+		decl = strings.ReplaceAll(decl, "{{Identifier}}", id)
+		decl = strings.ReplaceAll(decl, "{{GeneratedStructName}}", "Note")
+		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", note.Name)
+		identifiersDecl += decl
+
+		initializerStatements += fmt.Sprintf("\n\n	// Note %s values setup", note.Name)
+		// Initialisation of values
+		setValueField = StringInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Name")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(note.Name))
+		initializerStatements += setValueField
+
+		setValueField = StringInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Body")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(note.Body))
+		initializerStatements += setValueField
+
+		setValueField = NumberInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "X")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%f", note.X))
+		initializerStatements += setValueField
+
+		setValueField = NumberInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Y")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%f", note.Y))
+		initializerStatements += setValueField
+
+		setValueField = NumberInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Width")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%f", note.Width))
+		initializerStatements += setValueField
+
+		setValueField = NumberInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Heigth")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%f", note.Heigth))
+		initializerStatements += setValueField
+
+	}
+
 	map_Pkgelt_Identifiers := make(map[*Pkgelt]string)
 	_ = map_Pkgelt_Identifiers
 
@@ -2406,7 +2150,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(pkgeltOrdered[:], func(i, j int) bool {
 		return pkgeltOrdered[i].Name < pkgeltOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Pkgelt")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Pkgelt"
 	for idx, pkgelt := range pkgeltOrdered {
 
 		id = generatesIdentifier("Pkgelt", idx, pkgelt.Name)
@@ -2438,6 +2182,12 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(pkgelt.GongModelPath))
 		initializerStatements += setValueField
 
+		setValueField = NumberInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Editable")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%t", pkgelt.Editable))
+		initializerStatements += setValueField
+
 	}
 
 	map_Position_Identifiers := make(map[*Position]string)
@@ -2450,7 +2200,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(positionOrdered[:], func(i, j int) bool {
 		return positionOrdered[i].Name < positionOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Position")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Position"
 	for idx, position := range positionOrdered {
 
 		id = generatesIdentifier("Position", idx, position.Name)
@@ -2494,7 +2244,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(umlstateOrdered[:], func(i, j int) bool {
 		return umlstateOrdered[i].Name < umlstateOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of UmlState")
+	identifiersDecl += "\n\n	// Declarations of staged instances of UmlState"
 	for idx, umlstate := range umlstateOrdered {
 
 		id = generatesIdentifier("UmlState", idx, umlstate.Name)
@@ -2538,7 +2288,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(umlscOrdered[:], func(i, j int) bool {
 		return umlscOrdered[i].Name < umlscOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Umlsc")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Umlsc"
 	for idx, umlsc := range umlscOrdered {
 
 		id = generatesIdentifier("Umlsc", idx, umlsc.Name)
@@ -2576,7 +2326,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(verticeOrdered[:], func(i, j int) bool {
 		return verticeOrdered[i].Name < verticeOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Vertice")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Vertice"
 	for idx, vertice := range verticeOrdered {
 
 		id = generatesIdentifier("Vertice", idx, vertice.Name)
@@ -2624,6 +2374,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
 			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Classshapes")
 			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Classshape_Identifiers[_classshape])
+			pointersInitializesStatements += setPointerField
+		}
+
+		for _, _note := range classdiagram.Notes {
+			setPointerField = SliceOfPointersFieldInitStatement
+			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Notes")
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Note_Identifiers[_note])
 			pointersInitializesStatements += setPointerField
 		}
 
@@ -2729,6 +2487,16 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	for idx, note := range noteOrdered {
+		var setPointerField string
+		_ = setPointerField
+
+		id = generatesIdentifier("Note", idx, note.Name)
+		map_Note_Identifiers[note] = id
+
+		// Initialisation of values
+	}
+
 	for idx, pkgelt := range pkgeltOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -2827,6 +2595,7 @@ func generatesIdentifier(gongStructName string, idx int, instanceName string) (i
 }
 
 // insertion point of functions that provide maps for reverse associations
+
 // generate function for reverse association maps of Classdiagram
 func (stageStruct *StageStruct) CreateReverseMap_Classdiagram_Classshapes() (res map[*Classshape]*Classdiagram) {
 	res = make(map[*Classshape]*Classdiagram)
@@ -2839,6 +2608,19 @@ func (stageStruct *StageStruct) CreateReverseMap_Classdiagram_Classshapes() (res
 
 	return
 }
+
+func (stageStruct *StageStruct) CreateReverseMap_Classdiagram_Notes() (res map[*Note]*Classdiagram) {
+	res = make(map[*Note]*Classdiagram)
+
+	for classdiagram := range stageStruct.Classdiagrams {
+		for _, note_ := range classdiagram.Notes {
+			res[note_] = classdiagram
+		}
+	}
+
+	return
+}
+
 
 // generate function for reverse association maps of Classshape
 func (stageStruct *StageStruct) CreateReverseMap_Classshape_Position() (res map[*Position][]*Classshape) {
@@ -2861,7 +2643,6 @@ func (stageStruct *StageStruct) CreateReverseMap_Classshape_Position() (res map[
 
 	return
 }
-
 func (stageStruct *StageStruct) CreateReverseMap_Classshape_GongStruct() (res map[*GongStruct][]*Classshape) {
 	res = make(map[*GongStruct][]*Classshape)
 
@@ -2882,7 +2663,6 @@ func (stageStruct *StageStruct) CreateReverseMap_Classshape_GongStruct() (res ma
 
 	return
 }
-
 func (stageStruct *StageStruct) CreateReverseMap_Classshape_Fields() (res map[*Field]*Classshape) {
 	res = make(map[*Field]*Classshape)
 
@@ -2907,10 +2687,15 @@ func (stageStruct *StageStruct) CreateReverseMap_Classshape_Links() (res map[*Li
 	return
 }
 
+
 // generate function for reverse association maps of Field
+
 // generate function for reverse association maps of GongStruct
+
 // generate function for reverse association maps of GongdocCommand
+
 // generate function for reverse association maps of GongdocStatus
+
 // generate function for reverse association maps of Link
 func (stageStruct *StageStruct) CreateReverseMap_Link_Middlevertice() (res map[*Vertice][]*Link) {
 	res = make(map[*Vertice][]*Link)
@@ -2932,6 +2717,8 @@ func (stageStruct *StageStruct) CreateReverseMap_Link_Middlevertice() (res map[*
 
 	return
 }
+
+// generate function for reverse association maps of Note
 
 // generate function for reverse association maps of Pkgelt
 func (stageStruct *StageStruct) CreateReverseMap_Pkgelt_Classdiagrams() (res map[*Classdiagram]*Pkgelt) {
@@ -2958,8 +2745,11 @@ func (stageStruct *StageStruct) CreateReverseMap_Pkgelt_Umlscs() (res map[*Umlsc
 	return
 }
 
+
 // generate function for reverse association maps of Position
+
 // generate function for reverse association maps of UmlState
+
 // generate function for reverse association maps of Umlsc
 func (stageStruct *StageStruct) CreateReverseMap_Umlsc_States() (res map[*UmlState]*Umlsc) {
 	res = make(map[*UmlState]*Umlsc)
@@ -2973,7 +2763,888 @@ func (stageStruct *StageStruct) CreateReverseMap_Umlsc_States() (res map[*UmlSta
 	return
 }
 
+
 // generate function for reverse association maps of Vertice
+
+// Gongstruct is the type parameter for generated generic function that allows
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type Gongstruct interface {
+	// insertion point for generic types
+	Classdiagram | Classshape | Field | GongStruct | GongdocCommand | GongdocStatus | Link | Note | Pkgelt | Position | UmlState | Umlsc | Vertice
+}
+
+// Gongstruct is the type parameter for generated generic function that allows
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type PointerToGongstruct interface {
+	// insertion point for generic types
+	*Classdiagram | *Classshape | *Field | *GongStruct | *GongdocCommand | *GongdocStatus | *Link | *Note | *Pkgelt | *Position | *UmlState | *Umlsc | *Vertice
+	GetName() string
+}
+
+type GongstructSet interface {
+	map[any]any |
+		// insertion point for generic types
+		map[*Classdiagram]any |
+		map[*Classshape]any |
+		map[*Field]any |
+		map[*GongStruct]any |
+		map[*GongdocCommand]any |
+		map[*GongdocStatus]any |
+		map[*Link]any |
+		map[*Note]any |
+		map[*Pkgelt]any |
+		map[*Position]any |
+		map[*UmlState]any |
+		map[*Umlsc]any |
+		map[*Vertice]any |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+type GongstructMapString interface {
+	map[any]any |
+		// insertion point for generic types
+		map[string]*Classdiagram |
+		map[string]*Classshape |
+		map[string]*Field |
+		map[string]*GongStruct |
+		map[string]*GongdocCommand |
+		map[string]*GongdocStatus |
+		map[string]*Link |
+		map[string]*Note |
+		map[string]*Pkgelt |
+		map[string]*Position |
+		map[string]*UmlState |
+		map[string]*Umlsc |
+		map[string]*Vertice |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+// GongGetSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetSet[Type GongstructSet]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[*Classdiagram]any:
+		return any(&Stage.Classdiagrams).(*Type)
+	case map[*Classshape]any:
+		return any(&Stage.Classshapes).(*Type)
+	case map[*Field]any:
+		return any(&Stage.Fields).(*Type)
+	case map[*GongStruct]any:
+		return any(&Stage.GongStructs).(*Type)
+	case map[*GongdocCommand]any:
+		return any(&Stage.GongdocCommands).(*Type)
+	case map[*GongdocStatus]any:
+		return any(&Stage.GongdocStatuss).(*Type)
+	case map[*Link]any:
+		return any(&Stage.Links).(*Type)
+	case map[*Note]any:
+		return any(&Stage.Notes).(*Type)
+	case map[*Pkgelt]any:
+		return any(&Stage.Pkgelts).(*Type)
+	case map[*Position]any:
+		return any(&Stage.Positions).(*Type)
+	case map[*UmlState]any:
+		return any(&Stage.UmlStates).(*Type)
+	case map[*Umlsc]any:
+		return any(&Stage.Umlscs).(*Type)
+	case map[*Vertice]any:
+		return any(&Stage.Vertices).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GongGetMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetMap[Type GongstructMapString]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[string]*Classdiagram:
+		return any(&Stage.Classdiagrams_mapString).(*Type)
+	case map[string]*Classshape:
+		return any(&Stage.Classshapes_mapString).(*Type)
+	case map[string]*Field:
+		return any(&Stage.Fields_mapString).(*Type)
+	case map[string]*GongStruct:
+		return any(&Stage.GongStructs_mapString).(*Type)
+	case map[string]*GongdocCommand:
+		return any(&Stage.GongdocCommands_mapString).(*Type)
+	case map[string]*GongdocStatus:
+		return any(&Stage.GongdocStatuss_mapString).(*Type)
+	case map[string]*Link:
+		return any(&Stage.Links_mapString).(*Type)
+	case map[string]*Note:
+		return any(&Stage.Notes_mapString).(*Type)
+	case map[string]*Pkgelt:
+		return any(&Stage.Pkgelts_mapString).(*Type)
+	case map[string]*Position:
+		return any(&Stage.Positions_mapString).(*Type)
+	case map[string]*UmlState:
+		return any(&Stage.UmlStates_mapString).(*Type)
+	case map[string]*Umlsc:
+		return any(&Stage.Umlscs_mapString).(*Type)
+	case map[string]*Vertice:
+		return any(&Stage.Vertices_mapString).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GetGongstructInstancesSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gongstruct identifier
+func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Classdiagram:
+		return any(&Stage.Classdiagrams).(*map[*Type]any)
+	case Classshape:
+		return any(&Stage.Classshapes).(*map[*Type]any)
+	case Field:
+		return any(&Stage.Fields).(*map[*Type]any)
+	case GongStruct:
+		return any(&Stage.GongStructs).(*map[*Type]any)
+	case GongdocCommand:
+		return any(&Stage.GongdocCommands).(*map[*Type]any)
+	case GongdocStatus:
+		return any(&Stage.GongdocStatuss).(*map[*Type]any)
+	case Link:
+		return any(&Stage.Links).(*map[*Type]any)
+	case Note:
+		return any(&Stage.Notes).(*map[*Type]any)
+	case Pkgelt:
+		return any(&Stage.Pkgelts).(*map[*Type]any)
+	case Position:
+		return any(&Stage.Positions).(*map[*Type]any)
+	case UmlState:
+		return any(&Stage.UmlStates).(*map[*Type]any)
+	case Umlsc:
+		return any(&Stage.Umlscs).(*map[*Type]any)
+	case Vertice:
+		return any(&Stage.Vertices).(*map[*Type]any)
+	default:
+		return nil
+	}
+}
+
+// GetGongstructInstancesMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GetGongstructInstancesMap[Type Gongstruct]() *map[string]*Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Classdiagram:
+		return any(&Stage.Classdiagrams_mapString).(*map[string]*Type)
+	case Classshape:
+		return any(&Stage.Classshapes_mapString).(*map[string]*Type)
+	case Field:
+		return any(&Stage.Fields_mapString).(*map[string]*Type)
+	case GongStruct:
+		return any(&Stage.GongStructs_mapString).(*map[string]*Type)
+	case GongdocCommand:
+		return any(&Stage.GongdocCommands_mapString).(*map[string]*Type)
+	case GongdocStatus:
+		return any(&Stage.GongdocStatuss_mapString).(*map[string]*Type)
+	case Link:
+		return any(&Stage.Links_mapString).(*map[string]*Type)
+	case Note:
+		return any(&Stage.Notes_mapString).(*map[string]*Type)
+	case Pkgelt:
+		return any(&Stage.Pkgelts_mapString).(*map[string]*Type)
+	case Position:
+		return any(&Stage.Positions_mapString).(*map[string]*Type)
+	case UmlState:
+		return any(&Stage.UmlStates_mapString).(*map[string]*Type)
+	case Umlsc:
+		return any(&Stage.Umlscs_mapString).(*map[string]*Type)
+	case Vertice:
+		return any(&Stage.Vertices_mapString).(*map[string]*Type)
+	default:
+		return nil
+	}
+}
+
+// GetAssociationName is a generic function that returns an instance of Type
+// where each association is filled with an instance whose name is the name of the association
+//
+// This function can be handy for generating navigation function that are refactorable
+func GetAssociationName[Type Gongstruct]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for instance with special fields
+	case Classdiagram:
+		return any(&Classdiagram{
+			// Initialisation of associations
+			// field is initialized with an instance of Classshape with the name of the field
+			Classshapes: []*Classshape{{Name: "Classshapes"}},
+			// field is initialized with an instance of Note with the name of the field
+			Notes: []*Note{{Name: "Notes"}},
+		}).(*Type)
+	case Classshape:
+		return any(&Classshape{
+			// Initialisation of associations
+			// field is initialized with an instance of Position with the name of the field
+			Position: &Position{Name: "Position"},
+			// field is initialized with an instance of GongStruct with the name of the field
+			GongStruct: &GongStruct{Name: "GongStruct"},
+			// field is initialized with an instance of Field with the name of the field
+			Fields: []*Field{{Name: "Fields"}},
+			// field is initialized with an instance of Link with the name of the field
+			Links: []*Link{{Name: "Links"}},
+		}).(*Type)
+	case Field:
+		return any(&Field{
+			// Initialisation of associations
+		}).(*Type)
+	case GongStruct:
+		return any(&GongStruct{
+			// Initialisation of associations
+		}).(*Type)
+	case GongdocCommand:
+		return any(&GongdocCommand{
+			// Initialisation of associations
+		}).(*Type)
+	case GongdocStatus:
+		return any(&GongdocStatus{
+			// Initialisation of associations
+		}).(*Type)
+	case Link:
+		return any(&Link{
+			// Initialisation of associations
+			// field is initialized with an instance of Vertice with the name of the field
+			Middlevertice: &Vertice{Name: "Middlevertice"},
+		}).(*Type)
+	case Note:
+		return any(&Note{
+			// Initialisation of associations
+		}).(*Type)
+	case Pkgelt:
+		return any(&Pkgelt{
+			// Initialisation of associations
+			// field is initialized with an instance of Classdiagram with the name of the field
+			Classdiagrams: []*Classdiagram{{Name: "Classdiagrams"}},
+			// field is initialized with an instance of Umlsc with the name of the field
+			Umlscs: []*Umlsc{{Name: "Umlscs"}},
+		}).(*Type)
+	case Position:
+		return any(&Position{
+			// Initialisation of associations
+		}).(*Type)
+	case UmlState:
+		return any(&UmlState{
+			// Initialisation of associations
+		}).(*Type)
+	case Umlsc:
+		return any(&Umlsc{
+			// Initialisation of associations
+			// field is initialized with an instance of UmlState with the name of the field
+			States: []*UmlState{{Name: "States"}},
+		}).(*Type)
+	case Vertice:
+		return any(&Vertice{
+			// Initialisation of associations
+		}).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GetPointerReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..1) that is a pointer from one staged Gongstruct (type Start)
+// instances to another (type End)
+//
+// The function provides a map with keys as instances of End and values to arrays of *Start
+// the map is construed by iterating over all Start instances and populationg keys with End instances
+// and values with slice of Start instances
+func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Classdiagram
+	case Classdiagram:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Classshape
+	case Classshape:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Position":
+			res := make(map[*Position][]*Classshape)
+			for classshape := range Stage.Classshapes {
+				if classshape.Position != nil {
+					position_ := classshape.Position
+					var classshapes []*Classshape
+					_, ok := res[position_]
+					if ok {
+						classshapes = res[position_]
+					} else {
+						classshapes = make([]*Classshape, 0)
+					}
+					classshapes = append(classshapes, classshape)
+					res[position_] = classshapes
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		case "GongStruct":
+			res := make(map[*GongStruct][]*Classshape)
+			for classshape := range Stage.Classshapes {
+				if classshape.GongStruct != nil {
+					gongstruct_ := classshape.GongStruct
+					var classshapes []*Classshape
+					_, ok := res[gongstruct_]
+					if ok {
+						classshapes = res[gongstruct_]
+					} else {
+						classshapes = make([]*Classshape, 0)
+					}
+					classshapes = append(classshapes, classshape)
+					res[gongstruct_] = classshapes
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		}
+	// reverse maps of direct associations of Field
+	case Field:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of GongStruct
+	case GongStruct:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of GongdocCommand
+	case GongdocCommand:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of GongdocStatus
+	case GongdocStatus:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Link
+	case Link:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Middlevertice":
+			res := make(map[*Vertice][]*Link)
+			for link := range Stage.Links {
+				if link.Middlevertice != nil {
+					vertice_ := link.Middlevertice
+					var links []*Link
+					_, ok := res[vertice_]
+					if ok {
+						links = res[vertice_]
+					} else {
+						links = make([]*Link, 0)
+					}
+					links = append(links, link)
+					res[vertice_] = links
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		}
+	// reverse maps of direct associations of Note
+	case Note:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Pkgelt
+	case Pkgelt:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Position
+	case Position:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of UmlState
+	case UmlState:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Umlsc
+	case Umlsc:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Vertice
+	case Vertice:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	}
+	return nil
+}
+
+// GetSliceOfPointersReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..N) between one staged Gongstruct instances and many others
+//
+// The function provides a map with keys as instances of End and values to *Start instances
+// the map is construed by iterating over all Start instances and populating keys with End instances
+// and values with the Start instances
+func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*End]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Classdiagram
+	case Classdiagram:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Classshapes":
+			res := make(map[*Classshape]*Classdiagram)
+			for classdiagram := range Stage.Classdiagrams {
+				for _, classshape_ := range classdiagram.Classshapes {
+					res[classshape_] = classdiagram
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Notes":
+			res := make(map[*Note]*Classdiagram)
+			for classdiagram := range Stage.Classdiagrams {
+				for _, note_ := range classdiagram.Notes {
+					res[note_] = classdiagram
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Classshape
+	case Classshape:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Fields":
+			res := make(map[*Field]*Classshape)
+			for classshape := range Stage.Classshapes {
+				for _, field_ := range classshape.Fields {
+					res[field_] = classshape
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Links":
+			res := make(map[*Link]*Classshape)
+			for classshape := range Stage.Classshapes {
+				for _, link_ := range classshape.Links {
+					res[link_] = classshape
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Field
+	case Field:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of GongStruct
+	case GongStruct:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of GongdocCommand
+	case GongdocCommand:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of GongdocStatus
+	case GongdocStatus:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Link
+	case Link:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Note
+	case Note:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Pkgelt
+	case Pkgelt:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Classdiagrams":
+			res := make(map[*Classdiagram]*Pkgelt)
+			for pkgelt := range Stage.Pkgelts {
+				for _, classdiagram_ := range pkgelt.Classdiagrams {
+					res[classdiagram_] = pkgelt
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Umlscs":
+			res := make(map[*Umlsc]*Pkgelt)
+			for pkgelt := range Stage.Pkgelts {
+				for _, umlsc_ := range pkgelt.Umlscs {
+					res[umlsc_] = pkgelt
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Position
+	case Position:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of UmlState
+	case UmlState:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Umlsc
+	case Umlsc:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "States":
+			res := make(map[*UmlState]*Umlsc)
+			for umlsc := range Stage.Umlscs {
+				for _, umlstate_ := range umlsc.States {
+					res[umlstate_] = umlsc
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Vertice
+	case Vertice:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	}
+	return nil
+}
+
+// GetGongstructName returns the name of the Gongstruct
+// this can be usefull if one want program robust to refactoring
+func GetGongstructName[Type Gongstruct]() (res string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Classdiagram:
+		res = "Classdiagram"
+	case Classshape:
+		res = "Classshape"
+	case Field:
+		res = "Field"
+	case GongStruct:
+		res = "GongStruct"
+	case GongdocCommand:
+		res = "GongdocCommand"
+	case GongdocStatus:
+		res = "GongdocStatus"
+	case Link:
+		res = "Link"
+	case Note:
+		res = "Note"
+	case Pkgelt:
+		res = "Pkgelt"
+	case Position:
+		res = "Position"
+	case UmlState:
+		res = "UmlState"
+	case Umlsc:
+		res = "Umlsc"
+	case Vertice:
+		res = "Vertice"
+	}
+	return res
+}
+
+// GetFields return the array of the fields
+func GetFields[Type Gongstruct]() (res []string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Classdiagram:
+		res = []string{"Name", "Classshapes", "Notes", "IsEditable"}
+	case Classshape:
+		res = []string{"Name", "Position", "Structname", "GongStruct", "ShowNbInstances", "NbInstances", "Fields", "Links", "Width", "Heigth", "ClassshapeTargetType"}
+	case Field:
+		res = []string{"Name", "Fieldname", "FieldTypeAsString", "Structname", "Fieldtypename"}
+	case GongStruct:
+		res = []string{"Name", "NbInstances"}
+	case GongdocCommand:
+		res = []string{"Name", "Command", "DiagramName", "Date", "GongdocNodeType", "StructName", "FieldName", "FieldTypeName", "PositionX", "PositionY", "NoteName"}
+	case GongdocStatus:
+		res = []string{"Name", "Status", "CommandCompletionDate"}
+	case Link:
+		res = []string{"Name", "Fieldname", "Structname", "Fieldtypename", "TargetMultiplicity", "SourceMultiplicity", "Middlevertice"}
+	case Note:
+		res = []string{"Name", "Body", "X", "Y", "Width", "Heigth"}
+	case Pkgelt:
+		res = []string{"Name", "Path", "GongModelPath", "Classdiagrams", "Umlscs", "Editable"}
+	case Position:
+		res = []string{"X", "Y", "Name"}
+	case UmlState:
+		res = []string{"Name", "X", "Y"}
+	case Umlsc:
+		res = []string{"Name", "States", "Activestate"}
+	case Vertice:
+		res = []string{"X", "Y", "Name"}
+	}
+	return
+}
+
+func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res string) {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct field value
+	case Classdiagram:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Classdiagram).Name
+		case "Classshapes":
+			for idx, __instance__ := range any(instance).(Classdiagram).Classshapes {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Notes":
+			for idx, __instance__ := range any(instance).(Classdiagram).Notes {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "IsEditable":
+			res = fmt.Sprintf("%t", any(instance).(Classdiagram).IsEditable)
+		}
+	case Classshape:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Classshape).Name
+		case "Position":
+			if any(instance).(Classshape).Position != nil {
+				res = any(instance).(Classshape).Position.Name
+			}
+		case "Structname":
+			res = any(instance).(Classshape).Structname
+		case "GongStruct":
+			if any(instance).(Classshape).GongStruct != nil {
+				res = any(instance).(Classshape).GongStruct.Name
+			}
+		case "ShowNbInstances":
+			res = fmt.Sprintf("%t", any(instance).(Classshape).ShowNbInstances)
+		case "NbInstances":
+			res = fmt.Sprintf("%d", any(instance).(Classshape).NbInstances)
+		case "Fields":
+			for idx, __instance__ := range any(instance).(Classshape).Fields {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Links":
+			for idx, __instance__ := range any(instance).(Classshape).Links {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Width":
+			res = fmt.Sprintf("%f", any(instance).(Classshape).Width)
+		case "Heigth":
+			res = fmt.Sprintf("%f", any(instance).(Classshape).Heigth)
+		case "ClassshapeTargetType":
+			enum := any(instance).(Classshape).ClassshapeTargetType
+			res = enum.ToCodeString()
+		}
+	case Field:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Field).Name
+		case "Fieldname":
+			res = any(instance).(Field).Fieldname
+		case "FieldTypeAsString":
+			res = any(instance).(Field).FieldTypeAsString
+		case "Structname":
+			res = any(instance).(Field).Structname
+		case "Fieldtypename":
+			res = any(instance).(Field).Fieldtypename
+		}
+	case GongStruct:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(GongStruct).Name
+		case "NbInstances":
+			res = fmt.Sprintf("%d", any(instance).(GongStruct).NbInstances)
+		}
+	case GongdocCommand:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(GongdocCommand).Name
+		case "Command":
+			enum := any(instance).(GongdocCommand).Command
+			res = enum.ToCodeString()
+		case "DiagramName":
+			res = any(instance).(GongdocCommand).DiagramName
+		case "Date":
+			res = any(instance).(GongdocCommand).Date
+		case "GongdocNodeType":
+			enum := any(instance).(GongdocCommand).GongdocNodeType
+			res = enum.ToCodeString()
+		case "StructName":
+			res = any(instance).(GongdocCommand).StructName
+		case "FieldName":
+			res = any(instance).(GongdocCommand).FieldName
+		case "FieldTypeName":
+			res = any(instance).(GongdocCommand).FieldTypeName
+		case "PositionX":
+			res = fmt.Sprintf("%d", any(instance).(GongdocCommand).PositionX)
+		case "PositionY":
+			res = fmt.Sprintf("%d", any(instance).(GongdocCommand).PositionY)
+		case "NoteName":
+			res = any(instance).(GongdocCommand).NoteName
+		}
+	case GongdocStatus:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(GongdocStatus).Name
+		case "Status":
+			enum := any(instance).(GongdocStatus).Status
+			res = enum.ToCodeString()
+		case "CommandCompletionDate":
+			res = any(instance).(GongdocStatus).CommandCompletionDate
+		}
+	case Link:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Link).Name
+		case "Fieldname":
+			res = any(instance).(Link).Fieldname
+		case "Structname":
+			res = any(instance).(Link).Structname
+		case "Fieldtypename":
+			res = any(instance).(Link).Fieldtypename
+		case "TargetMultiplicity":
+			enum := any(instance).(Link).TargetMultiplicity
+			res = enum.ToCodeString()
+		case "SourceMultiplicity":
+			enum := any(instance).(Link).SourceMultiplicity
+			res = enum.ToCodeString()
+		case "Middlevertice":
+			if any(instance).(Link).Middlevertice != nil {
+				res = any(instance).(Link).Middlevertice.Name
+			}
+		}
+	case Note:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Note).Name
+		case "Body":
+			res = any(instance).(Note).Body
+		case "X":
+			res = fmt.Sprintf("%f", any(instance).(Note).X)
+		case "Y":
+			res = fmt.Sprintf("%f", any(instance).(Note).Y)
+		case "Width":
+			res = fmt.Sprintf("%f", any(instance).(Note).Width)
+		case "Heigth":
+			res = fmt.Sprintf("%f", any(instance).(Note).Heigth)
+		}
+	case Pkgelt:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Pkgelt).Name
+		case "Path":
+			res = any(instance).(Pkgelt).Path
+		case "GongModelPath":
+			res = any(instance).(Pkgelt).GongModelPath
+		case "Classdiagrams":
+			for idx, __instance__ := range any(instance).(Pkgelt).Classdiagrams {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Umlscs":
+			for idx, __instance__ := range any(instance).(Pkgelt).Umlscs {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Editable":
+			res = fmt.Sprintf("%t", any(instance).(Pkgelt).Editable)
+		}
+	case Position:
+		switch fieldName {
+		// string value of fields
+		case "X":
+			res = fmt.Sprintf("%f", any(instance).(Position).X)
+		case "Y":
+			res = fmt.Sprintf("%f", any(instance).(Position).Y)
+		case "Name":
+			res = any(instance).(Position).Name
+		}
+	case UmlState:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(UmlState).Name
+		case "X":
+			res = fmt.Sprintf("%f", any(instance).(UmlState).X)
+		case "Y":
+			res = fmt.Sprintf("%f", any(instance).(UmlState).Y)
+		}
+	case Umlsc:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Umlsc).Name
+		case "States":
+			for idx, __instance__ := range any(instance).(Umlsc).States {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Activestate":
+			res = any(instance).(Umlsc).Activestate
+		}
+	case Vertice:
+		switch fieldName {
+		// string value of fields
+		case "X":
+			res = fmt.Sprintf("%f", any(instance).(Vertice).X)
+		case "Y":
+			res = fmt.Sprintf("%f", any(instance).(Vertice).Y)
+		case "Name":
+			res = any(instance).(Vertice).Name
+		}
+	}
+	return
+}
 
 // insertion point of enum utility functions
 // Utility function for ClassshapeTargetType
@@ -2984,10 +3655,10 @@ func (classshapetargettype ClassshapeTargetType) ToString() (res string) {
 	// migration of former implementation of enum
 	switch classshapetargettype {
 	// insertion code per enum code
-	case ENUM:
-		res = "ENUM"
 	case STRUCT:
 		res = "STRUCT"
+	case ENUM:
+		res = "ENUM"
 	}
 	return
 }
@@ -2996,10 +3667,10 @@ func (classshapetargettype *ClassshapeTargetType) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "ENUM":
-		*classshapetargettype = ENUM
 	case "STRUCT":
 		*classshapetargettype = STRUCT
+	case "ENUM":
+		*classshapetargettype = ENUM
 	}
 }
 
@@ -3007,10 +3678,10 @@ func (classshapetargettype *ClassshapeTargetType) ToCodeString() (res string) {
 
 	switch *classshapetargettype {
 	// insertion code per enum code
-	case ENUM:
-		res = "ENUM"
 	case STRUCT:
 		res = "STRUCT"
+	case ENUM:
+		res = "ENUM"
 	}
 	return
 }
@@ -3023,10 +3694,10 @@ func (editionmode EditionMode) ToString() (res string) {
 	// migration of former implementation of enum
 	switch editionmode {
 	// insertion code per enum code
-	case DEVELOPMENT_MODE:
-		res = "DEVELOPMENT_MODE"
 	case PRODUCTION_MODE:
 		res = "PRODUCTION_MODE"
+	case DEVELOPMENT_MODE:
+		res = "DEVELOPMENT_MODE"
 	}
 	return
 }
@@ -3035,10 +3706,10 @@ func (editionmode *EditionMode) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "DEVELOPMENT_MODE":
-		*editionmode = DEVELOPMENT_MODE
 	case "PRODUCTION_MODE":
 		*editionmode = PRODUCTION_MODE
+	case "DEVELOPMENT_MODE":
+		*editionmode = DEVELOPMENT_MODE
 	}
 }
 
@@ -3046,10 +3717,10 @@ func (editionmode *EditionMode) ToCodeString() (res string) {
 
 	switch *editionmode {
 	// insertion code per enum code
-	case DEVELOPMENT_MODE:
-		res = "DEVELOPMENT_MODE"
 	case PRODUCTION_MODE:
 		res = "PRODUCTION_MODE"
+	case DEVELOPMENT_MODE:
+		res = "DEVELOPMENT_MODE"
 	}
 	return
 }
@@ -3062,32 +3733,32 @@ func (gongdoccommandtype GongdocCommandType) ToString() (res string) {
 	// migration of former implementation of enum
 	switch gongdoccommandtype {
 	// insertion code per enum code
-	case DIAGRAM_BASICFIELD_CREATE:
-		res = "DIAGRAM_BASICFIELD_CREATE"
-	case DIAGRAM_BASICFIELD_DELETE:
-		res = "DIAGRAM_BASICFIELD_DELETE"
-	case DIAGRAM_ELEMENT_CREATE:
-		res = "DIAGRAM_ELEMENT_CREATE"
-	case DIAGRAM_ELEMENT_DELETE:
-		res = "DIAGRAM_ELEMENT_DELETE"
-	case DIAGRAM_GONGSTRUCT_CREATE:
-		res = "DIAGRAM_GONGSTRUCT_CREATE"
-	case DIAGRAM_GONGSTRUCT_DELETE:
-		res = "DIAGRAM_GONGSTRUCT_DELETE"
-	case DIAGRAM_GONGSTRUCT_SELECT:
-		res = "DIAGRAM_GONGSTRUCT_SELECT"
-	case DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE:
-		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE"
-	case DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE:
-		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE"
-	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE:
-		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE"
-	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE:
-		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE"
 	case MARSHALL_DIAGRAM:
 		res = "MARSHALL_ALL_DIAGRAMS"
 	case PRINT_ALL_DOCUMENTS:
 		res = "PRINT_ALL_DOCUMENTS"
+	case DIAGRAM_ELEMENT_DELETE:
+		res = "DIAGRAM_ELEMENT_DELETE"
+	case DIAGRAM_ELEMENT_CREATE:
+		res = "DIAGRAM_ELEMENT_CREATE"
+	case DIAGRAM_GONGSTRUCT_DELETE:
+		res = "DIAGRAM_GONGSTRUCT_DELETE"
+	case DIAGRAM_GONGSTRUCT_CREATE:
+		res = "DIAGRAM_GONGSTRUCT_CREATE"
+	case DIAGRAM_BASICFIELD_DELETE:
+		res = "DIAGRAM_BASICFIELD_DELETE"
+	case DIAGRAM_BASICFIELD_CREATE:
+		res = "DIAGRAM_BASICFIELD_CREATE"
+	case DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE:
+		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE"
+	case DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE:
+		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE"
+	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE:
+		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE"
+	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE:
+		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE"
+	case DIAGRAM_GONGSTRUCT_SELECT:
+		res = "DIAGRAM_GONGSTRUCT_SELECT"
 	}
 	return
 }
@@ -3096,32 +3767,32 @@ func (gongdoccommandtype *GongdocCommandType) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "DIAGRAM_BASICFIELD_CREATE":
-		*gongdoccommandtype = DIAGRAM_BASICFIELD_CREATE
-	case "DIAGRAM_BASICFIELD_DELETE":
-		*gongdoccommandtype = DIAGRAM_BASICFIELD_DELETE
-	case "DIAGRAM_ELEMENT_CREATE":
-		*gongdoccommandtype = DIAGRAM_ELEMENT_CREATE
-	case "DIAGRAM_ELEMENT_DELETE":
-		*gongdoccommandtype = DIAGRAM_ELEMENT_DELETE
-	case "DIAGRAM_GONGSTRUCT_CREATE":
-		*gongdoccommandtype = DIAGRAM_GONGSTRUCT_CREATE
-	case "DIAGRAM_GONGSTRUCT_DELETE":
-		*gongdoccommandtype = DIAGRAM_GONGSTRUCT_DELETE
-	case "DIAGRAM_GONGSTRUCT_SELECT":
-		*gongdoccommandtype = DIAGRAM_GONGSTRUCT_SELECT
-	case "DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE":
-		*gongdoccommandtype = DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE
-	case "DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE":
-		*gongdoccommandtype = DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE
-	case "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE":
-		*gongdoccommandtype = DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE
-	case "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE":
-		*gongdoccommandtype = DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE
 	case "MARSHALL_ALL_DIAGRAMS":
 		*gongdoccommandtype = MARSHALL_DIAGRAM
 	case "PRINT_ALL_DOCUMENTS":
 		*gongdoccommandtype = PRINT_ALL_DOCUMENTS
+	case "DIAGRAM_ELEMENT_DELETE":
+		*gongdoccommandtype = DIAGRAM_ELEMENT_DELETE
+	case "DIAGRAM_ELEMENT_CREATE":
+		*gongdoccommandtype = DIAGRAM_ELEMENT_CREATE
+	case "DIAGRAM_GONGSTRUCT_DELETE":
+		*gongdoccommandtype = DIAGRAM_GONGSTRUCT_DELETE
+	case "DIAGRAM_GONGSTRUCT_CREATE":
+		*gongdoccommandtype = DIAGRAM_GONGSTRUCT_CREATE
+	case "DIAGRAM_BASICFIELD_DELETE":
+		*gongdoccommandtype = DIAGRAM_BASICFIELD_DELETE
+	case "DIAGRAM_BASICFIELD_CREATE":
+		*gongdoccommandtype = DIAGRAM_BASICFIELD_CREATE
+	case "DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE":
+		*gongdoccommandtype = DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE
+	case "DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE":
+		*gongdoccommandtype = DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE
+	case "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE":
+		*gongdoccommandtype = DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE
+	case "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE":
+		*gongdoccommandtype = DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE
+	case "DIAGRAM_GONGSTRUCT_SELECT":
+		*gongdoccommandtype = DIAGRAM_GONGSTRUCT_SELECT
 	}
 }
 
@@ -3129,32 +3800,32 @@ func (gongdoccommandtype *GongdocCommandType) ToCodeString() (res string) {
 
 	switch *gongdoccommandtype {
 	// insertion code per enum code
-	case DIAGRAM_BASICFIELD_CREATE:
-		res = "DIAGRAM_BASICFIELD_CREATE"
-	case DIAGRAM_BASICFIELD_DELETE:
-		res = "DIAGRAM_BASICFIELD_DELETE"
-	case DIAGRAM_ELEMENT_CREATE:
-		res = "DIAGRAM_ELEMENT_CREATE"
-	case DIAGRAM_ELEMENT_DELETE:
-		res = "DIAGRAM_ELEMENT_DELETE"
-	case DIAGRAM_GONGSTRUCT_CREATE:
-		res = "DIAGRAM_GONGSTRUCT_CREATE"
-	case DIAGRAM_GONGSTRUCT_DELETE:
-		res = "DIAGRAM_GONGSTRUCT_DELETE"
-	case DIAGRAM_GONGSTRUCT_SELECT:
-		res = "DIAGRAM_GONGSTRUCT_SELECT"
-	case DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE:
-		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE"
-	case DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE:
-		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE"
-	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE:
-		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE"
-	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE:
-		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE"
 	case MARSHALL_DIAGRAM:
 		res = "MARSHALL_DIAGRAM"
 	case PRINT_ALL_DOCUMENTS:
 		res = "PRINT_ALL_DOCUMENTS"
+	case DIAGRAM_ELEMENT_DELETE:
+		res = "DIAGRAM_ELEMENT_DELETE"
+	case DIAGRAM_ELEMENT_CREATE:
+		res = "DIAGRAM_ELEMENT_CREATE"
+	case DIAGRAM_GONGSTRUCT_DELETE:
+		res = "DIAGRAM_GONGSTRUCT_DELETE"
+	case DIAGRAM_GONGSTRUCT_CREATE:
+		res = "DIAGRAM_GONGSTRUCT_CREATE"
+	case DIAGRAM_BASICFIELD_DELETE:
+		res = "DIAGRAM_BASICFIELD_DELETE"
+	case DIAGRAM_BASICFIELD_CREATE:
+		res = "DIAGRAM_BASICFIELD_CREATE"
+	case DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE:
+		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_DELETE"
+	case DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE:
+		res = "DIAGRAM_POINTER_TO_GONGSTRUCT_CREATE"
+	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE:
+		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_DELETE"
+	case DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE:
+		res = "DIAGRAM_SLICE_OF_POINTERS_TO_GONGSTRUCT_CREATE"
+	case DIAGRAM_GONGSTRUCT_SELECT:
+		res = "DIAGRAM_GONGSTRUCT_SELECT"
 	}
 	return
 }
@@ -3167,26 +3838,34 @@ func (gongdocnodetype GongdocNodeType) ToString() (res string) {
 	// migration of former implementation of enum
 	switch gongdocnodetype {
 	// insertion code per enum code
-	case BASIC_FIELD:
-		res = "BASIC_FIELD"
-	case GONG_STRUCT:
-		res = "GONG_STRUCT"
-	case POINTER_TO_STRUCT:
-		res = "POINTER_TO_STRUCT"
-	case ROOT_OF_BASIC_FIELDS:
-		res = "ROOT_OF_BASIC_FIELDS"
 	case ROOT_OF_GONG_STRUCTS:
 		res = "ROOT_OF_GONG_STRUCTS"
-	case ROOT_OF_POINTER_TO_STRUCT_FIELDS:
-		res = "ROOT_OF_POINTER_TO_STRUCT_FIELDS"
-	case ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS:
-		res = "ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS"
+	case GONG_STRUCT:
+		res = "GONG_STRUCT"
+	case ROOT_OF_BASIC_FIELDS:
+		res = "ROOT_OF_BASIC_FIELDS"
+	case BASIC_FIELD:
+		res = "BASIC_FIELD"
 	case ROOT_OF_TIME_FIELDS:
 		res = "ROOT_OF_TIME_FIELDS"
-	case SLICE_OF_POINTER_TO_STRUCT:
-		res = "SLICE_OF_POINTER_TO_STRUCT"
 	case TIME_FIELD:
 		res = "TIME_FIELD"
+	case ROOT_OF_POINTER_TO_STRUCT_FIELDS:
+		res = "ROOT_OF_POINTER_TO_STRUCT_FIELDS"
+	case POINTER_TO_STRUCT:
+		res = "POINTER_TO_STRUCT"
+	case ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS:
+		res = "ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS"
+	case SLICE_OF_POINTER_TO_STRUCT:
+		res = "SLICE_OF_POINTER_TO_STRUCT"
+	case ROOT_OF_M_N_ASSOCIATION_FIELDS:
+		res = "ROOT_OF_M_N_ASSOCIATION_FIELDS"
+	case M_N_ASSOCIATION_FIELD:
+		res = "M_N_ASSOCIATION_FIELD"
+	case ROOT_OF_GONG_NOTES:
+		res = "ROOT_OF_GONG_NOTES"
+	case GONG_NOTE:
+		res = "GONG_NOTE"
 	}
 	return
 }
@@ -3195,26 +3874,34 @@ func (gongdocnodetype *GongdocNodeType) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "BASIC_FIELD":
-		*gongdocnodetype = BASIC_FIELD
-	case "GONG_STRUCT":
-		*gongdocnodetype = GONG_STRUCT
-	case "POINTER_TO_STRUCT":
-		*gongdocnodetype = POINTER_TO_STRUCT
-	case "ROOT_OF_BASIC_FIELDS":
-		*gongdocnodetype = ROOT_OF_BASIC_FIELDS
 	case "ROOT_OF_GONG_STRUCTS":
 		*gongdocnodetype = ROOT_OF_GONG_STRUCTS
-	case "ROOT_OF_POINTER_TO_STRUCT_FIELDS":
-		*gongdocnodetype = ROOT_OF_POINTER_TO_STRUCT_FIELDS
-	case "ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS":
-		*gongdocnodetype = ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS
+	case "GONG_STRUCT":
+		*gongdocnodetype = GONG_STRUCT
+	case "ROOT_OF_BASIC_FIELDS":
+		*gongdocnodetype = ROOT_OF_BASIC_FIELDS
+	case "BASIC_FIELD":
+		*gongdocnodetype = BASIC_FIELD
 	case "ROOT_OF_TIME_FIELDS":
 		*gongdocnodetype = ROOT_OF_TIME_FIELDS
-	case "SLICE_OF_POINTER_TO_STRUCT":
-		*gongdocnodetype = SLICE_OF_POINTER_TO_STRUCT
 	case "TIME_FIELD":
 		*gongdocnodetype = TIME_FIELD
+	case "ROOT_OF_POINTER_TO_STRUCT_FIELDS":
+		*gongdocnodetype = ROOT_OF_POINTER_TO_STRUCT_FIELDS
+	case "POINTER_TO_STRUCT":
+		*gongdocnodetype = POINTER_TO_STRUCT
+	case "ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS":
+		*gongdocnodetype = ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS
+	case "SLICE_OF_POINTER_TO_STRUCT":
+		*gongdocnodetype = SLICE_OF_POINTER_TO_STRUCT
+	case "ROOT_OF_M_N_ASSOCIATION_FIELDS":
+		*gongdocnodetype = ROOT_OF_M_N_ASSOCIATION_FIELDS
+	case "M_N_ASSOCIATION_FIELD":
+		*gongdocnodetype = M_N_ASSOCIATION_FIELD
+	case "ROOT_OF_GONG_NOTES":
+		*gongdocnodetype = ROOT_OF_GONG_NOTES
+	case "GONG_NOTE":
+		*gongdocnodetype = GONG_NOTE
 	}
 }
 
@@ -3222,26 +3909,34 @@ func (gongdocnodetype *GongdocNodeType) ToCodeString() (res string) {
 
 	switch *gongdocnodetype {
 	// insertion code per enum code
-	case BASIC_FIELD:
-		res = "BASIC_FIELD"
-	case GONG_STRUCT:
-		res = "GONG_STRUCT"
-	case POINTER_TO_STRUCT:
-		res = "POINTER_TO_STRUCT"
-	case ROOT_OF_BASIC_FIELDS:
-		res = "ROOT_OF_BASIC_FIELDS"
 	case ROOT_OF_GONG_STRUCTS:
 		res = "ROOT_OF_GONG_STRUCTS"
-	case ROOT_OF_POINTER_TO_STRUCT_FIELDS:
-		res = "ROOT_OF_POINTER_TO_STRUCT_FIELDS"
-	case ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS:
-		res = "ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS"
+	case GONG_STRUCT:
+		res = "GONG_STRUCT"
+	case ROOT_OF_BASIC_FIELDS:
+		res = "ROOT_OF_BASIC_FIELDS"
+	case BASIC_FIELD:
+		res = "BASIC_FIELD"
 	case ROOT_OF_TIME_FIELDS:
 		res = "ROOT_OF_TIME_FIELDS"
-	case SLICE_OF_POINTER_TO_STRUCT:
-		res = "SLICE_OF_POINTER_TO_STRUCT"
 	case TIME_FIELD:
 		res = "TIME_FIELD"
+	case ROOT_OF_POINTER_TO_STRUCT_FIELDS:
+		res = "ROOT_OF_POINTER_TO_STRUCT_FIELDS"
+	case POINTER_TO_STRUCT:
+		res = "POINTER_TO_STRUCT"
+	case ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS:
+		res = "ROOT_OF_SLICE_OF_POINTER_TO_GONG_STRUCT_FIELDS"
+	case SLICE_OF_POINTER_TO_STRUCT:
+		res = "SLICE_OF_POINTER_TO_STRUCT"
+	case ROOT_OF_M_N_ASSOCIATION_FIELDS:
+		res = "ROOT_OF_M_N_ASSOCIATION_FIELDS"
+	case M_N_ASSOCIATION_FIELD:
+		res = "M_N_ASSOCIATION_FIELD"
+	case ROOT_OF_GONG_NOTES:
+		res = "ROOT_OF_GONG_NOTES"
+	case GONG_NOTE:
+		res = "GONG_NOTE"
 	}
 	return
 }
@@ -3254,12 +3949,12 @@ func (multiplicitytype MultiplicityType) ToString() (res string) {
 	// migration of former implementation of enum
 	switch multiplicitytype {
 	// insertion code per enum code
-	case MANY:
-		res = "*"
-	case ONE:
-		res = "1"
 	case ZERO_ONE:
 		res = "0..1"
+	case ONE:
+		res = "1"
+	case MANY:
+		res = "*"
 	}
 	return
 }
@@ -3268,12 +3963,12 @@ func (multiplicitytype *MultiplicityType) FromString(input string) {
 
 	switch input {
 	// insertion code per enum code
-	case "*":
-		*multiplicitytype = MANY
-	case "1":
-		*multiplicitytype = ONE
 	case "0..1":
 		*multiplicitytype = ZERO_ONE
+	case "1":
+		*multiplicitytype = ONE
+	case "*":
+		*multiplicitytype = MANY
 	}
 }
 
@@ -3281,13 +3976,14 @@ func (multiplicitytype *MultiplicityType) ToCodeString() (res string) {
 
 	switch *multiplicitytype {
 	// insertion code per enum code
-	case MANY:
-		res = "MANY"
-	case ONE:
-		res = "ONE"
 	case ZERO_ONE:
 		res = "ZERO_ONE"
+	case ONE:
+		res = "ONE"
+	case MANY:
+		res = "MANY"
 	}
 	return
 }
 
+// Last line of the template

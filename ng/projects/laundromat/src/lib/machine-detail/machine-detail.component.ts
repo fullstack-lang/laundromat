@@ -37,7 +37,7 @@ export class MachineDetailComponent implements OnInit {
 	RemainingTime_Hours: number = 0
 	RemainingTime_Minutes: number = 0
 	RemainingTime_Seconds: number = 0
-	CleanedlaundryFormControl = new FormControl(false);
+	CleanedlaundryFormControl: FormControl = new FormControl(false);
 	MachineStateEnumList: MachineStateEnumSelect[] = []
 
 	// the MachineDB of interest

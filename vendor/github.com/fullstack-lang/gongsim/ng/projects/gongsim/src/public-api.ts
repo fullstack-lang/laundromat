@@ -50,13 +50,6 @@ export * from './lib/gongsimstatuss-table/gongsimstatuss-table.component'
 export * from './lib/gongsimstatus-db'
 export * from './lib/gongsimstatus.service'
 
-export * from './lib/updatestate-detail/updatestate-detail.component'
-export * from './lib/updatestate-presentation/updatestate-presentation.component'
-export * from './lib/updatestate-sorting/updatestate-sorting.component'
-export * from './lib/updatestates-table/updatestates-table.component'
-export * from './lib/updatestate-db'
-export * from './lib/updatestate.service'
-
 
 export * from './lib/ControlMode'
 export * from './lib/EngineDriverState'

@@ -58,10 +58,10 @@ type EventDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field eventDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field eventDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field eventDB.Duration {{BasicKind}} (to be completed)
+	// Declation for basic field eventDB.Duration
 	Duration_Data sql.NullInt64
 	// encoding of pointers
 	EventPointersEnconding
@@ -267,7 +267,7 @@ func (backRepoEvent *BackRepoEventStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	eventInstancesToBeRemovedFromTheStage := make(map[*models.Event]struct{})
+	eventInstancesToBeRemovedFromTheStage := make(map[*models.Event]any)
 	for key, value := range models.Stage.Events {
 		eventInstancesToBeRemovedFromTheStage[key] = value
 	}

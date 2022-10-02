@@ -68,22 +68,22 @@ type LinkDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field linkDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field linkDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field linkDB.Fieldname {{BasicKind}} (to be completed)
+	// Declation for basic field linkDB.Fieldname
 	Fieldname_Data sql.NullString
 
-	// Declation for basic field linkDB.Structname {{BasicKind}} (to be completed)
+	// Declation for basic field linkDB.Structname
 	Structname_Data sql.NullString
 
-	// Declation for basic field linkDB.Fieldtypename {{BasicKind}} (to be completed)
+	// Declation for basic field linkDB.Fieldtypename
 	Fieldtypename_Data sql.NullString
 
-	// Declation for basic field linkDB.TargetMultiplicity {{BasicKind}} (to be completed)
+	// Declation for basic field linkDB.TargetMultiplicity
 	TargetMultiplicity_Data sql.NullString
 
-	// Declation for basic field linkDB.SourceMultiplicity {{BasicKind}} (to be completed)
+	// Declation for basic field linkDB.SourceMultiplicity
 	SourceMultiplicity_Data sql.NullString
 	// encoding of pointers
 	LinkPointersEnconding
@@ -310,7 +310,7 @@ func (backRepoLink *BackRepoLinkStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	linkInstancesToBeRemovedFromTheStage := make(map[*models.Link]struct{})
+	linkInstancesToBeRemovedFromTheStage := make(map[*models.Link]any)
 	for key, value := range models.Stage.Links {
 		linkInstancesToBeRemovedFromTheStage[key] = value
 	}

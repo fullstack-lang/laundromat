@@ -19,9 +19,6 @@ import { GongsimCommandService } from './gongsimcommand.service'
 import { GongsimStatusDB } from './gongsimstatus-db'
 import { GongsimStatusService } from './gongsimstatus.service'
 
-import { UpdateStateDB } from './updatestate-db'
-import { UpdateStateService } from './updatestate.service'
-
 
 // FrontRepo stores all instances in a front repository (design pattern repository)
 export class FrontRepo { // insertion point sub template 
@@ -40,9 +37,6 @@ export class FrontRepo { // insertion point sub template
   GongsimStatuss_array = new Array<GongsimStatusDB>(); // array of repo instances
   GongsimStatuss = new Map<number, GongsimStatusDB>(); // map of repo instances
   GongsimStatuss_batch = new Map<number, GongsimStatusDB>(); // same but only in last GET (for finding repo instances to delete)
-  UpdateStates_array = new Array<UpdateStateDB>(); // array of repo instances
-  UpdateStates = new Map<number, UpdateStateDB>(); // map of repo instances
-  UpdateStates_batch = new Map<number, UpdateStateDB>(); // same but only in last GET (for finding repo instances to delete)
 }
 
 //
@@ -106,7 +100,6 @@ export class FrontRepoService {
     private eventService: EventService,
     private gongsimcommandService: GongsimCommandService,
     private gongsimstatusService: GongsimStatusService,
-    private updatestateService: UpdateStateService,
   ) { }
 
   // postService provides a post function for each struct name
@@ -142,14 +135,12 @@ export class FrontRepoService {
     Observable<EventDB[]>,
     Observable<GongsimCommandDB[]>,
     Observable<GongsimStatusDB[]>,
-    Observable<UpdateStateDB[]>,
   ] = [ // insertion point sub template 
       this.dummyagentService.getDummyAgents(),
       this.engineService.getEngines(),
       this.eventService.getEvents(),
       this.gongsimcommandService.getGongsimCommands(),
       this.gongsimstatusService.getGongsimStatuss(),
-      this.updatestateService.getUpdateStates(),
     ];
 
   //
@@ -170,7 +161,6 @@ export class FrontRepoService {
             events_,
             gongsimcommands_,
             gongsimstatuss_,
-            updatestates_,
           ]) => {
             // Typing can be messy with many items. Therefore, type casting is necessary here
             // insertion point sub template for type casting 
@@ -184,8 +174,6 @@ export class FrontRepoService {
             gongsimcommands = gongsimcommands_ as GongsimCommandDB[]
             var gongsimstatuss: GongsimStatusDB[]
             gongsimstatuss = gongsimstatuss_ as GongsimStatusDB[]
-            var updatestates: UpdateStateDB[]
-            updatestates = updatestates_ as UpdateStateDB[]
 
             // 
             // First Step: init map of instances
@@ -355,39 +343,6 @@ export class FrontRepoService {
               return 0;
             });
 
-            // init the array
-            FrontRepoSingloton.UpdateStates_array = updatestates
-
-            // clear the map that counts UpdateState in the GET
-            FrontRepoSingloton.UpdateStates_batch.clear()
-
-            updatestates.forEach(
-              updatestate => {
-                FrontRepoSingloton.UpdateStates.set(updatestate.ID, updatestate)
-                FrontRepoSingloton.UpdateStates_batch.set(updatestate.ID, updatestate)
-              }
-            )
-
-            // clear updatestates that are absent from the batch
-            FrontRepoSingloton.UpdateStates.forEach(
-              updatestate => {
-                if (FrontRepoSingloton.UpdateStates_batch.get(updatestate.ID) == undefined) {
-                  FrontRepoSingloton.UpdateStates.delete(updatestate.ID)
-                }
-              }
-            )
-
-            // sort UpdateStates_array array
-            FrontRepoSingloton.UpdateStates_array.sort((t1, t2) => {
-              if (t1.Name > t2.Name) {
-                return 1;
-              }
-              if (t1.Name < t2.Name) {
-                return -1;
-              }
-              return 0;
-            });
-
 
             // 
             // Second Step: redeem pointers between instances (thanks to maps in the First Step)
@@ -395,13 +350,6 @@ export class FrontRepoService {
             dummyagents.forEach(
               dummyagent => {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
-                // insertion point for pointer field Engine redeeming
-                {
-                  let _engine = FrontRepoSingloton.Engines.get(dummyagent.EngineID.Int64)
-                  if (_engine) {
-                    dummyagent.Engine = _engine
-                  }
-                }
 
                 // insertion point for redeeming ONE-MANY associations
               }
@@ -429,13 +377,6 @@ export class FrontRepoService {
             )
             gongsimstatuss.forEach(
               gongsimstatus => {
-                // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
-
-                // insertion point for redeeming ONE-MANY associations
-              }
-            )
-            updatestates.forEach(
-              updatestate => {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
@@ -477,13 +418,6 @@ export class FrontRepoService {
                 FrontRepoSingloton.DummyAgents_batch.set(dummyagent.ID, dummyagent)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
-                // insertion point for pointer field Engine redeeming
-                {
-                  let _engine = FrontRepoSingloton.Engines.get(dummyagent.EngineID.Int64)
-                  if (_engine) {
-                    dummyagent.Engine = _engine
-                  }
-                }
 
                 // insertion point for redeeming ONE-MANY associations
               }
@@ -713,57 +647,6 @@ export class FrontRepoService {
       }
     )
   }
-
-  // UpdateStatePull performs a GET on UpdateState of the stack and redeem association pointers 
-  UpdateStatePull(): Observable<FrontRepo> {
-    return new Observable<FrontRepo>(
-      (observer) => {
-        combineLatest([
-          this.updatestateService.getUpdateStates()
-        ]).subscribe(
-          ([ // insertion point sub template 
-            updatestates,
-          ]) => {
-            // init the array
-            FrontRepoSingloton.UpdateStates_array = updatestates
-
-            // clear the map that counts UpdateState in the GET
-            FrontRepoSingloton.UpdateStates_batch.clear()
-
-            // 
-            // First Step: init map of instances
-            // insertion point sub template 
-            updatestates.forEach(
-              updatestate => {
-                FrontRepoSingloton.UpdateStates.set(updatestate.ID, updatestate)
-                FrontRepoSingloton.UpdateStates_batch.set(updatestate.ID, updatestate)
-
-                // insertion point for redeeming ONE/ZERO-ONE associations
-
-                // insertion point for redeeming ONE-MANY associations
-              }
-            )
-
-            // clear updatestates that are absent from the GET
-            FrontRepoSingloton.UpdateStates.forEach(
-              updatestate => {
-                if (FrontRepoSingloton.UpdateStates_batch.get(updatestate.ID) == undefined) {
-                  FrontRepoSingloton.UpdateStates.delete(updatestate.ID)
-                }
-              }
-            )
-
-            // 
-            // Second Step: redeem pointers between instances (thanks to maps in the First Step)
-            // insertion point sub template 
-
-            // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
-          }
-        )
-      }
-    )
-  }
 }
 
 // insertion point for get unique ID per struct 
@@ -781,7 +664,4 @@ export function getGongsimCommandUniqueID(id: number): number {
 }
 export function getGongsimStatusUniqueID(id: number): number {
   return 47 * id
-}
-export function getUpdateStateUniqueID(id: number): number {
-  return 53 * id
 }

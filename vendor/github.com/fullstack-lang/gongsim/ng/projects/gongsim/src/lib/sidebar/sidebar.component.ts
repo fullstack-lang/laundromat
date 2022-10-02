@@ -21,8 +21,6 @@ import { GongsimCommandService } from '../gongsimcommand.service'
 import { getGongsimCommandUniqueID } from '../front-repo.service'
 import { GongsimStatusService } from '../gongsimstatus.service'
 import { getGongsimStatusUniqueID } from '../front-repo.service'
-import { UpdateStateService } from '../updatestate.service'
-import { getUpdateStateUniqueID } from '../front-repo.service'
 
 /**
  * Types of a GongNode / GongFlatNode
@@ -170,7 +168,6 @@ export class SidebarComponent implements OnInit {
     private eventService: EventService,
     private gongsimcommandService: GongsimCommandService,
     private gongsimstatusService: GongsimStatusService,
-    private updatestateService: UpdateStateService,
   ) { }
 
   ngOnDestroy() {
@@ -230,14 +227,6 @@ export class SidebarComponent implements OnInit {
     )
     // observable for changes in structs
     this.gongsimstatusService.GongsimStatusServiceChanged.subscribe(
-      message => {
-        if (message == "post" || message == "update" || message == "delete") {
-          this.refresh()
-        }
-      }
-    )
-    // observable for changes in structs
-    this.updatestateService.UpdateStateServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
           this.refresh()
@@ -309,41 +298,6 @@ export class SidebarComponent implements OnInit {
           dummyagentGongNodeStruct.children!.push(dummyagentGongNodeInstance)
 
           // insertion point for per field code
-          /**
-          * let append a node for the association Engine
-          */
-          let EngineGongNodeAssociation: GongNode = {
-            name: "(Engine) Engine",
-            type: GongNodeType.ONE__ZERO_ONE_ASSOCIATION,
-            id: dummyagentDB.ID,
-            uniqueIdPerStack: 17 * nonInstanceNodeId,
-            structName: "DummyAgent",
-            associationField: "Engine",
-            associatedStructName: "Engine",
-            children: new Array<GongNode>()
-          }
-          nonInstanceNodeId = nonInstanceNodeId + 1
-          dummyagentGongNodeInstance.children!.push(EngineGongNodeAssociation)
-
-          /**
-            * let append a node for the instance behind the asssociation Engine
-            */
-          if (dummyagentDB.Engine != undefined) {
-            let dummyagentGongNodeInstance_Engine: GongNode = {
-              name: dummyagentDB.Engine.Name,
-              type: GongNodeType.INSTANCE,
-              id: dummyagentDB.Engine.ID,
-              uniqueIdPerStack: // godel numbering (thank you kurt)
-                3 * getDummyAgentUniqueID(dummyagentDB.ID)
-                + 5 * getEngineUniqueID(dummyagentDB.Engine.ID),
-              structName: "Engine",
-              associationField: "",
-              associatedStructName: "",
-              children: new Array<GongNode>()
-            }
-            EngineGongNodeAssociation.children.push(dummyagentGongNodeInstance_Engine)
-          }
-
         }
       )
 
@@ -518,50 +472,6 @@ export class SidebarComponent implements OnInit {
             children: new Array<GongNode>()
           }
           gongsimstatusGongNodeStruct.children!.push(gongsimstatusGongNodeInstance)
-
-          // insertion point for per field code
-        }
-      )
-
-      /**
-      * fill up the UpdateState part of the mat tree
-      */
-      let updatestateGongNodeStruct: GongNode = {
-        name: "UpdateState",
-        type: GongNodeType.STRUCT,
-        id: 0,
-        uniqueIdPerStack: 13 * nonInstanceNodeId,
-        structName: "UpdateState",
-        associationField: "",
-        associatedStructName: "",
-        children: new Array<GongNode>()
-      }
-      nonInstanceNodeId = nonInstanceNodeId + 1
-      this.gongNodeTree.push(updatestateGongNodeStruct)
-
-      this.frontRepo.UpdateStates_array.sort((t1, t2) => {
-        if (t1.Name > t2.Name) {
-          return 1;
-        }
-        if (t1.Name < t2.Name) {
-          return -1;
-        }
-        return 0;
-      });
-
-      this.frontRepo.UpdateStates_array.forEach(
-        updatestateDB => {
-          let updatestateGongNodeInstance: GongNode = {
-            name: updatestateDB.Name,
-            type: GongNodeType.INSTANCE,
-            id: updatestateDB.ID,
-            uniqueIdPerStack: getUpdateStateUniqueID(updatestateDB.ID),
-            structName: "UpdateState",
-            associationField: "",
-            associatedStructName: "",
-            children: new Array<GongNode>()
-          }
-          updatestateGongNodeStruct.children!.push(updatestateGongNodeInstance)
 
           // insertion point for per field code
         }

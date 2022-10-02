@@ -64,13 +64,13 @@ type UmlStateDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field umlstateDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field umlstateDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field umlstateDB.X {{BasicKind}} (to be completed)
+	// Declation for basic field umlstateDB.X
 	X_Data sql.NullFloat64
 
-	// Declation for basic field umlstateDB.Y {{BasicKind}} (to be completed)
+	// Declation for basic field umlstateDB.Y
 	Y_Data sql.NullFloat64
 	// encoding of pointers
 	UmlStatePointersEnconding
@@ -279,7 +279,7 @@ func (backRepoUmlState *BackRepoUmlStateStruct) CheckoutPhaseOne() (Error error)
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	umlstateInstancesToBeRemovedFromTheStage := make(map[*models.UmlState]struct{})
+	umlstateInstancesToBeRemovedFromTheStage := make(map[*models.UmlState]any)
 	for key, value := range models.Stage.UmlStates {
 		umlstateInstancesToBeRemovedFromTheStage[key] = value
 	}

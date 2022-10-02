@@ -58,13 +58,13 @@ type GongdocStatusDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field gongdocstatusDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field gongdocstatusDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field gongdocstatusDB.Status {{BasicKind}} (to be completed)
+	// Declation for basic field gongdocstatusDB.Status
 	Status_Data sql.NullString
 
-	// Declation for basic field gongdocstatusDB.CommandCompletionDate {{BasicKind}} (to be completed)
+	// Declation for basic field gongdocstatusDB.CommandCompletionDate
 	CommandCompletionDate_Data sql.NullString
 	// encoding of pointers
 	GongdocStatusPointersEnconding
@@ -273,7 +273,7 @@ func (backRepoGongdocStatus *BackRepoGongdocStatusStruct) CheckoutPhaseOne() (Er
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	gongdocstatusInstancesToBeRemovedFromTheStage := make(map[*models.GongdocStatus]struct{})
+	gongdocstatusInstancesToBeRemovedFromTheStage := make(map[*models.GongdocStatus]any)
 	for key, value := range models.Stage.GongdocStatuss {
 		gongdocstatusInstancesToBeRemovedFromTheStage[key] = value
 	}

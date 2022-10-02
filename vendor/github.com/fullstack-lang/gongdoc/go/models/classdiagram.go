@@ -15,6 +15,7 @@ import (
 	"github.com/tdewolff/canvas/renderers/rasterizer"
 	"github.com/tdewolff/canvas/renderers/svg"
 
+	gong_models "github.com/fullstack-lang/gong/go/models"
 	"github.com/fullstack-lang/gongdoc/go/static"
 	"github.com/fullstack-lang/gongdoc/go/walk"
 )
@@ -25,8 +26,11 @@ import (
 type Classdiagram struct {
 	Name string
 
-	// this is the memory model (and not the "memory motel" of the Rolling Stones)
+	// list of classshapes in the diagram
 	Classshapes []*Classshape
+
+	// list of notes in the diagram
+	Notes []*Note
 
 	// IsEditable indicates the the drawing can be edited (in development mode)
 	// or not (in production mode)
@@ -86,6 +90,20 @@ func (classdiagram *Classdiagram) MarshallAsVariable(file *os.File) error {
 	}
 	fmt.Fprintf(file, "\t},\n")
 
+	fmt.Fprintf(file, "\tNotes: []*uml.Note{\n")
+
+	if len(classdiagram.Notes) > 0 {
+		// sort Notes
+		sort.Slice(classdiagram.Notes[:], func(i, j int) bool {
+			return classdiagram.Notes[i].Body < classdiagram.Notes[j].Body
+		})
+		for _, note := range classdiagram.Notes {
+			note.Marshall(file, 2)
+			fmt.Fprintf(file, ",\n")
+		}
+	}
+	fmt.Fprintf(file, "\t},\n")
+
 	fmt.Fprintf(file, "}\n")
 	return nil
 }
@@ -98,7 +116,7 @@ var ClassdiagramStore ClassdiagramMap = make(map[string]*Classdiagram, 0)
 
 // Unmarshall updates a classdiagram values from an ast.Epr
 // and appends it to the ClassdiagramStore
-func (classdiagram *Classdiagram) Unmarshall(expr ast.Expr, fset *token.FileSet) {
+func (classdiagram *Classdiagram) Unmarshall(modelPkg *gong_models.ModelPkg, expr ast.Expr, fset *token.FileSet) {
 
 	// expression should be a composite literal expression
 	// "uml.Classdiagram{
@@ -149,7 +167,7 @@ func (classdiagram *Classdiagram) Unmarshall(expr ast.Expr, fset *token.FileSet)
 								}
 							case *ast.CompositeLit: // this is a definition
 								classshape = new(Classshape)
-								classshape.Unmarshall(exp, fset)
+								classshape.Unmarshall(modelPkg, exp, fset)
 							default:
 								log.Panic("Value shoud be a composite lit or a unary" +
 									fset.Position(structvaluekeyexpr.Pos()).String())
@@ -157,7 +175,33 @@ func (classdiagram *Classdiagram) Unmarshall(expr ast.Expr, fset *token.FileSet)
 
 							classdiagram.Classshapes = append(classdiagram.Classshapes, classshape)
 						}
+					case "Notes":
+						var cl *ast.CompositeLit
+						var ok bool
+						if cl, ok = structvaluekeyexpr.Value.(*ast.CompositeLit); !ok {
+							log.Panic("Value shoud be a composite lit" +
+								fset.Position(structvaluekeyexpr.Pos()).String())
+						}
+						for _, expr := range cl.Elts {
 
+							var note *Note
+							switch exp := expr.(type) {
+							case *ast.UnaryExpr: // this is a reference to a variable
+								if ident, ok := exp.X.(*ast.Ident); !ok {
+									log.Panic("" + fset.Position(exp.Pos()).String())
+								} else {
+									log.Printf("found %s", ident.Name)
+								}
+							case *ast.CompositeLit: // this is a definition
+								note = new(Note)
+								note.Unmarshall(modelPkg, exp, fset)
+							default:
+								log.Panic("Value shoud be a composite lit or a unary" +
+									fset.Position(structvaluekeyexpr.Pos()).String())
+							}
+
+							classdiagram.Notes = append(classdiagram.Notes, note)
+						}
 					case "Name":
 						// already initialized
 					default:
@@ -180,6 +224,9 @@ func (classdiagram *Classdiagram) SerializeToStage() {
 
 	for _, classshape := range classdiagram.Classshapes {
 		classshape.SerializeToStage()
+	}
+	for _, note := range classdiagram.Notes {
+		note.Stage()
 	}
 }
 
@@ -328,9 +375,8 @@ func (classdiagram *Classdiagram) OutputSVG(path string) {
 }
 
 func (classDiagram *Classdiagram) Marshall(pkgelt *Pkgelt, pkgPath string) error {
+
 	// open file
-	file, err := os.Create(filepath.Join(pkgPath, classDiagram.Name) + ".go")
-	defer closeFile(file)
 
 	log.SetFlags(log.Lshortfile)
 	filename := walk.CaptureOutput(func() { log.Printf("") })
@@ -344,10 +390,14 @@ func (classDiagram *Classdiagram) Marshall(pkgelt *Pkgelt, pkgPath string) error
 	}
 	prelude = strings.ReplaceAll(prelude, "docs", "models")
 
+	filepath := filepath.Join(pkgPath, classDiagram.Name) + ".go"
+	file, err := os.Create(filepath)
+	defer closeFile(file)
 	if err == nil {
 		fmt.Fprintf(file, prelude)
 	} else {
-		log.Fatal(err)
+		cwd, _ := os.Getwd()
+		log.Fatal("Cannot open file ", filepath, " from cwd ", cwd, ", Error is ", err)
 	}
 	if err2 := classDiagram.MarshallAsVariable(file); err != nil {
 		return err2

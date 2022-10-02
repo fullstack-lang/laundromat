@@ -21,16 +21,6 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="dummyagent.TechName"></textarea>
     </mat-form-field>
 
-    <mat-form-field class="detail-full-width">
-        <mat-label>Engine</mat-label>
-        <mat-select [compareWith]="compareObjects" [(value)]="dummyagent.Engine" (selectionChange)="fillUpNameIfEmpty($event)">
-            <mat-option>None</mat-option>
-            <mat-option *ngFor="let engine of frontRepo.Engines_array" [value]="engine">
-                {{engine.Name}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
     <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">

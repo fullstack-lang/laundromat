@@ -58,13 +58,13 @@ type PositionDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field positionDB.X {{BasicKind}} (to be completed)
+	// Declation for basic field positionDB.X
 	X_Data sql.NullFloat64
 
-	// Declation for basic field positionDB.Y {{BasicKind}} (to be completed)
+	// Declation for basic field positionDB.Y
 	Y_Data sql.NullFloat64
 
-	// Declation for basic field positionDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field positionDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
 	PositionPointersEnconding
@@ -273,7 +273,7 @@ func (backRepoPosition *BackRepoPositionStruct) CheckoutPhaseOne() (Error error)
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	positionInstancesToBeRemovedFromTheStage := make(map[*models.Position]struct{})
+	positionInstancesToBeRemovedFromTheStage := make(map[*models.Position]any)
 	for key, value := range models.Stage.Positions {
 		positionInstancesToBeRemovedFromTheStage[key] = value
 	}

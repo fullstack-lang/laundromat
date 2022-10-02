@@ -1,12 +1,15 @@
 package models
 
 // ModelPkg is the go package where the gong source code is located
+//
+// It contains the list of GongStructs & GongEnum
 type ModelPkg struct {
 	Name    string // should be "models"
 	PkgPath string // for instance "github.com/.../models"
 
 	GongStructs map[string]*GongStruct `gorm:"-"` // sql3Lite does not support maps
 	GongEnums   map[string]*GongEnum   `gorm:"-"`
+	GongNotes   map[string]*GongNote   `gorm:"-"`
 }
 
 // SerializeToStage stages modelPkg and
@@ -45,6 +48,9 @@ func (modelPkg *ModelPkg) SerializeToStage() {
 		for _, gongEnumValue := range gongEnum.GongEnumValues {
 			gongEnumValue.Stage()
 		}
+	}
+	for _, gongNote := range modelPkg.GongNotes {
+		gongNote.Stage()
 	}
 	Stage.Commit()
 }

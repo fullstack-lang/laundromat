@@ -68,11 +68,14 @@ type SliceOfPointerToGongStructFieldDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field sliceofpointertogongstructfieldDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field sliceofpointertogongstructfieldDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field sliceofpointertogongstructfieldDB.Index {{BasicKind}} (to be completed)
+	// Declation for basic field sliceofpointertogongstructfieldDB.Index
 	Index_Data sql.NullInt64
+
+	// Declation for basic field sliceofpointertogongstructfieldDB.CompositeStructName
+	CompositeStructName_Data sql.NullString
 	// encoding of pointers
 	SliceOfPointerToGongStructFieldPointersEnconding
 }
@@ -97,6 +100,8 @@ type SliceOfPointerToGongStructFieldWOP struct {
 	Name string `xlsx:"1"`
 
 	Index int `xlsx:"2"`
+
+	CompositeStructName string `xlsx:"3"`
 	// insertion for WOP pointer fields
 }
 
@@ -105,6 +110,7 @@ var SliceOfPointerToGongStructField_Fields = []string{
 	"ID",
 	"Name",
 	"Index",
+	"CompositeStructName",
 }
 
 type BackRepoSliceOfPointerToGongStructFieldStruct struct {
@@ -286,7 +292,7 @@ func (backRepoSliceOfPointerToGongStructField *BackRepoSliceOfPointerToGongStruc
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	sliceofpointertogongstructfieldInstancesToBeRemovedFromTheStage := make(map[*models.SliceOfPointerToGongStructField]struct{})
+	sliceofpointertogongstructfieldInstancesToBeRemovedFromTheStage := make(map[*models.SliceOfPointerToGongStructField]any)
 	for key, value := range models.Stage.SliceOfPointerToGongStructFields {
 		sliceofpointertogongstructfieldInstancesToBeRemovedFromTheStage[key] = value
 	}
@@ -404,6 +410,9 @@ func (sliceofpointertogongstructfieldDB *SliceOfPointerToGongStructFieldDB) Copy
 
 	sliceofpointertogongstructfieldDB.Index_Data.Int64 = int64(sliceofpointertogongstructfield.Index)
 	sliceofpointertogongstructfieldDB.Index_Data.Valid = true
+
+	sliceofpointertogongstructfieldDB.CompositeStructName_Data.String = sliceofpointertogongstructfield.CompositeStructName
+	sliceofpointertogongstructfieldDB.CompositeStructName_Data.Valid = true
 }
 
 // CopyBasicFieldsFromSliceOfPointerToGongStructFieldWOP
@@ -415,6 +424,9 @@ func (sliceofpointertogongstructfieldDB *SliceOfPointerToGongStructFieldDB) Copy
 
 	sliceofpointertogongstructfieldDB.Index_Data.Int64 = int64(sliceofpointertogongstructfield.Index)
 	sliceofpointertogongstructfieldDB.Index_Data.Valid = true
+
+	sliceofpointertogongstructfieldDB.CompositeStructName_Data.String = sliceofpointertogongstructfield.CompositeStructName
+	sliceofpointertogongstructfieldDB.CompositeStructName_Data.Valid = true
 }
 
 // CopyBasicFieldsToSliceOfPointerToGongStructField
@@ -422,6 +434,7 @@ func (sliceofpointertogongstructfieldDB *SliceOfPointerToGongStructFieldDB) Copy
 	// insertion point for checkout of basic fields (back repo to stage)
 	sliceofpointertogongstructfield.Name = sliceofpointertogongstructfieldDB.Name_Data.String
 	sliceofpointertogongstructfield.Index = int(sliceofpointertogongstructfieldDB.Index_Data.Int64)
+	sliceofpointertogongstructfield.CompositeStructName = sliceofpointertogongstructfieldDB.CompositeStructName_Data.String
 }
 
 // CopyBasicFieldsToSliceOfPointerToGongStructFieldWOP
@@ -430,6 +443,7 @@ func (sliceofpointertogongstructfieldDB *SliceOfPointerToGongStructFieldDB) Copy
 	// insertion point for checkout of basic fields (back repo to stage)
 	sliceofpointertogongstructfield.Name = sliceofpointertogongstructfieldDB.Name_Data.String
 	sliceofpointertogongstructfield.Index = int(sliceofpointertogongstructfieldDB.Index_Data.Int64)
+	sliceofpointertogongstructfield.CompositeStructName = sliceofpointertogongstructfieldDB.CompositeStructName_Data.String
 }
 
 // Backup generates a json file from a slice of all SliceOfPointerToGongStructFieldDB instances in the backrepo

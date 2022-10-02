@@ -64,19 +64,19 @@ type FieldDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field fieldDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field fieldDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field fieldDB.Fieldname {{BasicKind}} (to be completed)
+	// Declation for basic field fieldDB.Fieldname
 	Fieldname_Data sql.NullString
 
-	// Declation for basic field fieldDB.FieldTypeAsString {{BasicKind}} (to be completed)
+	// Declation for basic field fieldDB.FieldTypeAsString
 	FieldTypeAsString_Data sql.NullString
 
-	// Declation for basic field fieldDB.Structname {{BasicKind}} (to be completed)
+	// Declation for basic field fieldDB.Structname
 	Structname_Data sql.NullString
 
-	// Declation for basic field fieldDB.Fieldtypename {{BasicKind}} (to be completed)
+	// Declation for basic field fieldDB.Fieldtypename
 	Fieldtypename_Data sql.NullString
 	// encoding of pointers
 	FieldPointersEnconding
@@ -291,7 +291,7 @@ func (backRepoField *BackRepoFieldStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	fieldInstancesToBeRemovedFromTheStage := make(map[*models.Field]struct{})
+	fieldInstancesToBeRemovedFromTheStage := make(map[*models.Field]any)
 	for key, value := range models.Stage.Fields {
 		fieldInstancesToBeRemovedFromTheStage[key] = value
 	}

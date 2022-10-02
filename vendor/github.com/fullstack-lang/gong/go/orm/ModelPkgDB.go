@@ -58,10 +58,10 @@ type ModelPkgDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field modelpkgDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field modelpkgDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field modelpkgDB.PkgPath {{BasicKind}} (to be completed)
+	// Declation for basic field modelpkgDB.PkgPath
 	PkgPath_Data sql.NullString
 	// encoding of pointers
 	ModelPkgPointersEnconding
@@ -267,7 +267,7 @@ func (backRepoModelPkg *BackRepoModelPkgStruct) CheckoutPhaseOne() (Error error)
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	modelpkgInstancesToBeRemovedFromTheStage := make(map[*models.ModelPkg]struct{})
+	modelpkgInstancesToBeRemovedFromTheStage := make(map[*models.ModelPkg]any)
 	for key, value := range models.Stage.ModelPkgs {
 		modelpkgInstancesToBeRemovedFromTheStage[key] = value
 	}

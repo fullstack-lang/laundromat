@@ -58,10 +58,10 @@ type GongStructDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field gongstructDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field gongstructDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field gongstructDB.NbInstances {{BasicKind}} (to be completed)
+	// Declation for basic field gongstructDB.NbInstances
 	NbInstances_Data sql.NullInt64
 	// encoding of pointers
 	GongStructPointersEnconding
@@ -267,7 +267,7 @@ func (backRepoGongStruct *BackRepoGongStructStruct) CheckoutPhaseOne() (Error er
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	gongstructInstancesToBeRemovedFromTheStage := make(map[*models.GongStruct]struct{})
+	gongstructInstancesToBeRemovedFromTheStage := make(map[*models.GongStruct]any)
 	for key, value := range models.Stage.GongStructs {
 		gongstructInstancesToBeRemovedFromTheStage[key] = value
 	}

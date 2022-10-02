@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	gong_models "github.com/fullstack-lang/gong/go/models"
 )
 
 // Link represent the UML Link in any diagram
@@ -17,7 +19,8 @@ type Link struct {
 	Name string
 
 	// swagger:ignore
-	Field              interface{} `gorm:"-"` // field that is diagrammed
+	Field interface{} `gorm:"-"` // field that is diagrammed
+
 	Fieldname          string
 	Structname         string
 	Fieldtypename      string
@@ -25,12 +28,11 @@ type Link struct {
 	SourceMultiplicity MultiplicityType
 
 	// Vertices at the middle
-	// swagger:ignore
 	Middlevertice *Vertice
 }
 
 // Unmarshall
-func (link *Link) Unmarshall(expr ast.Expr, fset *token.FileSet) {
+func (link *Link) Unmarshall(modelPkg *gong_models.ModelPkg, expr ast.Expr, fset *token.FileSet) {
 
 	var cl *ast.CompositeLit
 	var ok bool
@@ -38,6 +40,13 @@ func (link *Link) Unmarshall(expr ast.Expr, fset *token.FileSet) {
 		log.Panic("Expecting a composite litteral like 	Field: models.Line{}.Start, " +
 			fset.Position(expr.Pos()).String())
 	}
+
+	// fieldType is the type of the field.
+	//
+	//  It is stored here in order to adjust it later if the type in the case of an N_M association field.
+	// in a N_M assciation field, the field is an slice of pointer to a type with a suffix "Use"
+	// and whose only pointer field is to the actual type
+	var fieldType *gong_models.GongStruct
 
 	// extract all elements
 	for _, elt := range cl.Elts {
@@ -52,7 +61,7 @@ func (link *Link) Unmarshall(expr ast.Expr, fset *token.FileSet) {
 			log.Panic("Expecting 1 ident " + fset.Position(kve.Pos()).String())
 		}
 
-		// check Link Field is
+		// parse elements
 		switch ident.Name {
 		case "Field":
 			var kve *ast.KeyValueExpr
@@ -85,20 +94,31 @@ func (link *Link) Unmarshall(expr ast.Expr, fset *token.FileSet) {
 				log.Panic("Expecting 1 selector " + fset.Position(cl.Pos()).String())
 			}
 
-			var ident2 *ast.Ident
-			if ident2, ok = se2.X.(*ast.Ident); !ok {
-				log.Panic("Expecting 1 ident " + fset.Position(se2.Pos()).String())
-			}
-
-			structnameWithX := ident2.Name + "." + se2.Sel.Name
 			link.Structname = se2.Sel.Name
 			link.Fieldname = se.Sel.Name
 			link.Name = link.Fieldname
 
-			// now, let's find the link target !!!
-			fieldname := fmt.Sprintf("%s{}.%s", structnameWithX, link.Fieldname)
+			// try to find the type of the field
+			var typename string
+			for _, _struct := range modelPkg.GongStructs {
+				if _struct.Name == link.Structname {
+					for _, _field := range _struct.PointerToGongStructFields {
+						if _field.Name == link.Fieldname {
+							typename = _field.GongStruct.Name
+							fieldType = _field.GongStruct
+						}
+					}
+					for _, _field := range _struct.SliceOfPointerToGongStructFields {
+						if _field.Name == link.Fieldname {
+							typename = _field.GongStruct.Name
+							fieldType = _field.GongStruct
+						}
+					}
+				}
+			}
+			_ = typename
 
-			fieldtypename := MapExpToType[fieldname]
+			fieldtypename := typename
 
 			// extract only the selector
 			words := strings.Split(fieldtypename, ".")
@@ -143,6 +163,22 @@ func (link *Link) Unmarshall(expr ast.Expr, fset *token.FileSet) {
 		default:
 			log.Panic("Expecting 1 Field Middlevertice " + fset.Position(ident.Pos()).String())
 		}
+	}
+
+	// process the special case of N_M association field
+	// if both source and end multiplicity are MANY, then the field is a N_M association field
+	if link.SourceMultiplicity == MANY && link.TargetMultiplicity == MANY {
+		// get the field of the the field type
+		if fieldType == nil {
+			log.Panic(" N_M association field, expecting a field type " + fset.Position(cl.Pos()).String())
+		}
+		if !strings.HasSuffix(fieldType.Name, "Use") {
+			log.Panic(" N_M association field, expecting a field type with a Use suffix" + fset.Position(cl.Pos()).String())
+		}
+		if len(fieldType.PointerToGongStructFields) != 1 {
+			log.Panic(" N_M association field, expecting a field type with a single field" + fset.Position(cl.Pos()).String())
+		}
+		link.Fieldtypename = fieldType.PointerToGongStructFields[0].GongStruct.Name
 	}
 }
 

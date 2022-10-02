@@ -15,6 +15,7 @@ import * as gong from 'gong'
 import { newUmlClassShape } from './newUmlClassShape'
 import { ClassdiagramContextSubject, ClassdiagramContext } from '../diagram-displayed-gongstruct'
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { newUmlNote } from './newUmlNote';
 
 @Component({
   selector: 'lib-class-diagram',
@@ -83,11 +84,15 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
   // one has to redraw the diagram by comparaison with the route
   public idOfDrawnClassDiagram: number = 0
 
+  // editable
+  editable: boolean = false
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
 
     private positionService: gongdoc.PositionService,
+    private noteService: gongdoc.NoteService,
     private verticeService: gongdoc.VerticeService,
 
     private gongdocFrontRepoService: gongdoc.FrontRepoService,
@@ -173,6 +178,22 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
   }
 
   // onMove is called each time the shape is moved
+  onNoteMove(umlNote: joint.shapes.standard.Rectangle) {
+
+
+    let note = umlNote.attributes['note'] as gongdoc.NoteDB
+    let noteService = umlNote.attributes['noteService'] as gongdoc.NoteService
+    note.X = umlNote.get('position')!.x
+    note.Y = umlNote.get('position')!.y
+    noteService.updateNote(note!).subscribe(
+      note => {
+
+      }
+    )
+    // console.log(note.Name, ':', umlNote.get('position'));
+  }
+
+  // onMove is called each time the shape is moved
   onLinkMove(standardLink: joint.shapes.standard.Link) {
     // console.log(standardLink.id, ':', standardLink.get('vertices'));
 
@@ -222,6 +243,37 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
   }
 
   //
+  // make a jointjs umlclass from a gong Note object
+  //
+  addNoteToGraph(note: gongdoc.NoteDB): joint.shapes.basic.Rect {
+
+    //
+    // creates the UML shape
+    //
+
+    // fetch the command singloton
+    let gongdocCommandSingloton: gongdoc.GongdocCommandDB
+    for (let gongdocCommand of this.gongdocFrontRepo.GongdocCommands_array) {
+      gongdocCommandSingloton = gongdocCommand
+    }
+
+    // back pointers: 
+    // stores  as an attribute in the jointjs uml class shape :
+    // - the position service
+    // - the command singloton
+    // - the command service
+    let umlNote = newUmlNote(note, this.noteService,
+      gongdocCommandSingloton!, this.gongdocCommandService)
+
+    // structRectangle.attributes = ['firstName: String']
+    umlNote.addTo(this.graph!);
+
+    // this.Map_CellId_NoteDB.set(umlNote.id.toString(), note)
+    // this.Map_GongStructName_JointjsUMLNote.set(note.Structname, umlNote)
+
+    return umlNote
+  }
+  //
   // turn gong instances into a jointjs diagram
   //
   drawClassdiagram(): void {
@@ -234,7 +286,7 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
     //
     // this is a work in progress
     //
-    let diagramWidth = 600
+    let diagramWidth = 1000
     if (this.classdiagram != undefined) {
       if (this.classdiagram.Classshapes != undefined) {
         diagramWidth = (this.classdiagram.Classshapes.length + 2) * 300
@@ -286,6 +338,13 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
         let umlClassShape = cellView.model
 
         let classhape = umlClassShape.attributes['classshape'] as gongdoc.ClassshapeDB
+
+        // if selected object is not a classshape, move on
+        if (classhape == undefined) {
+          return
+        }
+
+
         let gongdocCommandSingloton = umlClassShape.attributes['gongdocCommandSingloton'] as gongdoc.GongdocCommandDB
         let gongdocCommandService = umlClassShape.attributes['gongdocCommandService'] as gongdoc.GongdocCommandService
 
@@ -416,6 +475,16 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
       }
     }
 
+    // draw notes from the gong notes
+    if (this.classdiagram?.Notes != undefined) {
+      for (let note of this.classdiagram.Notes) {
+        let umlNote = this.addNoteToGraph(note)
+
+        // add a backbone event handler to update the position
+        umlNote.on('change:position', this.onNoteMove)
+      }
+    }
+
     // allow some observers to know what are the displayed structs
     if (this.classdiagram) {
       let classdiagramContext = new ClassdiagramContext()
@@ -458,6 +527,7 @@ export class ClassDiagramComponent implements OnInit, OnDestroy {
         // console.log("gongdoc front repo pull returned")
 
         const id = +this.route.snapshot.paramMap.get('id')!;
+        this.editable = this.route.snapshot.paramMap.get('editable')! == "true";
         this.classdiagram = frontRepo.Classdiagrams.get(id)!
 
         this.drawClassdiagram();

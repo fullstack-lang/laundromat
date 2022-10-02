@@ -9,8 +9,6 @@
   import { GongsimCommandSortingComponent } from './gongsimcommand-sorting/gongsimcommand-sorting.component'
   import { GongsimStatussTableComponent } from './gongsimstatuss-table/gongsimstatuss-table.component'
   import { GongsimStatusSortingComponent } from './gongsimstatus-sorting/gongsimstatus-sorting.component'
-  import { UpdateStatesTableComponent } from './updatestates-table/updatestates-table.component'
-  import { UpdateStateSortingComponent } from './updatestate-sorting/updatestate-sorting.component'
 
 // insertion point sub template for map of components per struct 
   export const MapOfDummyAgentsComponents: Map<string, any> = new Map([["DummyAgentsTableComponent", DummyAgentsTableComponent],])
@@ -23,8 +21,6 @@
   export const MapOfGongsimCommandSortingComponents: Map<string, any> = new Map([["GongsimCommandSortingComponent", GongsimCommandSortingComponent],])
   export const MapOfGongsimStatussComponents: Map<string, any> = new Map([["GongsimStatussTableComponent", GongsimStatussTableComponent],])
   export const MapOfGongsimStatusSortingComponents: Map<string, any> = new Map([["GongsimStatusSortingComponent", GongsimStatusSortingComponent],])
-  export const MapOfUpdateStatesComponents: Map<string, any> = new Map([["UpdateStatesTableComponent", UpdateStatesTableComponent],])
-  export const MapOfUpdateStateSortingComponents: Map<string, any> = new Map([["UpdateStateSortingComponent", UpdateStateSortingComponent],])
 
 // map of all ng components of the stacks
 export const MapOfComponents: Map<string, any> =
@@ -36,7 +32,6 @@ export const MapOfComponents: Map<string, any> =
       ["Event", MapOfEventsComponents],
       ["GongsimCommand", MapOfGongsimCommandsComponents],
       ["GongsimStatus", MapOfGongsimStatussComponents],
-      ["UpdateState", MapOfUpdateStatesComponents],
     ]
   )
 
@@ -50,6 +45,5 @@ export const MapOfSortingComponents: Map<string, any> =
       ["Event", MapOfEventSortingComponents],
       ["GongsimCommand", MapOfGongsimCommandSortingComponents],
       ["GongsimStatus", MapOfGongsimStatusSortingComponents],
-      ["UpdateState", MapOfUpdateStateSortingComponents],
     ]
   )

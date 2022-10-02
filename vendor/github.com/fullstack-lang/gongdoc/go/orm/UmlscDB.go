@@ -64,10 +64,10 @@ type UmlscDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field umlscDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field umlscDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field umlscDB.Activestate {{BasicKind}} (to be completed)
+	// Declation for basic field umlscDB.Activestate
 	Activestate_Data sql.NullString
 	// encoding of pointers
 	UmlscPointersEnconding
@@ -292,7 +292,7 @@ func (backRepoUmlsc *BackRepoUmlscStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	umlscInstancesToBeRemovedFromTheStage := make(map[*models.Umlsc]struct{})
+	umlscInstancesToBeRemovedFromTheStage := make(map[*models.Umlsc]any)
 	for key, value := range models.Stage.Umlscs {
 		umlscInstancesToBeRemovedFromTheStage[key] = value
 	}

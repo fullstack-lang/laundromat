@@ -1,9 +1,9 @@
 // generated from ng_file_enum.ts.go
 export enum EngineState {
 	// insertion point	
-	OVER = "OVER",
-	PAUSED = "PAUSED",
 	RUNNING = "RUNNING",
+	PAUSED = "PAUSED",
+	OVER = "OVER",
 }
 
 export interface EngineStateSelect {
@@ -12,7 +12,7 @@ export interface EngineStateSelect {
 }
 
 export const EngineStateList: EngineStateSelect[] = [ // insertion point	
-	{ value: EngineState.OVER, viewValue: "OVER" },
-	{ value: EngineState.PAUSED, viewValue: "PAUSED" },
 	{ value: EngineState.RUNNING, viewValue: "RUNNING" },
+	{ value: EngineState.PAUSED, viewValue: "PAUSED" },
+	{ value: EngineState.OVER, viewValue: "OVER" },
 ];

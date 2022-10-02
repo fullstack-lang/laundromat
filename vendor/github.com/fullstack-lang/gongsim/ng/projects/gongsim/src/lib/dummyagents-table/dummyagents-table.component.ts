@@ -71,9 +71,6 @@ export class DummyAgentsTableComponent implements OnInit {
         case 'TechName':
           return dummyagentDB.TechName;
 
-        case 'Engine':
-          return (dummyagentDB.Engine ? dummyagentDB.Engine.Name : '');
-
         case 'Name':
           return dummyagentDB.Name;
 
@@ -92,9 +89,6 @@ export class DummyAgentsTableComponent implements OnInit {
 
       // insertion point for merging of fields
       mergedContent += dummyagentDB.TechName.toLowerCase()
-      if (dummyagentDB.Engine) {
-        mergedContent += dummyagentDB.Engine.Name.toLowerCase()
-      }
       mergedContent += dummyagentDB.Name.toLowerCase()
 
       let isSelected = mergedContent.includes(filter.toLowerCase())
@@ -147,13 +141,11 @@ export class DummyAgentsTableComponent implements OnInit {
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "TechName",
-        "Engine",
         "Name",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "TechName",
-        "Engine",
         "Name",
       ]
       this.selection = new SelectionModel<DummyAgentDB>(allowMultiSelect, this.initialSelection);

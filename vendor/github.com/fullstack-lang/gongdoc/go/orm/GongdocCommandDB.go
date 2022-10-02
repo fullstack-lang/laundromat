@@ -58,35 +58,38 @@ type GongdocCommandDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field gongdoccommandDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.Command {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.Command
 	Command_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.DiagramName {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.DiagramName
 	DiagramName_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.Date {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.Date
 	Date_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.GongdocNodeType {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.GongdocNodeType
 	GongdocNodeType_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.StructName {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.StructName
 	StructName_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.FieldName {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.FieldName
 	FieldName_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.FieldTypeName {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.FieldTypeName
 	FieldTypeName_Data sql.NullString
 
-	// Declation for basic field gongdoccommandDB.PositionX {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.PositionX
 	PositionX_Data sql.NullInt64
 
-	// Declation for basic field gongdoccommandDB.PositionY {{BasicKind}} (to be completed)
+	// Declation for basic field gongdoccommandDB.PositionY
 	PositionY_Data sql.NullInt64
+
+	// Declation for basic field gongdoccommandDB.NoteName
+	NoteName_Data sql.NullString
 	// encoding of pointers
 	GongdocCommandPointersEnconding
 }
@@ -127,6 +130,8 @@ type GongdocCommandWOP struct {
 	PositionX int `xlsx:"9"`
 
 	PositionY int `xlsx:"10"`
+
+	NoteName string `xlsx:"11"`
 	// insertion for WOP pointer fields
 }
 
@@ -143,6 +148,7 @@ var GongdocCommand_Fields = []string{
 	"FieldTypeName",
 	"PositionX",
 	"PositionY",
+	"NoteName",
 }
 
 type BackRepoGongdocCommandStruct struct {
@@ -315,7 +321,7 @@ func (backRepoGongdocCommand *BackRepoGongdocCommandStruct) CheckoutPhaseOne() (
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	gongdoccommandInstancesToBeRemovedFromTheStage := make(map[*models.GongdocCommand]struct{})
+	gongdoccommandInstancesToBeRemovedFromTheStage := make(map[*models.GongdocCommand]any)
 	for key, value := range models.Stage.GongdocCommands {
 		gongdoccommandInstancesToBeRemovedFromTheStage[key] = value
 	}
@@ -453,6 +459,9 @@ func (gongdoccommandDB *GongdocCommandDB) CopyBasicFieldsFromGongdocCommand(gong
 
 	gongdoccommandDB.PositionY_Data.Int64 = int64(gongdoccommand.PositionY)
 	gongdoccommandDB.PositionY_Data.Valid = true
+
+	gongdoccommandDB.NoteName_Data.String = gongdoccommand.NoteName
+	gongdoccommandDB.NoteName_Data.Valid = true
 }
 
 // CopyBasicFieldsFromGongdocCommandWOP
@@ -488,6 +497,9 @@ func (gongdoccommandDB *GongdocCommandDB) CopyBasicFieldsFromGongdocCommandWOP(g
 
 	gongdoccommandDB.PositionY_Data.Int64 = int64(gongdoccommand.PositionY)
 	gongdoccommandDB.PositionY_Data.Valid = true
+
+	gongdoccommandDB.NoteName_Data.String = gongdoccommand.NoteName
+	gongdoccommandDB.NoteName_Data.Valid = true
 }
 
 // CopyBasicFieldsToGongdocCommand
@@ -503,6 +515,7 @@ func (gongdoccommandDB *GongdocCommandDB) CopyBasicFieldsToGongdocCommand(gongdo
 	gongdoccommand.FieldTypeName = gongdoccommandDB.FieldTypeName_Data.String
 	gongdoccommand.PositionX = int(gongdoccommandDB.PositionX_Data.Int64)
 	gongdoccommand.PositionY = int(gongdoccommandDB.PositionY_Data.Int64)
+	gongdoccommand.NoteName = gongdoccommandDB.NoteName_Data.String
 }
 
 // CopyBasicFieldsToGongdocCommandWOP
@@ -519,6 +532,7 @@ func (gongdoccommandDB *GongdocCommandDB) CopyBasicFieldsToGongdocCommandWOP(gon
 	gongdoccommand.FieldTypeName = gongdoccommandDB.FieldTypeName_Data.String
 	gongdoccommand.PositionX = int(gongdoccommandDB.PositionX_Data.Int64)
 	gongdoccommand.PositionY = int(gongdoccommandDB.PositionY_Data.Int64)
+	gongdoccommand.NoteName = gongdoccommandDB.NoteName_Data.String
 }
 
 // Backup generates a json file from a slice of all GongdocCommandDB instances in the backrepo

@@ -64,11 +64,6 @@ import { GongsimStatusSortingComponent } from './gongsimstatus-sorting/gongsimst
 import { GongsimStatusDetailComponent } from './gongsimstatus-detail/gongsimstatus-detail.component'
 import { GongsimStatusPresentationComponent } from './gongsimstatus-presentation/gongsimstatus-presentation.component'
 
-import { UpdateStatesTableComponent } from './updatestates-table/updatestates-table.component'
-import { UpdateStateSortingComponent } from './updatestate-sorting/updatestate-sorting.component'
-import { UpdateStateDetailComponent } from './updatestate-detail/updatestate-detail.component'
-import { UpdateStatePresentationComponent } from './updatestate-presentation/updatestate-presentation.component'
-
 
 @NgModule({
 	declarations: [
@@ -97,11 +92,6 @@ import { UpdateStatePresentationComponent } from './updatestate-presentation/upd
 		GongsimStatusSortingComponent,
 		GongsimStatusDetailComponent,
 		GongsimStatusPresentationComponent,
-
-		UpdateStatesTableComponent,
-		UpdateStateSortingComponent,
-		UpdateStateDetailComponent,
-		UpdateStatePresentationComponent,
 
 
 		SplitterComponent,
@@ -166,11 +156,6 @@ import { UpdateStatePresentationComponent } from './updatestate-presentation/upd
 		GongsimStatusSortingComponent,
 		GongsimStatusDetailComponent,
 		GongsimStatusPresentationComponent,
-
-		UpdateStatesTableComponent,
-		UpdateStateSortingComponent,
-		UpdateStateDetailComponent,
-		UpdateStatePresentationComponent,
 
 
 		SplitterComponent,

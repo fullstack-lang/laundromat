@@ -46,7 +46,6 @@ func AutoMigrate(db *gorm.DB) {
 		&EventDB{},
 		&GongsimCommandDB{},
 		&GongsimStatusDB{},
-		&UpdateStateDB{},
 	)
 
 	if err != nil {
@@ -64,5 +63,4 @@ func ResetDB(db *gorm.DB) { // insertion point for reference to structs
 	db.Delete(&EventDB{})
 	db.Delete(&GongsimCommandDB{})
 	db.Delete(&GongsimStatusDB{})
-	db.Delete(&UpdateStateDB{})
 }
