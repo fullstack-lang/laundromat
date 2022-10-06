@@ -51,10 +51,12 @@ github.com/frankban/quicktest v1.13.1/go.mod h1:NeW+ay9A/U67EYXNFA1nPE8e/tnQv/09
 github.com/fredbi/uri v0.0.0-20181227131451-3dcfdacbaaf3/go.mod h1:CzM2G82Q9BDUvMTGHnXf/6OExw/Dz2ivDj48nVg7Lg8=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/fsnotify/fsnotify v1.5.1/go.mod h1:T3375wBYaZdLLcVNkcVbzGHY7f1l/uK5T5Ai1i3InKU=
-github.com/fullstack-lang/gong v0.0.0-20221002094639-34bbbff0c04a h1:zud5ob34ATFVU5zG5y6pzS3cV03KB6pACFGpVDkGqzc=
-github.com/fullstack-lang/gong v0.0.0-20221002094639-34bbbff0c04a/go.mod h1:8XhkipwDupSXGZJY1teDqFcuYyWeg+EiGLO3VOReshg=
+github.com/fullstack-lang/gong v0.0.0-20221006193725-941aa8b9e762 h1:6SwCIOXbGcbGuH2cGEji2iCzm1XwOMeE0/VbkoK6Wro=
+github.com/fullstack-lang/gong v0.0.0-20221006193725-941aa8b9e762/go.mod h1:8XhkipwDupSXGZJY1teDqFcuYyWeg+EiGLO3VOReshg=
 github.com/fullstack-lang/gongdoc v0.0.0-20221002094654-e53186a904a6 h1:otOIRLkPMlDoGFp9HaoT7D2i4l/xZS42b3qJGfPa3x4=
 github.com/fullstack-lang/gongdoc v0.0.0-20221002094654-e53186a904a6/go.mod h1:RWP7Z32Xsks9Y4xq6ivGMzJntP6NeJUDP5Czx5QBJlE=
+github.com/fullstack-lang/gongdoc v0.0.0-20221006192736-652f930a70fc h1:+nFPCGfDHFgEGuTqizQhPcLnouvXrxcsdWmEF5ZtT/g=
+github.com/fullstack-lang/gongdoc v0.0.0-20221006192736-652f930a70fc/go.mod h1:RWP7Z32Xsks9Y4xq6ivGMzJntP6NeJUDP5Czx5QBJlE=
 github.com/fullstack-lang/gongsim v0.0.0-20221002114411-296be87897b9 h1:NYtQcuQ5y656qT04fS7Yu3kKJAFmUGa3NkvKdbUUZ44=
 github.com/fullstack-lang/gongsim v0.0.0-20221002114411-296be87897b9/go.mod h1:rsa5/Boa/WCNYBhTynV14qzjbMHmVfTgXadns/PXojk=
 github.com/gin-contrib/cors v1.4.0 h1:oJ6gwtUl3lqV0WEIwM/LxPF1QZ5qe2lGWdY2+bz7y0g=

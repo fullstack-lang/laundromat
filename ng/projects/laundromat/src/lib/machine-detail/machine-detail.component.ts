@@ -1,6 +1,6 @@
 // generated from NgDetailTemplateTS
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { MachineDB } from '../machine-db'
 import { MachineService } from '../machine.service'
@@ -37,7 +37,7 @@ export class MachineDetailComponent implements OnInit {
 	RemainingTime_Hours: number = 0
 	RemainingTime_Minutes: number = 0
 	RemainingTime_Seconds: number = 0
-	CleanedlaundryFormControl: FormControl = new FormControl(false);
+	CleanedlaundryFormControl: UntypedFormControl = new UntypedFormControl(false);
 	MachineStateEnumList: MachineStateEnumSelect[] = []
 
 	// the MachineDB of interest
