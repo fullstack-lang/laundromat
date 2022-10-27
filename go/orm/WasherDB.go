@@ -364,6 +364,7 @@ func (backRepo *BackRepoStruct) CommitWasher(washer *models.Washer) {
 	if id, ok := (*backRepo.BackRepoWasher.Map_WasherPtr_WasherDBID)[washer]; ok {
 		backRepo.BackRepoWasher.CommitPhaseTwoInstance(backRepo, id, washer)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitWasher allows checkout of a single washer (if already staged and with a BackRepo id)

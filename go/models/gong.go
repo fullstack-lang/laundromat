@@ -2,6 +2,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,9 @@ import (
 	"sort"
 	"strings"
 )
+
+// errUnkownEnum is returns when a value cannot match enum values
+var errUnkownEnum = errors.New("unkown enum")
 
 // swagger:ignore
 type __void any
@@ -31,11 +35,29 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	Machines           map[*Machine]any
 	Machines_mapString map[string]*Machine
 
+	OnAfterMachineCreateCallback OnAfterCreateInterface[Machine]
+	OnAfterMachineUpdateCallback OnAfterUpdateInterface[Machine]
+	OnAfterMachineDeleteCallback OnAfterDeleteInterface[Machine]
+	OnAfterMachineReadCallback   OnAfterReadInterface[Machine]
+
+
 	Simulations           map[*Simulation]any
 	Simulations_mapString map[string]*Simulation
 
+	OnAfterSimulationCreateCallback OnAfterCreateInterface[Simulation]
+	OnAfterSimulationUpdateCallback OnAfterUpdateInterface[Simulation]
+	OnAfterSimulationDeleteCallback OnAfterDeleteInterface[Simulation]
+	OnAfterSimulationReadCallback   OnAfterReadInterface[Simulation]
+
+
 	Washers           map[*Washer]any
 	Washers_mapString map[string]*Washer
+
+	OnAfterWasherCreateCallback OnAfterCreateInterface[Washer]
+	OnAfterWasherUpdateCallback OnAfterUpdateInterface[Washer]
+	OnAfterWasherDeleteCallback OnAfterDeleteInterface[Washer]
+	OnAfterWasherReadCallback   OnAfterReadInterface[Washer]
+
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
@@ -54,6 +76,29 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 type OnInitCommitInterface interface {
 	BeforeCommit(stage *StageStruct)
+}
+
+// OnAfterCreateInterface callback when an instance is updated from the front
+type OnAfterCreateInterface[Type Gongstruct] interface {
+	OnAfterCreate(stage *StageStruct,
+		instance *Type)
+}
+
+// OnAfterReadInterface callback when an instance is updated from the front
+type OnAfterReadInterface[Type Gongstruct] interface {
+	OnAfterRead(stage *StageStruct,
+		instance *Type)
+}
+
+// OnAfterUpdateInterface callback when an instance is updated from the front
+type OnAfterUpdateInterface[Type Gongstruct] interface {
+	OnAfterUpdate(stage *StageStruct, old, new *Type)
+}
+
+// OnAfterDeleteInterface callback when an instance is updated from the front
+type OnAfterDeleteInterface[Type Gongstruct] interface {
+	OnAfterDelete(stage *StageStruct,
+		staged, front *Type)
 }
 
 type BackRepoInterface interface {
@@ -1145,7 +1190,7 @@ func (machinestateenum MachineStateEnum) ToString() (res string) {
 	return
 }
 
-func (machinestateenum *MachineStateEnum) FromString(input string) {
+func (machinestateenum *MachineStateEnum) FromString(input string) (err error) {
 
 	switch input {
 	// insertion code per enum code
@@ -1155,7 +1200,10 @@ func (machinestateenum *MachineStateEnum) FromString(input string) {
 		*machinestateenum = MACHINE_DOOR_CLOSED_RUNNING
 	case "MACHINE_DOOR_CLOSED_IDLE":
 		*machinestateenum = MACHINE_DOOR_CLOSED_IDLE
+	default:
+		return errUnkownEnum
 	}
+	return
 }
 
 func (machinestateenum *MachineStateEnum) ToCodeString() (res string) {
@@ -1198,7 +1246,7 @@ func (washerstateenum WasherStateEnum) ToString() (res string) {
 	return
 }
 
-func (washerstateenum *WasherStateEnum) FromString(input string) {
+func (washerstateenum *WasherStateEnum) FromString(input string) (err error) {
 
 	switch input {
 	// insertion code per enum code
@@ -1216,7 +1264,10 @@ func (washerstateenum *WasherStateEnum) FromString(input string) {
 		*washerstateenum = WASHER_UNLOAD_DRUM
 	case "WASHER_START_PROGRAM":
 		*washerstateenum = WASHER_START_PROGRAM
+	default:
+		return errUnkownEnum
 	}
+	return
 }
 
 func (washerstateenum *WasherStateEnum) ToCodeString() (res string) {

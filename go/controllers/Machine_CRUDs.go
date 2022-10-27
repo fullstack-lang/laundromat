@@ -41,11 +41,12 @@ type MachineInput struct {
 //
 // swagger:route GET /machines machines getMachines
 //
-// Get all machines
+// # Get all machines
 //
 // Responses:
-//    default: genericError
-//        200: machineDBsResponse
+// default: genericError
+//
+//	200: machineDBResponse
 func GetMachines(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMachine.GetDB()
 
@@ -85,14 +86,15 @@ func GetMachines(c *gin.Context) {
 // swagger:route POST /machines machines postMachine
 //
 // Creates a machine
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: machineDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostMachine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMachine.GetDB()
 
@@ -124,6 +126,14 @@ func PostMachine(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoMachine.CheckoutPhaseOneInstance(&machineDB)
+	machine := (*orm.BackRepo.BackRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]
+
+	if machine != nil {
+		models.AfterCreateFromFront(&models.Stage, machine)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostMachine(c *gin.Context) {
 // Gets the details for a machine.
 //
 // Responses:
-//    default: genericError
-//        200: machineDBResponse
+// default: genericError
+//
+//	200: machineDBResponse
 func GetMachine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMachine.GetDB()
 
@@ -166,11 +177,12 @@ func GetMachine(c *gin.Context) {
 //
 // swagger:route PATCH /machines/{ID} machines updateMachine
 //
-// Update a machine
+// # Update a machine
 //
 // Responses:
-//    default: genericError
-//        200: machineDBResponse
+// default: genericError
+//
+//	200: machineDBResponse
 func UpdateMachine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMachine.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateMachine(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	machineNew := new(models.Machine)
+	machineDB.CopyBasicFieldsToMachine(machineNew)
+
+	// get stage instance from DB instance, and call callback function
+	machineOld := (*orm.BackRepo.BackRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]
+	if machineOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, machineOld, machineNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the machineDB
@@ -223,10 +247,11 @@ func UpdateMachine(c *gin.Context) {
 //
 // swagger:route DELETE /machines/{ID} machines deleteMachine
 //
-// Delete a machine
+// # Delete a machine
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: machineDBResponse
 func DeleteMachine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMachine.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteMachine(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&machineDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	machineDeleted := new(models.Machine)
+	machineDB.CopyBasicFieldsToMachine(machineDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	machineStaged := (*orm.BackRepo.BackRepoMachine.Map_MachineDBID_MachinePtr)[machineDB.ID]
+	if machineStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, machineStaged, machineDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

@@ -41,11 +41,12 @@ type SimulationInput struct {
 //
 // swagger:route GET /simulations simulations getSimulations
 //
-// Get all simulations
+// # Get all simulations
 //
 // Responses:
-//    default: genericError
-//        200: simulationDBsResponse
+// default: genericError
+//
+//	200: simulationDBResponse
 func GetSimulations(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
@@ -85,14 +86,15 @@ func GetSimulations(c *gin.Context) {
 // swagger:route POST /simulations simulations postSimulation
 //
 // Creates a simulation
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: simulationDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostSimulation(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
@@ -124,6 +126,14 @@ func PostSimulation(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoSimulation.CheckoutPhaseOneInstance(&simulationDB)
+	simulation := (*orm.BackRepo.BackRepoSimulation.Map_SimulationDBID_SimulationPtr)[simulationDB.ID]
+
+	if simulation != nil {
+		models.AfterCreateFromFront(&models.Stage, simulation)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostSimulation(c *gin.Context) {
 // Gets the details for a simulation.
 //
 // Responses:
-//    default: genericError
-//        200: simulationDBResponse
+// default: genericError
+//
+//	200: simulationDBResponse
 func GetSimulation(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
@@ -166,11 +177,12 @@ func GetSimulation(c *gin.Context) {
 //
 // swagger:route PATCH /simulations/{ID} simulations updateSimulation
 //
-// Update a simulation
+// # Update a simulation
 //
 // Responses:
-//    default: genericError
-//        200: simulationDBResponse
+// default: genericError
+//
+//	200: simulationDBResponse
 func UpdateSimulation(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateSimulation(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	simulationNew := new(models.Simulation)
+	simulationDB.CopyBasicFieldsToSimulation(simulationNew)
+
+	// get stage instance from DB instance, and call callback function
+	simulationOld := (*orm.BackRepo.BackRepoSimulation.Map_SimulationDBID_SimulationPtr)[simulationDB.ID]
+	if simulationOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, simulationOld, simulationNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the simulationDB
@@ -223,10 +247,11 @@ func UpdateSimulation(c *gin.Context) {
 //
 // swagger:route DELETE /simulations/{ID} simulations deleteSimulation
 //
-// Delete a simulation
+// # Delete a simulation
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: simulationDBResponse
 func DeleteSimulation(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSimulation.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteSimulation(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&simulationDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	simulationDeleted := new(models.Simulation)
+	simulationDB.CopyBasicFieldsToSimulation(simulationDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	simulationStaged := (*orm.BackRepo.BackRepoSimulation.Map_SimulationDBID_SimulationPtr)[simulationDB.ID]
+	if simulationStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, simulationStaged, simulationDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

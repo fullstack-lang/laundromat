@@ -386,6 +386,7 @@ func (backRepo *BackRepoStruct) CommitSimulation(simulation *models.Simulation) 
 	if id, ok := (*backRepo.BackRepoSimulation.Map_SimulationPtr_SimulationDBID)[simulation]; ok {
 		backRepo.BackRepoSimulation.CommitPhaseTwoInstance(backRepo, id, simulation)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitSimulation allows checkout of a single simulation (if already staged and with a BackRepo id)

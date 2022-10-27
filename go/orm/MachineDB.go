@@ -371,6 +371,7 @@ func (backRepo *BackRepoStruct) CommitMachine(machine *models.Machine) {
 	if id, ok := (*backRepo.BackRepoMachine.Map_MachinePtr_MachineDBID)[machine]; ok {
 		backRepo.BackRepoMachine.CommitPhaseTwoInstance(backRepo, id, machine)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitMachine allows checkout of a single machine (if already staged and with a BackRepo id)

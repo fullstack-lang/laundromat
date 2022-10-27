@@ -41,11 +41,12 @@ type WasherInput struct {
 //
 // swagger:route GET /washers washers getWashers
 //
-// Get all washers
+// # Get all washers
 //
 // Responses:
-//    default: genericError
-//        200: washerDBsResponse
+// default: genericError
+//
+//	200: washerDBResponse
 func GetWashers(c *gin.Context) {
 	db := orm.BackRepo.BackRepoWasher.GetDB()
 
@@ -85,14 +86,15 @@ func GetWashers(c *gin.Context) {
 // swagger:route POST /washers washers postWasher
 //
 // Creates a washer
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: washerDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostWasher(c *gin.Context) {
 	db := orm.BackRepo.BackRepoWasher.GetDB()
 
@@ -124,6 +126,14 @@ func PostWasher(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoWasher.CheckoutPhaseOneInstance(&washerDB)
+	washer := (*orm.BackRepo.BackRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]
+
+	if washer != nil {
+		models.AfterCreateFromFront(&models.Stage, washer)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostWasher(c *gin.Context) {
 // Gets the details for a washer.
 //
 // Responses:
-//    default: genericError
-//        200: washerDBResponse
+// default: genericError
+//
+//	200: washerDBResponse
 func GetWasher(c *gin.Context) {
 	db := orm.BackRepo.BackRepoWasher.GetDB()
 
@@ -166,11 +177,12 @@ func GetWasher(c *gin.Context) {
 //
 // swagger:route PATCH /washers/{ID} washers updateWasher
 //
-// Update a washer
+// # Update a washer
 //
 // Responses:
-//    default: genericError
-//        200: washerDBResponse
+// default: genericError
+//
+//	200: washerDBResponse
 func UpdateWasher(c *gin.Context) {
 	db := orm.BackRepo.BackRepoWasher.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateWasher(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	washerNew := new(models.Washer)
+	washerDB.CopyBasicFieldsToWasher(washerNew)
+
+	// get stage instance from DB instance, and call callback function
+	washerOld := (*orm.BackRepo.BackRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]
+	if washerOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, washerOld, washerNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the washerDB
@@ -223,10 +247,11 @@ func UpdateWasher(c *gin.Context) {
 //
 // swagger:route DELETE /washers/{ID} washers deleteWasher
 //
-// Delete a washer
+// # Delete a washer
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: washerDBResponse
 func DeleteWasher(c *gin.Context) {
 	db := orm.BackRepo.BackRepoWasher.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteWasher(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&washerDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	washerDeleted := new(models.Washer)
+	washerDB.CopyBasicFieldsToWasher(washerDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	washerStaged := (*orm.BackRepo.BackRepoWasher.Map_WasherDBID_WasherPtr)[washerDB.ID]
+	if washerStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, washerStaged, washerDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
